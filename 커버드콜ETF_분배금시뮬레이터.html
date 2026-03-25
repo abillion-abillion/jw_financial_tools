@@ -174,6 +174,19 @@
 </head>
 <body>
 
+<!-- Top Bar -->
+<div style="background:#1e293b;display:flex;align-items:center;justify-content:space-between;padding:8px 24px;">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div style="width:32px;height:32px;background:linear-gradient(135deg,#c0392b,#e67e22);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:.8rem;letter-spacing:-0.5px;">JW</div>
+    <span style="color:#fff;font-weight:700;font-size:.92rem;">JW Financial</span>
+    <span style="color:rgba(255,255,255,.5);font-size:.82rem;margin-left:2px;">· 커버드콜 ETF 분배금 시뮬레이터</span>
+  </div>
+  <div style="background:rgba(220,53,69,.15);border:1px solid rgba(220,53,69,.4);border-radius:6px;padding:4px 14px;display:flex;align-items:center;gap:6px;">
+    <span style="font-size:.78rem;">🔒</span>
+    <span style="color:#ff6b6b;font-size:.78rem;font-weight:700;">대외비 — 사내 전용 자료 · 고객 배포 금지</span>
+  </div>
+</div>
+
 <div class="header">
   <h1>📈 커버드콜 ETF 분배금 시뮬레이터</h1>
   <p>목돈을 커버드콜 ETF에 투자했을 때 받을 수 있는 월 분배금을 계산합니다</p>
@@ -286,7 +299,7 @@
 
 <!-- STEP 4: 분배금 구조 분석 -->
 <div class="card" style="margin-top:20px;">
-  <div class="card-title">분배금 구조 이해 &amp; 세금 계산</div>
+  <div class="card-title">STEP 4 &nbsp;분배금 구조 이해 &amp; 세금 계산</div>
 
   <div class="formula-box">
     <div class="formula-row">
@@ -535,11 +548,11 @@ function getDefaultDesc(name, type) {
 // ─── 포트폴리오 데이터 ───
 // lastDiv: 직전월 실제 분배금(원/주), taxBase: 주당 과세표준액(원/주, FunETF 확인 필요)
 let etfData = [
-  { code:'498410', name:'KODEX 금융고배당TOP10타겟위클리커버드콜', type:'국내주식', price:12690, divPerShare:151, lastDiv:189, taxBase:13, gijunYmd:'20260225', paymentYmd:'20260227', weight:20 },
-  { code:'498400', name:'KODEX 200타겟위클리커버드콜',               type:'국내주식', price:17310, divPerShare:182, lastDiv:252, taxBase:33, gijunYmd:'20260311', paymentYmd:'20260313', weight:20 },
-  { code:'490590', name:'RISE 미국AI밸류체인데일리고정커버드콜',    type:'해외주식', price:12755, divPerShare:195, lastDiv:152, taxBase:0, gijunYmd:'20260225', paymentYmd:'20260227', weight:10 },
+  { code:'489030', name:'PLUS 고배당주위클리커버드콜',               type:'국내주식', price:8785,  divPerShare:147, lastDiv:156, taxBase:0, gijunYmd:'20260225', paymentYmd:'20260227', weight:20 },
+  { code:'475720', name:'RISE 200위클리커버드콜',                     type:'국내주식', price:12250, divPerShare:150, lastDiv:200, taxBase:0, gijunYmd:'20260225', paymentYmd:'20260227', weight:20 },
   { code:'494300', name:'KODEX 미국나스닥100데일리커버드콜OTM',      type:'해외주식', price:9825,  divPerShare:161, lastDiv:161, taxBase:161, gijunYmd:'20260225', paymentYmd:'20260227', weight:20 },
-  { code:'475080', name:'KODEX 테슬라커버드콜채권혼합액티브',        type:'자산배분', price:8610,  divPerShare:111, lastDiv:108, taxBase:17, gijunYmd:'20260225', paymentYmd:'20260227', weight:30 },
+  { code:'490590', name:'RISE 미국AI밸류체인데일리고정커버드콜',    type:'해외주식', price:12755, divPerShare:195, lastDiv:152, taxBase:0, gijunYmd:'20260225', paymentYmd:'20260227', weight:10 },
+  { code:'0040Y0', name:'SOL 팔란티어커버드콜OTM채권혼합',          type:'자산배분', price:9320,  divPerShare:176, lastDiv:185, taxBase:0, gijunYmd:'20260225', paymentYmd:'20260227', weight:30 },
 ];
 
 const COLORS=['#3b5bdb','#f76707','#2f9e44','#9c36b5','#1098ad','#d6336c','#495057','#e67700','#0c8599','#862e9c'];
