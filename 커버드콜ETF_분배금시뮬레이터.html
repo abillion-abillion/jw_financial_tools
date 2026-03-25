@@ -658,11 +658,11 @@ function buildTaxTable() {
       </td>
       <td><input class="editable" type="number" value="${etf.lastDiv}" min="0" oninput="updateTaxField(${i},'lastDiv',this.value)" title="직전월 분배금(원/주)"></td>
       <td><input class="editable" type="number" value="${etf.taxBase}" min="0" oninput="updateTaxField(${i},'taxBase',this.value)" title="주당 과세표준액(원/주)"></td>
-      <td class="tax-free-col">${fmt(optPremium)}원<div class="pct-bar"><div class="pct-free" style="width:${barFree}%"></div><div class="pct-taxed" style="width:${barTax}%"></div></div></td>
-      <td>${freePct.toFixed(0)}%<span style="font-size:.68rem;color:var(--gray-600);margin-left:2px;">비과세</span></td>
-      <td class="result-green">${fmt(gross)}원</td>
-      <td class="tax-col">${fmt(taxAmt)}원</td>
-      <td class="net-col">${fmt(net)}원</td>`;
+      <td class="tax-free-col" id="tax-free-${i}">${fmt(optPremium)}원<div class="pct-bar"><div class="pct-free" style="width:${barFree}%"></div><div class="pct-taxed" style="width:${barTax}%"></div></div></td>
+      <td id="tax-pct-${i}">${freePct.toFixed(0)}%<span style="font-size:.68rem;color:var(--gray-600);margin-left:2px;">비과세</span></td>
+      <td class="result-green" id="tax-gross-${i}">${fmt(gross)}원</td>
+      <td class="tax-col" id="tax-amt-${i}">${fmt(taxAmt)}원</td>
+      <td class="net-col" id="tax-net-${i}">${fmt(net)}원</td>`;
     tbody.appendChild(row);
   });
   const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
@@ -675,7 +675,36 @@ function buildTaxTable() {
 }
 function updateTaxField(i,field,val){
   etfData[i][field]=parseFloat(val)||0;
-  buildTaxTable();
+  // 테이블 재생성 없이 해당 행 계산값만 업데이트 (input 포커스 유지)
+  const etf=etfData[i], total=getTotalAmount();
+  const investAmt=total*(etf.weight/100);
+  const shares=etf.price>0?investAmt/etf.price:0;
+  const gross=shares*etf.lastDiv;
+  const taxAmt=shares*etf.taxBase*0.154;
+  const net=gross-taxAmt;
+  const optPremium=etf.lastDiv-etf.taxBase;
+  const freePct=etf.lastDiv>0?(optPremium/etf.lastDiv*100):0;
+  const barFree=Math.max(0,Math.min(100,freePct)).toFixed(1);
+  const barTax=(100-parseFloat(barFree)).toFixed(1);
+  const s=(id,v)=>{const e=document.getElementById(id);if(e)e.innerHTML=v;};
+  s('tax-free-'+i, fmt(optPremium)+'원<div class="pct-bar"><div class="pct-free" style="width:'+barFree+'%"></div><div class="pct-taxed" style="width:'+barTax+'%"></div></div>');
+  s('tax-pct-'+i, freePct.toFixed(0)+'%<span style="font-size:.68rem;color:var(--gray-600);margin-left:2px;">비과세</span>');
+  s('tax-gross-'+i, fmt(gross)+'원');
+  s('tax-amt-'+i, fmt(taxAmt)+'원');
+  s('tax-net-'+i, fmt(net)+'원');
+  // 합계 재계산
+  let sumGross=0,sumTax=0,sumNet=0;
+  etfData.forEach(e=>{
+    const inv=total*(e.weight/100), sh=e.price>0?inv/e.price:0;
+    sumGross+=sh*e.lastDiv; sumTax+=sh*e.taxBase*0.154; sumNet+=sh*e.lastDiv-sh*e.taxBase*0.154;
+  });
+  const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  el('tax-total-gross', fmt(sumGross)+'원');
+  el('tax-total-tax',   fmt(sumTax)+'원');
+  el('tax-total-net',   fmt(sumNet)+'원');
+  el('tax-annual-gross',toKorean(Math.round(sumGross*12)));
+  el('tax-annual-tax',  fmt(sumTax*12)+'원');
+  el('tax-annual-net',  toKorean(Math.round(sumNet*12)));
 }
 
 // ─── Product Summary ───
