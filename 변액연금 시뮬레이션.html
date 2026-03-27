@@ -371,24 +371,50 @@ updateHints();
 let calcTimer=null;
 function autoCalc(){clearTimeout(calcTimer);calcTimer=setTimeout(calculate,350);}
 
-/* ── 핵심 계산 ── */
+/* ── 핵심 계산 (변액수익 v11 로직 적용) ── */
 function calcVA(premWon,r1,r2,deferYears){
-  const ratio1=1-0.0612-0.15, ratio2=1-0.0314-0.15;
-  const net1=Math.max(0,r1-0.0054-0.0005), net2=Math.max(0,r2-0.0054-0.0005);
-  const rm1=net1/12, rm2=net2/12;
-  // 사업비 합계
-  const costTotal=(premWon*0.0612*84)+(premWon*0.0314*36)+(premWon*0.15*120)+(premWon*0.015*deferYears*12);
-  let acc=0;
-  for(let t=1;t<=120;t++){const ratio=t<=84?ratio1:ratio2;acc=acc*(1+rm1)+premWon*ratio;}
-  const bonusLump=premWon*120*0.06;
-  const splitM=premWon*12*10*0.0037;
-  let splitFV=0;
-  for(let t=1;t<=60;t++) splitFV=splitFV*(1+rm2)+splitM;
-  const accComp=acc+bonusLump+splitFV;
-  const mgmt=premWon*0.015;
-  let accP=accComp;
-  for(let t=1;t<=deferYears*12;t++){accP=accP*(1+rm2)-mgmt;if(accP<0){accP=0;break;}}
-  return{totalPaid:premWon*120,accComp,bonusTotal:bonusLump+splitFV,fund:accP,costTotal};
+  // 순수익률: 보증비용 0.05%만 차감 (운용보수 삭제)
+  const annualNet1 = Math.max(0, r1 - 0.0005);
+  const annualNet2 = Math.max(0, r2 - 0.0005);
+  const rm1 = Math.pow(1 + annualNet1, 1/12) - 1;
+  const rm2 = Math.pow(1 + annualNet2, 1/12) - 1;
+
+  // 사업비: 1~7년(84개월) 21.1282%, 8~10년(36개월) 18.1482%
+  const feeRate1 = 0.211282, feeRate2 = 0.181482;
+  let acc = 0, totalPaid = 0;
+
+  // 납입기간 10년 (120개월)
+  for(let y = 1; y <= 10; y++){
+    for(let m = 1; m <= 12; m++){
+      totalPaid += premWon;
+      const feeRate = y <= 7 ? feeRate1 : feeRate2;
+      acc += premWon * (1 - feeRate);
+      acc *= (1 + rm1);
+    }
+  }
+  const accAtComp = acc; // 납입완료 시점 적립금 (보너스 전)
+
+  // 보너스: 납입완료 시 6% 일시보너스
+  const bonusLump = premWon * 120 * 0.06;
+  acc += bonusLump;
+  let sumBonus = bonusLump;
+
+  // 거치기간: 유지관리비 1.5% + 분할보너스 5년(60개월)
+  const mgmt = premWon * 0.015;
+  const splitM = premWon * 120 * 0.0037;
+  let splitCount = 0;
+  for(let y = 1; y <= deferYears; y++){
+    for(let m = 1; m <= 12; m++){
+      acc -= mgmt;
+      acc *= (1 + rm2);
+      if(splitCount < 60){ acc += splitM; sumBonus += splitM; splitCount++; }
+    }
+  }
+
+  // 사업비 합계 (표시용)
+  const costTotal = (premWon * feeRate1 * 84) + (premWon * feeRate2 * 36) + (mgmt * deferYears * 12);
+
+  return{totalPaid, accComp: accAtComp + bonusLump, bonusTotal: sumBonus, fund: Math.max(0, acc), costTotal};
 }
 
 function calcETFTax(gain){
@@ -430,37 +456,43 @@ function calcPension(fund,type,lifeExp){
   return 0;
 }
 
-/* ── 그래프용 시계열 ── */
+/* ── 그래프용 시계열 (변액수익 v11 로직 적용) ── */
 function buildTS(premWon,r1,r2,deferYears,curAge,pa,receiveYrs){
-  const ratio1=1-0.0612-0.15, ratio2=1-0.0314-0.15;
-  const net1=Math.max(0,r1-0.0054-0.0005), net2=Math.max(0,r2-0.0054-0.0005);
-  const rm1=net1/12, rm2=net2/12, etfRm1=r1/12, etfRm2=r2/12;
-  const mgmt=premWon*0.015;
+  const feeRate1 = 0.211282, feeRate2 = 0.181482;
+  // 순수익률: 보증비용 0.05%만 차감
+  const annualNet1 = Math.max(0, r1 - 0.0005);
+  const annualNet2 = Math.max(0, r2 - 0.0005);
+  const rm1 = Math.pow(1 + annualNet1, 1/12) - 1;
+  const rm2 = Math.pow(1 + annualNet2, 1/12) - 1;
+  const etfRm1 = r1/12, etfRm2 = r2/12;
+  const mgmt = premWon * 0.015;
   const ages=[],vaLine=[],etfLine=[],paidLine=[];
   let va=0,etf=0,paid=0;
   const compAge=curAge+10;
   const bonusLump=premWon*120*0.06;
-  const splitM=premWon*12*10*0.0037;
+  const splitM=premWon*120*0.0037;
 
-  // 납입기간 (연 단위 샘플)
+  // 납입기간 (10년)
   for(let yr=0;yr<10;yr++){
     for(let m=0;m<12;m++){
-      const t=yr*12+m+1;
-      const ratio=t<=84?ratio1:ratio2;
-      va=va*(1+rm1)+premWon*ratio;
-      etf=etf*(1+etfRm1)+premWon;
       paid+=premWon;
+      const feeRate = (yr < 7) ? feeRate1 : feeRate2;
+      va += premWon * (1 - feeRate);
+      va *= (1 + rm1);
+      etf = etf*(1+etfRm1)+premWon;
     }
     ages.push(curAge+yr+1);vaLine.push(va);etfLine.push(etf);paidLine.push(paid);
   }
   // 납입완료 보너스 즉시 반영
-  va+=bonusLump;
+  va += bonusLump;
+
   // 거치기간
   let splitCount=0;
   for(let yr=0;yr<deferYears;yr++){
     for(let m=0;m<12;m++){
-      va=va*(1+rm2)-mgmt;if(va<0)va=0;
-      etf=etf*(1+etfRm2);
+      va -= mgmt;
+      va *= (1 + rm2);
+      etf = etf*(1+etfRm2);
       if(splitCount<60){va+=splitM;splitCount++;}
     }
     ages.push(compAge+yr+1);vaLine.push(va);etfLine.push(etf);paidLine.push(paid);
@@ -867,8 +899,8 @@ function calculate(){
   <div class="result-footer">
     <strong>🔒 대외비 — 사내 전용 자료 · 고객 배포 금지</strong>&nbsp;|&nbsp;
     ① 투자수익률 납입 ${pct(r1)} / 거치 ${pct(r2)} — 참고용 예시, 실제 운용결과와 다를 수 있음
-    ② 순수익률 = 수익률 − 운용보수 0.54% − 보증비용 0.05%
-    ③ 사업비: 계약체결비 1~7년 6.12% / 8~10년 3.14% + 계약관리비 납입중 15% / 거치중 월 기본보험료 × 1.5%
+    ② 순수익률 = 수익률 − 보증비용 0.05% (특별계정 운용비용 미차감)
+    ③ 사업비: 1~7년 21.1282% / 8~10년 18.1482% (선공제) · 거치중 월 기본보험료 × 1.5%
     ④ 장기유지 보너스: 납입완료 시 × 6% + 이후 5년 분할 × 0.37%
     ⑤ 연금이율: 공시이율 2.35% (매월 변동) · 기대여명: 통계청 2022
     ⑥ ETF: 총수익 2,000만원 초과분 종합소득세 누진(최고 49.5% 지방세 포함) · 변액연금 비과세: 월 150만원 이하 + 10년 이상 유지
