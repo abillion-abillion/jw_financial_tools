@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>미래를 부탁해 통합 상담 시뮬레이터 v22</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --primary: #002d56; --accent: #ff6b00; --etf: #10b981; --bg: #f4f7fa; }
+        body { font-family: 'Pretendard', sans-serif; background-color: var(--bg); margin: 0; padding: 20px; color: #334155; }
+        .container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 400px 1fr; gap: 20px; }
+        .panel { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); height: fit-content; }
+        h2 { font-size: 1.1rem; border-bottom: 2px solid #edf2f7; padding-bottom: 10px; color: var(--primary); margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 6px; color: #64748b; }
+        input, select { padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; width: 100%; box-sizing: border-box; }
+        .rate-control { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .rate-control input[type="number"] { width: 70px; font-weight: 800; color: var(--accent); border:none; background:transparent; text-align:right; }
+        
+        .section-title { font-size: 1.25rem; font-weight: 800; color: var(--primary); margin: 45px 0 20px 0; display: flex; align-items: center; gap: 12px; }
+        .section-title::before { content: ''; display: inline-block; width: 6px; height: 26px; background: var(--accent); border-radius: 3px; }
+
+        .chart-wrap { height: 420px; background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 30px; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        th { background: #f8fafc; padding: 15px; border-bottom: 2px solid #e2e8f0; color: #475569; }
+        td { padding: 15px; border-bottom: 1px solid #f1f5f9; text-align: right; }
+
+        .pension-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 40px; }
+        .pension-card { background: white; border: 1px solid #e2e8f0; padding: 25px; border-radius: 16px; transition: all 0.3s; }
+        .pension-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .p-title { font-size: 0.9rem; font-weight: 800; color: #475569; margin-bottom: 15px; }
+        .p-main { font-size: 1.5rem; font-weight: 900; color: var(--primary); margin-bottom: 8px; }
+        .p-sub { font-size: 0.9rem; color: #64748b; margin-bottom: 15px; line-height: 1.4; }
+        .p-total-box { background: #f8fafc; padding: 12px; border-radius: 8px; border-top: 1px solid #e2e8f0; }
+        .p-total-label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; }
+        .p-total-val { font-size: 1.1rem; font-weight: 800; color: var(--accent); }
+
+        .info-box { font-size: 0.75rem; color: #475569; background: #f0f9ff; padding: 15px; border-radius: 10px; border-left: 4px solid #002d56; line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="panel">
+        <h2>🛠️ 상담 조건 설정 (v22)</h2>
+        <div class="input-group">
+            <label>성별 선택</label>
+            <select id="gender">
+                <option value="male" selected>남성 (집중 ~83세)</option>
+                <option value="female">여성 (집중 ~87세)</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>피보험자 생년월일</label>
+            <div style="display:flex; gap:5px;"><input type="number" id="y" value="1985"><input type="number" id="m" value="8"><input type="number" id="d" value="13"></div>
+        </div>
+        <div class="input-group"><label>월 투자 금액 (원)</label><input type="number" id="premium" value="500000"></div>
+        <div class="input-group"><label>연금개시 연령 (세)</label><input type="number" id="targetAge" value="65"></div>
+        <div class="input-group">
+            <label>투자수익률 (%)</label>
+            <div class="rate-control">
+                <input type="range" id="rRange" min="-5" max="15" value="3.75" step="0.05">
+                <input type="number" id="rText" value="3.75" step="0.05">%
+            </div>
+        </div>
+        <div class="info-box">
+            <b>성별에 따른 수령 로직:</b><br>
+            • <b>남성</b>: 집중기간 연금개시 ~ 83세<br>
+            • <b>여성</b>: 집중기간 연금개시 ~ 87세<br>
+            • 그 외 모든 사업비 및 이율 데이터는 고정된 값을 사용합니다.
+        </div>
+    </div>
+
+    <div class="panel" style="background:transparent; padding:0; box-shadow:none;">
+        
+        <div class="section-title">1. 비과세 혜택 및 ETF(세후) 자산 비교</div>
+        <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
+
+        <div class="section-title">2. 시점별 상세 데이터 비교</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>시점</th>
+                    <th>연령</th>
+                    <th>누적납입</th>
+                    <th>변액연금(비과세)</th>
+                    <th>ETF(세후)</th>
+                    <th>비과세 이득</th>
+                </tr>
+            </thead>
+            <tbody id="resultBody"></tbody>
+        </table>
+
+        <div class="section-title">3. 연금 수령 방식별 실제 수령액 비교</div>
+        <div class="pension-grid">
+            <div class="pension-card">
+                <div class="p-title">10년 확정연금형</div>
+                <div class="p-main" id="valFixed10">0원</div>
+                <div class="p-sub">120회 확정지급 (이자포함)</div>
+                <div class="p-total-box">
+                    <div class="p-total-label">수령 총액</div>
+                    <div class="p-total-val" id="totalFixed10">0원</div>
+                </div>
+            </div>
+            <div class="pension-card">
+                <div class="p-title">20년 확정연금형</div>
+                <div class="p-main" id="valFixed20">0원</div>
+                <div class="p-sub">240회 확정지급 (이자포함)</div>
+                <div class="p-total-box">
+                    <div class="p-total-label">수령 총액</div>
+                    <div class="p-total-val" id="totalFixed20">0원</div>
+                </div>
+            </div>
+            <div class="pension-card">
+                <div class="p-title" id="titleEarly2">조기집중 종신 (2배수)</div>
+                <div class="p-main" id="valEarly2_1">집중기: 0원</div>
+                <div class="p-sub" id="valEarly2_2">축소기: 0원</div>
+                <div class="p-total-box">
+                    <div class="p-total-label">110세까지 수령 총액</div>
+                    <div class="p-total-val" id="totalEarly2">0원</div>
+                </div>
+            </div>
+            <div class="pension-card">
+                <div class="p-title" id="titleEarly3">조기집중 종신 (3배수)</div>
+                <div class="p-main" id="valEarly3_1">집중기: 0원</div>
+                <div class="p-sub" id="valEarly3_2">축소기: 0원</div>
+                <div class="p-total-box">
+                    <div class="p-total-label">110세까지 수령 총액</div>
+                    <div class="p-total-val" id="totalEarly3">0원</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let chart = null;
+    function format(n) { return Math.round(n).toLocaleString() + '원'; }
+
+    function calculateGlobalTax(gains) {
+        if (gains <= 0) return 0;
+        if (gains <= 20000000) return gains * 0.154;
+        let baseTax = 20000000 * 0.14;
+        let excess = gains - 20000000;
+        let excessTax = 0;
+        if (excess <= 14000000) excessTax = excess * 0.06;
+        else if (excess <= 50000000) excessTax = (14000000 * 0.06) + (excess - 14000000) * 0.15;
+        else if (excess <= 88000000) excessTax = (14000000 * 0.06) + (36000000 * 0.15) + (excess - 50000000) * 0.24;
+        else if (excess <= 150000000) excessTax = (14000000 * 0.06) + (36000000 * 0.15) + (38000000 * 0.24) + (excess - 88000000) * 0.35;
+        else if (excess <= 300000000) excessTax = (14000000 * 0.06) + (36000000 * 0.15) + (38000000 * 0.24) + (62000000 * 0.35) + (excess - 150000000) * 0.38;
+        else if (excess <= 1000000000) excessTax = (14000000 * 0.06) + (36000000 * 0.15) + (38000000 * 0.24) + (62000000 * 0.35) + (150000000 * 0.38) + (excess - 300000000) * 0.42;
+        else excessTax = (14000000 * 0.06) + (36000000 * 0.15) + (38000000 * 0.24) + (62000000 * 0.35) + (150000000 * 0.38) + (700000000 * 0.42) + (excess - 1000000000) * 0.45;
+        return (baseTax + excessTax) * 1.1;
+    }
+
+    function calculate() {
+        const premium = parseInt(document.getElementById('premium').value);
+        const targetAge = parseInt(document.getElementById('targetAge').value);
+        const annualYield = parseFloat(document.getElementById('rText').value) / 100;
+        const currentAge = 2026 - parseInt(document.getElementById('y').value);
+        const gender = document.getElementById('gender').value;
+        const totalMonths = (targetAge - currentAge) * 12;
+
+        const mYieldPen = Math.pow(1 + (annualYield - 0.0005), 1/12) - 1;
+        const mYieldEtf = Math.pow(1 + annualYield, 1/12) - 1;
+        const mFeeEtf = Math.pow(1 + 0.005, 1/12) - 1;
+
+        let accPen = 0; let accEtf = 0; let totalPaid = 0;
+        let cLabels = []; let cPen = []; let cEtfNet = []; let snapshots = {};
+
+        for (let m = 1; m <= totalMonths; m++) {
+            let year = Math.ceil(m / 12);
+            if (m <= 120) {
+                totalPaid += premium;
+                accPen += premium * (1 - (year <= 7 ? 0.211282 : 0.181482));
+                accEtf += premium;
+            } else {
+                accPen -= premium * 0.015;
+            }
+            accPen *= (1 + mYieldPen);
+            accEtf *= (1 + mYieldEtf);
+            accEtf *= (1 - mFeeEtf);
+
+            if (m === 120) accPen += (premium * 120) * 0.06;
+            if (m > 120 && m <= 180) accPen += (premium * 120) * 0.0037;
+
+            if (m % 12 === 0) {
+                let y = m / 12;
+                let cNet = accEtf - calculateGlobalTax(accEtf - totalPaid);
+                cLabels.push((currentAge + y) + '세');
+                cPen.push(Math.round(accPen));
+                cEtfNet.push(Math.round(cNet));
+                if ([10, 15, 20, (targetAge - currentAge)].includes(y)) snapshots[y] = { pen: accPen, etfNet: cNet, paid: totalPaid };
+            }
+        }
+
+        // --- 연금 수령 시뮬레이션 (성별 맞춤형 집중 기간 적용) ---
+        const mAnnuityRate = Math.pow(1.0235, 1/12) - 1;
+        const getFixedPmt = (pv, rate, n) => (pv * rate) / (1 - Math.pow(1 + rate, -n));
+        
+        // 성별에 따른 집중 종료 연령 설정
+        const concEndAge = gender === 'male' ? 83 : 87;
+        const concYears = concEndAge - targetAge + 1; 
+        const concMonths = Math.max(0, concYears * 12);
+        const totalLifeMonths = (110 - targetAge + 1) * 12; 
+
+        const getEarlyPmtFixedAge = (pv, rate, k) => {
+            let f1 = (1 - Math.pow(1 + rate, -concMonths)) / rate;
+            let f2 = (Math.pow(1 + rate, -concMonths) - Math.pow(1 + rate, -totalLifeMonths)) / (rate * k);
+            return (pv / (f1 + f2)) * 0.99;
+        };
+
+        const pmt10 = getFixedPmt(accPen, mAnnuityRate, 120) * 0.995;
+        const pmt20 = getFixedPmt(accPen, mAnnuityRate, 240) * 0.995;
+        const early2 = getEarlyPmtFixedAge(accPen, mAnnuityRate, 2);
+        const early3 = getEarlyPmtFixedAge(accPen, mAnnuityRate, 3);
+
+        document.getElementById('valFixed10').innerText = format(pmt10);
+        document.getElementById('totalFixed10').innerText = format(pmt10 * 120);
+        document.getElementById('valFixed20').innerText = format(pmt20);
+        document.getElementById('totalFixed20').innerText = format(pmt20 * 240);
+        
+        document.getElementById('titleEarly2').innerText = `조기집중 종신 (2배수) [~${concEndAge}세]`;
+        document.getElementById('valEarly2_1').innerText = "집중기: " + format(early2);
+        document.getElementById('valEarly2_2').innerText = `${concEndAge + 1}세부터: ` + format(early2 / 2);
+        document.getElementById('totalEarly2').innerText = format((early2 * concMonths) + (early2 / 2 * (totalLifeMonths - concMonths)));
+
+        document.getElementById('titleEarly3').innerText = `조기집중 종신 (3배수) [~${concEndAge}세]`;
+        document.getElementById('valEarly3_1').innerText = "집중기: " + format(early3);
+        document.getElementById('valEarly3_2').innerText = `${concEndAge + 1}세부터: ` + format(early3 / 3);
+        document.getElementById('totalEarly3').innerText = format((early3 * concMonths) + (early3 / 3 * (totalLifeMonths - concMonths)));
+
+        let html = '';
+        Object.keys(snapshots).forEach(y => {
+            let s = snapshots[y];
+            html += `<tr><td>${y}년 시점</td><td>${currentAge + parseInt(y)}세</td><td>${format(s.paid)}</td><td style="font-weight:700;">${format(s.pen)}</td><td>${format(s.etfNet)}</td><td style="color:var(--accent); font-weight:800;">${format(s.pen - s.etfNet)}</td></tr>`;
+        });
+        document.getElementById('resultBody').innerHTML = html;
+
+        if (chart) chart.destroy();
+        chart = new Chart(document.getElementById('mainChart'), {
+            type: 'line',
+            data: { labels: cLabels, datasets: [
+                { label: '변액연금(비과세)', data: cPen, borderColor: '#ff6b00', backgroundColor: 'rgba(255,107,0,0.1)', fill: true, tension: 0.4, pointRadius: 0 },
+                { label: 'ETF(세후)', data: cEtfNet, borderColor: '#10b981', borderWidth: 3, fill: false, tension: 0.4, pointRadius: 0 }
+            ]},
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    }
+
+    document.getElementById('rRange').oninput = (e) => { document.getElementById('rText').value = e.target.value; calculate(); };
+    document.getElementById('rText').oninput = (e) => { document.getElementById('rRange').oninput(); };
+    document.querySelectorAll('input, select').forEach(el => el.onchange = calculate);
+    window.onload = calculate;
+</script>
+</body>
+</html>
