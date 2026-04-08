@@ -850,10 +850,10 @@
     <div class="hero-badge">Recruiting 2025 · 핀사이트랩스</div>
     <h1 class="hero-title">
       한 달에 상담이 <em>10건 이상,</em><br>
-      계약 1건에 <em>80~100만 원</em><br>
+      계약 1건에 <em>80~100만 원.</em><br>
       <br>
-      가능한 이유는 단 하나,<br>
-      시장이 이미 만들어져 있기 때문
+      이게 가능한 이유는 단 하나,<br>
+      시장이 이미 만들어져 있기 때문입니다.
     </h1>
     <p class="hero-sub">
       핀사이트랩스는 전문가를 <strong>구하는</strong> 게 아닙니다.<br>
@@ -1252,15 +1252,58 @@
     if (!isOpen) item.classList.add('open');
   }
 
-  function submitForm() {
-    const name = document.getElementById('name').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    if (!name || !phone) {
-      alert('이름과 연락처는 필수 입력 항목입니다.');
+  const BOT_TOKEN = '8720572160:AAF8kYdv8PceDfQxDtrD4mRme2IC820dwOc';
+  const CHAT_ID   = '6234327488';
+
+  async function submitForm() {
+    const name   = document.getElementById('name').value.trim();
+    const phone  = document.getElementById('phone').value.trim();
+    const career = document.getElementById('career').value;
+    const reason = document.getElementById('reason').value.trim();
+
+    if (!name) {
+      alert('이름을 입력해주세요.');
+      document.getElementById('name').focus();
       return;
     }
-    document.getElementById('applyFormContent').style.display = 'none';
-    document.getElementById('applySuccess').classList.add('show');
+    if (!phone) {
+      alert('연락처를 입력해주세요.');
+      document.getElementById('phone').focus();
+      return;
+    }
+
+    const btn = document.querySelector('.form-submit');
+    btn.disabled = true;
+    btn.querySelector('span').textContent = '신청 중...';
+
+    const now = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+    const msg = `🔔 *사업설명회 신청 접수*\n`
+              + `━━━━━━━━━━━━━━━\n`
+              + `👤 이름: ${name}\n`
+              + `📱 연락처: ${phone}\n`
+              + `💼 경력: ${career || '(미선택)'}\n`
+              + `📝 신청계기: ${reason || '(미작성)'}\n`
+              + `━━━━━━━━━━━━━━━\n`
+              + `🕐 ${now}`;
+
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'Markdown' })
+      });
+
+      if (res.ok) {
+        document.getElementById('applyFormContent').style.display = 'none';
+        document.getElementById('applySuccess').classList.add('show');
+      } else {
+        throw new Error('전송 실패');
+      }
+    } catch (err) {
+      alert('신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      btn.disabled = false;
+      btn.querySelector('span').textContent = '사업설명회 신청하기 →';
+    }
   }
 </script>
 </body>
