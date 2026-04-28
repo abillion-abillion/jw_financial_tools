@@ -1,0 +1,2689 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fin.Sight.Labs | 1차 미팅 자산배분 시뮬레이터</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" rel="stylesheet">
+<style>
+  :root {
+    --brand: #4834FF;
+    --brand-dark: #2E1FA8;
+    --brand-light: #EEEBFF;
+    --brand-glow: rgba(72, 52, 255, 0.15);
+    --ink: #0A0A1A;
+    --ink-soft: #4A4A5A;
+    --ink-mute: #8A8A9A;
+    --paper: #FAFAFD;
+    --line: #E6E6F0;
+    --line-strong: #D0D0E0;
+    --before: #E87722;
+    --before-bg: #FFF4E6;
+    --after: #0B6FC2;
+    --after-bg: #E6F2FB;
+    --good: #10A66F;
+    --good-bg: #E6F7F0;
+    --warn: #E0A000;
+    --warn-bg: #FFF7E0;
+    --bad: #DC3545;
+    --bad-bg: #FDEAED;
+    --shadow-sm: 0 1px 2px rgba(10,10,26,0.04), 0 1px 4px rgba(10,10,26,0.04);
+    --shadow-md: 0 4px 16px rgba(10,10,26,0.06), 0 2px 8px rgba(10,10,26,0.04);
+    --shadow-lg: 0 12px 32px rgba(10,10,26,0.08), 0 4px 12px rgba(10,10,26,0.05);
+    --shadow-brand: 0 8px 24px var(--brand-glow);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    font-family: "Pretendard Variable", Pretendard, -apple-system, system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(72, 52, 255, 0.05) 0%, transparent 40%),
+      radial-gradient(circle at 100% 0%, rgba(11, 111, 194, 0.04) 0%, transparent 40%),
+      var(--paper);
+  }
+
+  /* ===== Header ===== */
+  .app-header {
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+    color: white;
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-brand);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .brand-mark {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.15);
+    display: grid;
+    place-items: center;
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: -0.5px;
+    backdrop-filter: blur(8px);
+  }
+  .brand-text { display: flex; flex-direction: column; }
+  .brand-name { font-weight: 700; font-size: 14px; letter-spacing: 0.3px; opacity: 0.85; }
+  .brand-title { font-weight: 800; font-size: 18px; letter-spacing: -0.3px; margin-top: 1px; }
+  .header-actions { display: flex; gap: 10px; align-items: center; }
+  .btn {
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s ease;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-ghost {
+    background: rgba(255,255,255,0.12);
+    color: white;
+    backdrop-filter: blur(8px);
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.22); }
+  .btn-primary {
+    background: white;
+    color: var(--brand-dark);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
+
+  /* ===== Layout ===== */
+  .app-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 24px;
+    display: grid;
+    grid-template-columns: 340px 1fr 420px;
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 1280px) {
+    .app-container { grid-template-columns: 1fr; }
+  }
+
+  /* ===== Card (공통) ===== */
+  .card {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title::before {
+    content: "";
+    width: 3px;
+    height: 14px;
+    background: var(--brand);
+    border-radius: 2px;
+  }
+  .card-hint { font-size: 11px; color: var(--ink-mute); font-weight: 500; }
+  .card-body { padding: 18px 20px; }
+
+  /* ===== Left Panel - 고객 정보 ===== */
+  .input-group { margin-bottom: 16px; }
+  .input-group:last-child { margin-bottom: 0; }
+  .input-label {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+    letter-spacing: 0.2px;
+  }
+  .input-field {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    background: white;
+  }
+  .input-field:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px var(--brand-glow);
+  }
+  .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .input-suffix {
+    position: relative;
+  }
+  .input-suffix .input-field { padding-right: 36px; }
+  .input-suffix::after {
+    content: attr(data-suffix);
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    color: var(--ink-mute);
+    font-weight: 600;
+    pointer-events: none;
+  }
+
+  /* 저축가능액 하이라이트 */
+  .savings-highlight {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, var(--brand-light) 0%, #F0EDFF 100%);
+    border-radius: 10px;
+    border: 1px solid rgba(72, 52, 255, 0.15);
+  }
+  .savings-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--brand-dark);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+  .savings-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--brand-dark);
+    margin-top: 4px;
+    letter-spacing: -0.5px;
+    font-variant-numeric: tabular-nums;
+  }
+  .savings-value .unit { font-size: 14px; font-weight: 600; margin-left: 3px; }
+  .savings-warn {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--bad);
+    font-weight: 600;
+    display: none;
+  }
+  .savings-warn.show { display: block; }
+
+  /* ===== Center Panel - 슬라이더 ===== */
+  .allocation-wrap { padding: 4px; }
+  .allocation-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+    padding: 14px;
+    background: #F5F5FA;
+    border-radius: 10px;
+  }
+  .summary-item { text-align: center; }
+  .summary-label {
+    font-size: 10.5px;
+    color: var(--ink-mute);
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .summary-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--ink);
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .summary-value .unit { font-size: 11px; font-weight: 600; color: var(--ink-mute); margin-left: 2px; }
+
+  /* 배분 슬라이더 카드 */
+  .slider-card {
+    margin-bottom: 12px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: white;
+    transition: all 0.15s ease;
+  }
+  .slider-card:hover { border-color: var(--line-strong); }
+  .slider-card.category-short { border-left: 3px solid #F4A261; }
+  .slider-card.category-mid { border-left: 3px solid #E76F51; }
+  .slider-card.category-long { border-left: 3px solid #6A4C93; }
+  .slider-card.category-insurance { border-left: 3px solid #2A9D8F; }
+
+  .slider-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .slider-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .slider-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .category-short .slider-dot { background: #F4A261; }
+  .category-mid .slider-dot { background: #E76F51; }
+  .category-long .slider-dot { background: #6A4C93; }
+  .category-insurance .slider-dot { background: #2A9D8F; }
+
+  .slider-name {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .slider-period {
+    font-size: 11px;
+    color: var(--ink-mute);
+    font-weight: 500;
+  }
+  .slider-value {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .slider-value .unit { font-size: 11px; font-weight: 600; color: var(--ink-mute); margin-left: 2px; }
+  .slider-pct {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 6px;
+    background: #F0F0F5;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--ink-soft);
+  }
+
+  /* 커스텀 슬라이더 */
+  .slider-input {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #E8E8F0;
+    outline: none;
+    cursor: pointer;
+  }
+  .slider-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--brand);
+    cursor: grab;
+    box-shadow: 0 2px 6px rgba(72,52,255,0.3);
+    transition: transform 0.1s ease;
+  }
+  .slider-input::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(1.15); }
+  .slider-input::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--brand);
+    cursor: grab;
+    box-shadow: 0 2px 6px rgba(72,52,255,0.3);
+  }
+
+  .category-short .slider-input::-webkit-slider-thumb { border-color: #F4A261; }
+  .category-mid .slider-input::-webkit-slider-thumb { border-color: #E76F51; }
+  .category-long .slider-input::-webkit-slider-thumb { border-color: #6A4C93; }
+  .category-insurance .slider-input::-webkit-slider-thumb { border-color: #2A9D8F; }
+
+  .slider-hint {
+    margin-top: 8px;
+    font-size: 10.5px;
+    color: var(--ink-mute);
+    line-height: 1.4;
+  }
+
+  /* 카테고리 그룹 (단기/중기/장기/보장성 묶음) */
+  .category-group {
+    margin-bottom: 14px;
+  }
+  .category-group:last-child { margin-bottom: 0; }
+  .category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 8px 8px 0 0;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    color: white;
+    margin-bottom: -1px;
+  }
+  .category-header.short-bg { background: linear-gradient(90deg, #F4A261 0%, #E8954D 100%); }
+  .category-header.mid-bg { background: linear-gradient(90deg, #E76F51 0%, #D9573B 100%); }
+  .category-header.long-bg { background: linear-gradient(90deg, #6A4C93 0%, #553A7B 100%); }
+  .category-header.insurance-bg { background: linear-gradient(90deg, #2A9D8F 0%, #218377 100%); }
+  .category-header-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+  }
+  .category-header-period {
+    font-size: 10px;
+    opacity: 0.85;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0.1px;
+  }
+  .category-header-total {
+    font-size: 13px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .category-header-total .unit { font-size: 10.5px; opacity: 0.85; margin-left: 2px; }
+
+  .category-children {
+    border: 1px solid var(--line);
+    border-radius: 0 0 8px 8px;
+    background: white;
+    padding: 4px 10px;
+  }
+  /* 서브 슬라이더 카드 (그룹 안에 들어가는 작은 카드) */
+  .sub-slider {
+    padding: 10px 10px;
+    border-bottom: 1px solid var(--line);
+    transition: background 0.15s ease;
+  }
+  .sub-slider:last-child { border-bottom: none; }
+  .sub-slider:hover { background: #FAFAFD; }
+  .sub-slider-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .sub-slider-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .sub-slider-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sub-slider-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+  .sub-slider-dot.short { background: #F4A261; }
+  .sub-slider-dot.mid { background: #E76F51; }
+  .sub-slider-dot.long { background: #6A4C93; }
+  .sub-slider-dot.insurance { background: #2A9D8F; }
+  .sub-slider-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .sub-slider-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .sub-slider-value .unit { font-size: 10.5px; color: var(--ink-mute); margin-left: 2px; font-weight: 600; }
+  .sub-slider-pct {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 5px;
+    background: #F0F0F5;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ink-soft);
+  }
+  .sub-slider .slider-input {
+    height: 5px;
+  }
+  .sub-slider .slider-input::-webkit-slider-thumb {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+  }
+  .sub-slider.short-tint .slider-input::-webkit-slider-thumb { border-color: #F4A261; }
+  .sub-slider.mid-tint .slider-input::-webkit-slider-thumb { border-color: #E76F51; }
+  .sub-slider.long-tint .slider-input::-webkit-slider-thumb { border-color: #6A4C93; }
+  .sub-slider.insurance-tint .slider-input::-webkit-slider-thumb { border-color: #2A9D8F; }
+  .sub-slider-note {
+    margin-top: 4px;
+    font-size: 10px;
+    color: var(--ink-mute);
+    line-height: 1.3;
+  }
+
+  /* 숫자 입력 스테퍼 (+/-) */
+  .stepper {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: white;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.15s ease;
+    width: 138px;
+  }
+  .stepper:focus-within {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px var(--brand-glow);
+  }
+  .stepper-btn {
+    width: 30px;
+    height: 32px;
+    border: none;
+    background: #F5F5FA;
+    color: var(--ink-soft);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.1s ease;
+    display: grid;
+    place-items: center;
+    user-select: none;
+  }
+  .stepper-btn:hover { background: var(--brand-light); color: var(--brand-dark); }
+  .stepper-btn:active { background: var(--brand); color: white; }
+  .stepper-btn:disabled { color: var(--ink-mute); cursor: not-allowed; opacity: 0.4; background: #FAFAFD; }
+  .stepper-input {
+    flex: 1;
+    width: 0;  /* flex 안에서 잘 줄어들도록 */
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    padding: 6px 4px;
+    height: 32px;
+    font-variant-numeric: tabular-nums;
+    -moz-appearance: textfield;
+  }
+  .stepper-input:focus { outline: none; }
+  .stepper-input::-webkit-outer-spin-button,
+  .stepper-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .stepper-suffix {
+    font-size: 10.5px;
+    color: var(--ink-mute);
+    font-weight: 600;
+    padding-right: 8px;
+    pointer-events: none;
+  }
+  /* 카테고리별 입력 활성화 색상 */
+  .stepper.short-tint:focus-within { border-color: #F4A261; box-shadow: 0 0 0 3px rgba(244, 162, 97, 0.2); }
+  .stepper.mid-tint:focus-within { border-color: #E76F51; box-shadow: 0 0 0 3px rgba(231, 111, 81, 0.2); }
+  .stepper.long-tint:focus-within { border-color: #6A4C93; box-shadow: 0 0 0 3px rgba(106, 76, 147, 0.2); }
+  .stepper.insurance-tint:focus-within { border-color: #2A9D8F; box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.2); }
+
+  /* 가정 패널 - 카테고리 그룹 헤더 */
+  .assumption-cat-header {
+    font-size: 10px;
+    font-weight: 800;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 6px;
+  }
+  .assumption-cat-header.short-bg { background: linear-gradient(90deg, #F4A261 0%, #E8954D 100%); }
+  .assumption-cat-header.mid-bg { background: linear-gradient(90deg, #E76F51 0%, #D9573B 100%); }
+  .assumption-cat-header.long-bg { background: linear-gradient(90deg, #6A4C93 0%, #553A7B 100%); }
+
+  /* 수익률 패널 Before/After 탭 */
+  .rate-tab-bar {
+    display: flex;
+    gap: 0;
+    background: #F0F0F5;
+    border-radius: 7px;
+    padding: 3px;
+    margin-bottom: 14px;
+  }
+  .rate-tab-btn {
+    flex: 1;
+    padding: 6px 10px;
+    font-size: 11.5px;
+    font-weight: 700;
+    background: transparent;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--ink-mute);
+    transition: all 0.15s ease;
+    letter-spacing: 0.2px;
+  }
+  .rate-tab-btn.active-before {
+    background: white;
+    color: var(--before);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .rate-tab-btn.active-after {
+    background: white;
+    color: var(--after);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .rate-tab-pane { display: none; }
+  .rate-tab-pane.active { display: block; }
+
+  /* 세전/세후 토글 (차트 카드 헤더에 들어감) */
+  .tax-toggle {
+    display: inline-flex;
+    background: #F0F0F5;
+    border-radius: 6px;
+    padding: 2px;
+    gap: 0;
+  }
+  .tax-toggle button {
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--ink-mute);
+    transition: all 0.15s ease;
+    letter-spacing: 0.2px;
+  }
+  .tax-toggle button.active {
+    background: var(--brand);
+    color: white;
+    box-shadow: 0 1px 3px rgba(72, 52, 255, 0.3);
+  }
+  .tax-toggle button:not(.active):hover {
+    color: var(--ink-soft);
+  }
+
+  /* 가정 패널 - 세율 표시 라벨 */
+  .tax-rate-tag {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 6px;
+    background: #FAFAFD;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: var(--ink-mute);
+    font-variant-numeric: tabular-nums;
+  }
+  .tax-rate-tag.zero {
+    background: var(--good-bg);
+    border-color: rgba(16, 166, 111, 0.2);
+    color: var(--good);
+  }
+
+  /* 배분 막대 (가로 스택) */
+  .allocation-bar {
+    height: 24px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #F0F0F5;
+    display: flex;
+    margin-bottom: 18px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .allocation-bar-seg {
+    height: 100%;
+    transition: width 0.25s cubic-bezier(0.2, 0.9, 0.2, 1);
+    position: relative;
+  }
+  .allocation-bar-seg::after {
+    content: attr(data-pct);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 10.5px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+  .allocation-bar-seg.short { background: #F4A261; }
+  .allocation-bar-seg.mid { background: #E76F51; }
+  .allocation-bar-seg.long { background: #6A4C93; }
+  .allocation-bar-seg.insurance { background: #2A9D8F; }
+
+  /* ===== Right Panel - 결과 ===== */
+  .indicator-row {
+    display: grid;
+    grid-template-columns: 1fr 90px 90px;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    align-items: center;
+  }
+  .indicator-row:last-child { border-bottom: none; }
+  .indicator-head {
+    display: grid;
+    grid-template-columns: 1fr 90px 90px;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 2px solid var(--line-strong);
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--ink-mute);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .indicator-head > :nth-child(2),
+  .indicator-head > :nth-child(3) {
+    text-align: center;
+  }
+  .indicator-info { }
+  .indicator-name {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .indicator-guide {
+    font-size: 10.5px;
+    color: var(--ink-mute);
+    margin-top: 1px;
+    font-weight: 500;
+  }
+  .indicator-val {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+  .indicator-val.before { background: var(--before-bg); color: var(--before); }
+  .indicator-val.after { background: var(--after-bg); color: var(--after); }
+  .indicator-val.good { background: var(--good-bg); color: var(--good); }
+  .indicator-val.bad { background: var(--bad-bg); color: var(--bad); }
+
+  /* 차트 영역 */
+  .chart-container {
+    position: relative;
+    height: 240px;
+    margin-top: 12px;
+  }
+  .chart-legend {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 8px;
+    font-size: 11.5px;
+    font-weight: 600;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-swatch { width: 12px; height: 3px; border-radius: 2px; }
+  .legend-before { background: var(--before); }
+  .legend-after { background: var(--after); }
+
+  /* Before 상세 입력 행 */
+  .before-row {
+    display: grid;
+    grid-template-columns: 1fr 70px 70px;
+    align-items: center;
+    padding: 3px 4px 3px 10px;
+    gap: 6px;
+  }
+  .before-col-header {
+    display: grid;
+    grid-template-columns: 1fr 70px 70px;
+    padding: 4px 4px 2px 10px;
+    gap: 6px;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: var(--ink-mute);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  .before-col-header span:first-child { text-align: left; }
+  .before-label {
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  .before-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .before-input {
+    width: 100%;
+    padding: 4px 22px 4px 6px;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    background: white;
+    -moz-appearance: textfield;
+  }
+  .before-input.asset-input {
+    border-color: rgba(72, 52, 255, 0.25);
+    background: var(--brand-light);
+    color: var(--brand-dark);
+  }
+  .before-input.asset-input:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 2px var(--brand-glow);
+  }
+  .before-input:focus {
+    outline: none;
+    border-color: var(--before);
+    box-shadow: 0 0 0 2px rgba(232, 119, 34, 0.15);
+  }
+  .before-input::-webkit-outer-spin-button,
+  .before-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .before-suffix {
+    position: absolute;
+    right: 6px;
+    font-size: 10px;
+    color: var(--ink-mute);
+    font-weight: 600;
+    pointer-events: none;
+  }
+
+  /* KPI 하이라이트 */
+  .kpi-highlight {
+    padding: 14px 16px;
+    background: linear-gradient(135deg, var(--good-bg) 0%, #D4F0E5 100%);
+    border-radius: 10px;
+    border: 1px solid rgba(16, 166, 111, 0.2);
+    margin-top: 12px;
+  }
+  .kpi-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--good);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+  .kpi-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--good);
+    margin-top: 2px;
+    letter-spacing: -0.4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi-value .unit { font-size: 13px; font-weight: 600; margin-left: 3px; }
+  .kpi-sub { font-size: 11px; color: var(--ink-soft); margin-top: 2px; font-weight: 500; }
+
+  /* 수익률 가정 설정 패널 */
+  .assumptions-panel {
+    margin-top: 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+  }
+  .assumptions-toggle {
+    width: 100%;
+    padding: 10px 14px;
+    background: #FAFAFD;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: inherit;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    letter-spacing: 0.2px;
+    transition: background 0.15s ease;
+  }
+  .assumptions-toggle:hover { background: #F0F0F8; }
+  .assumptions-toggle .toggle-icon {
+    font-size: 10px;
+    transition: transform 0.2s ease;
+    color: var(--brand);
+  }
+  .assumptions-panel.open .toggle-icon { transform: rotate(180deg); }
+  .assumptions-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+  }
+  .assumptions-panel.open .assumptions-body {
+    max-height: 600px;
+  }
+  .assumptions-content { padding: 14px; }
+  .assumption-section {
+    margin-bottom: 14px;
+  }
+  .assumption-section:last-child { margin-bottom: 0; }
+  .assumption-section-title {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--ink-mute);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .assumption-row {
+    display: grid;
+    grid-template-columns: 1fr 100px;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .assumption-row:last-child { margin-bottom: 0; }
+  .assumption-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  .assumption-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .dot-short { background: #F4A261; }
+  .dot-mid { background: #E76F51; }
+  .dot-long { background: #6A4C93; }
+  .dot-before { background: #E87722; }
+  .assumption-input-wrap {
+    position: relative;
+  }
+  .assumption-input {
+    width: 100%;
+    padding: 6px 28px 6px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--ink);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    background: white;
+  }
+  .assumption-input:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px var(--brand-glow);
+  }
+  .assumption-input-wrap::after {
+    content: "%";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    color: var(--ink-mute);
+    font-weight: 600;
+    pointer-events: none;
+  }
+  .interest-toggle {
+    display: inline-flex;
+    background: #F0F0F5;
+    border-radius: 6px;
+    padding: 2px;
+    margin-left: auto;
+  }
+  .interest-toggle button {
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--ink-mute);
+    transition: all 0.15s ease;
+  }
+  .interest-toggle button.active {
+    background: white;
+    color: var(--brand-dark);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .preset-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+  }
+  .preset-btn {
+    flex: 1;
+    padding: 6px 8px;
+    font-size: 10.5px;
+    font-weight: 700;
+    background: white;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--ink-soft);
+    font-family: inherit;
+    transition: all 0.15s ease;
+  }
+  .preset-btn:hover {
+    background: var(--brand-light);
+    border-color: var(--brand);
+    color: var(--brand-dark);
+  }
+
+  /* 합의 카드 (전체 하단) */
+  .agreement-card {
+    grid-column: 1 / -1;
+    margin-top: 8px;
+    padding: 24px 28px;
+    background: white;
+    border-radius: 14px;
+    border: 2px solid var(--brand);
+    box-shadow: var(--shadow-md);
+  }
+  .agreement-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed var(--line-strong);
+  }
+  .agreement-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--brand-dark);
+    letter-spacing: -0.3px;
+  }
+  .agreement-date { font-size: 12px; color: var(--ink-soft); font-weight: 500; }
+  .agreement-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .agreement-item {
+    padding: 12px 14px;
+    background: #FAFAFD;
+    border-radius: 8px;
+    border-left: 3px solid;
+  }
+  .agreement-item.short { border-color: #F4A261; }
+  .agreement-item.mid { border-color: #E76F51; }
+  .agreement-item.long { border-color: #6A4C93; }
+  .agreement-item.insurance { border-color: #2A9D8F; }
+  .agreement-period {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--ink-mute);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+  .agreement-amount {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--ink);
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .agreement-amount .unit { font-size: 11px; font-weight: 600; color: var(--ink-mute); margin-left: 2px; }
+  .agreement-products {
+    font-size: 10.5px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+  .agreement-text {
+    padding: 14px 16px;
+    background: #FFFDF2;
+    border: 1px solid #F2E9C4;
+    border-radius: 8px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    margin-bottom: 18px;
+  }
+  .sign-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding-top: 8px;
+  }
+  .sign-box {
+    text-align: center;
+    padding: 14px 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    background: #FAFAFD;
+  }
+  .sign-label { font-size: 11px; color: var(--ink-mute); font-weight: 600; }
+  .sign-line {
+    margin-top: 32px;
+    border-bottom: 1px solid var(--ink-soft);
+    height: 1px;
+  }
+  .sign-caption {
+    font-size: 10.5px;
+    color: var(--ink-mute);
+    margin-top: 6px;
+    font-weight: 500;
+  }
+
+  /* 알림 배지 */
+  .alert-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 10.5px;
+    font-weight: 700;
+  }
+  .alert-badge.ok { background: var(--good-bg); color: var(--good); }
+  .alert-badge.warn { background: var(--warn-bg); color: var(--warn); }
+  .alert-badge.bad { background: var(--bad-bg); color: var(--bad); }
+
+  /* 인쇄 모드 */
+  @media print {
+    .app-header, .header-actions { display: none; }
+    .app-container {
+      grid-template-columns: 1fr 1fr;
+      padding: 0;
+      max-width: none;
+    }
+    .card { box-shadow: none; border: 1px solid #888; page-break-inside: avoid; }
+    body { background: white; }
+    .agreement-card { grid-column: 1 / -1; page-break-before: always; }
+  }
+
+  /* 애니메이션 */
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+  .pulse { animation: pulse 2s infinite; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="app-header">
+  <div class="brand">
+    <div class="brand-mark">FS</div>
+    <div class="brand-text">
+      <div class="brand-name">Fin.Sight.Labs</div>
+      <div class="brand-title">1차 미팅 자산배분 시뮬레이터</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-ghost" onclick="resetAll()">↺ 초기화</button>
+    <button class="btn btn-ghost" onclick="window.print()">🖨 인쇄</button>
+    <button class="btn btn-primary" onclick="scrollToAgreement()">배분 합의 ↓</button>
+  </div>
+</header>
+
+<div class="app-container">
+
+  <!-- ===== Left: 고객 정보 입력 ===== -->
+  <aside>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">고객 정보 · 소득/지출</div>
+        <div class="card-hint">입력값</div>
+      </div>
+      <div class="card-body">
+        <div class="input-group">
+          <label class="input-label">고객명</label>
+          <input type="text" class="input-field" id="customerName" placeholder="예) 홍규희">
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label class="input-label">생년</label>
+            <input type="text" class="input-field" id="birthYear" placeholder="92">
+          </div>
+          <div class="input-group">
+            <label class="input-label">직업</label>
+            <input type="text" class="input-field" id="job" placeholder="직장인">
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">재무목표</label>
+          <input type="text" class="input-field" id="goal" placeholder="내집마련 / 노후 / 결혼자금 등">
+        </div>
+
+        <div style="height: 14px;"></div>
+
+        <div class="input-group">
+          <label class="input-label">본인 월급여</label>
+          <div class="input-suffix" data-suffix="만원">
+            <input type="number" class="input-field" id="income1" value="500" min="0">
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">배우자 월급여 · 기타소득</label>
+          <div class="input-suffix" data-suffix="만원">
+            <input type="number" class="input-field" id="income2" value="0" min="0">
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">월 지출 합계 (고정+변동)</label>
+          <div class="input-suffix" data-suffix="만원">
+            <input type="number" class="input-field" id="expense" value="280" min="0">
+          </div>
+        </div>
+
+        <div class="savings-highlight">
+          <div class="savings-label">월 저축 가능 금액</div>
+          <div class="savings-value"><span id="savingsValue">220</span><span class="unit">만원</span></div>
+          <div class="savings-warn" id="savingsWarn">⚠ 배분 합계가 저축 가능 금액을 초과합니다</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height: 16px;"></div>
+
+    <!-- 현재 상태(Before) - 상세 입력 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" style="color: var(--before);">현재 자산 내역 (Before)</div>
+        <div class="card-hint">월적립 / 현재자산</div>
+      </div>
+      <div class="card-body" style="padding: 10px 14px;">
+        <div class="before-col-header">
+          <span>항목</span><span>월적립</span><span>현재자산</span>
+        </div>
+        <!-- 단기 -->
+        <div style="margin-bottom: 7px;">
+          <div style="font-size: 10px; font-weight: 700; color: #E87722; letter-spacing: 0.3px; padding: 3px 0 2px 10px; text-transform: uppercase;">단기</div>
+          <div class="before-row"><span class="before-label">적금</span>
+            <div class="before-input-wrap"><input type="number" class="before-input" id="bSavings" value="80" min="0" step="5"><span class="before-suffix">만</span></div>
+            <div class="before-input-wrap"><input type="number" class="before-input asset-input" id="bAssetSavings" value="0" min="0" step="100"><span class="before-suffix" style="color:var(--brand-dark);">만</span></div>
+          </div>
+          <div class="before-row"><span class="before-label">주택청약</span>
+            <div class="before-input-wrap"><input type="number" class="before-input" id="bHousing" value="10" min="0" step="1"><span class="before-suffix">만</span></div>
+            <div class="before-input-wrap"><input type="number" class="before-input asset-input" id="bAssetHousing" value="0" min="0" step="100"><span class="before-suffix" style="color:var(--brand-dark);">만</span></div>
+          </div>
+          <div class="before-row"><span class="before-label">단기유동성</span>
+            <div class="before-input-wrap"><input type="number" class="before-input" id="bLiquid" value="10" min="0" step="5"><span class="before-suffix">만</span></div>
+            <div class="before-input-wrap"><input type="number" class="before-input asset-input" id="bAssetLiquid" value="0" min="0" step="100"><span class="before-suffix" style="color:var(--brand-dark);">만</span></div>
+          </div>
+        </div>
+        <!-- 중기 -->
+        <div style="margin-bottom: 7px;">
+          <div style="font-size: 10px; font-weight: 700; color: #E76F51; letter-spacing: 0.3px; padding: 3px 0 2px 10px; text-transform: uppercase;">중기</div>
+          <div class="before-row"><span class="before-label">중개형 ISA</span>
+            <div class="before-input-wrap"><input type="number" class="before-input" id="bIsa" value="0" min="0" step="5"><span class="before-suffix">만</span></div>
+            <div class="before-input-wrap"><input type="number" class="before-input asset-input" id="bAssetIsa" value="0" min="0" step="100"><span class="before-suffix" style="color:var(--brand-dark);">만</span></div>
+          </div>
+          <div class="before-row"><span class="before-label">ETF</span>
+            <div class="before-input-wrap"><input type="number" class="before-input" id="bEtf" value="0" min="0" step="5"><span class="before-suffix">만</span></div>
+            <div class="before-input-wrap"><input type="number" class="before-input asset-input" id="bAssetEtf" value="0" min="0" step="100"><span class="before-suffix" style="color:var(--brand-dark);">만</span></div>
+          </div>
+          <div class="before-row"><span class="before-label">국내주식</span>
+            <div class="before-input-wrap"><input type="number" class="before-input" id="bKrEq" value="20" min="0" step="5"><span class="before-suffix">만</span></div>
+            <div class="before-input-wrap"><input type="number" class="before-input asset-input" id="bAssetKrEq" value="0" min="0" step="100"><span class="before-suffix" style="color:var(--brand-dark);">만</span></div>
+          </div>
+          <div class="before-row"><span class="before-label">해외주식</span>
+            <div class="before-input-wrap"><input type="number" class="before-input" id="bGlEq" value="10" min="0" step="5"><span class="before-suffix">만</span></div>
+            <div class="before-input-wrap"><input type="number" class="before-input asset-input" id="bAssetGlEq" value="0" min="0" step="100"><span class="before-suffix" style="color:var(--brand-dark);">만</span></div>
+          </div>
+        </div>
+        <!-- 장기 -->
+        <div style="margin-bottom: 7px;">
+          <div style="font-size: 10px; font-weight: 700; color: #6A4C93; letter-spacing: 0.3px; padding: 3px 0 2px 10px; text-transform: uppercase;">장기</div>
+          <div class="before-row"><span class="before-label">연금저축·IRP</span>
+            <div class="before-input-wrap"><input type="number" class="before-input" id="bPension" value="20" min="0" step="5"><span class="before-suffix">만</span></div>
+            <div class="before-input-wrap"><input type="number" class="before-input asset-input" id="bAssetPension" value="0" min="0" step="100"><span class="before-suffix" style="color:var(--brand-dark);">만</span></div>
+          </div>
+          <div class="before-row"><span class="before-label">비과세 변액</span>
+            <div class="before-input-wrap"><input type="number" class="before-input" id="bVl" value="0" min="0" step="5"><span class="before-suffix">만</span></div>
+            <div class="before-input-wrap"><input type="number" class="before-input asset-input" id="bAssetVl" value="0" min="0" step="100"><span class="before-suffix" style="color:var(--brand-dark);">만</span></div>
+          </div>
+        </div>
+        <!-- 보장성 -->
+        <div>
+          <div style="font-size: 10px; font-weight: 700; color: #2A9D8F; letter-spacing: 0.3px; padding: 3px 0 2px 10px; text-transform: uppercase;">보장성</div>
+          <div class="before-row" style="grid-template-columns: 1fr 70px;"><span class="before-label">보장성 보험료</span>
+            <div class="before-input-wrap"><input type="number" class="before-input" id="bIns" value="3" min="0" step="1"><span class="before-suffix">만</span></div>
+          </div>
+        </div>
+        <!-- 합계 -->
+        <div style="margin-top: 8px; padding: 8px 12px; background: var(--before-bg); border-radius: 7px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 11px; font-weight: 700; color: var(--before);">월 저축/투자 합계</span>
+          <span style="font-size: 13px; font-weight: 800; color: var(--before); font-variant-numeric: tabular-nums;"><span id="beforeSum">150</span> <span style="font-size: 10px;">만원/월</span></span>
+        </div>
+        <div style="margin-top: 5px; padding: 8px 12px; background: var(--brand-light); border-radius: 7px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 11px; font-weight: 700; color: var(--brand-dark);">현재 자산 합계</span>
+          <span style="font-size: 13px; font-weight: 800; color: var(--brand-dark); font-variant-numeric: tabular-nums;"><span id="beforeAssetSum">0</span> <span style="font-size: 10px;">만원</span></span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== Center: 배분 슬라이더 ===== -->
+  <main>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">자산 배분 재설계 (After)</div>
+        <div class="card-hint">슬라이더를 조작해 고객과 함께 합의하세요</div>
+      </div>
+      <div class="card-body">
+
+        <!-- 상단 요약 -->
+        <div class="allocation-summary">
+          <div class="summary-item">
+            <div class="summary-label">배분 합계</div>
+            <div class="summary-value"><span id="sumTotal">220</span><span class="unit">만원</span></div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">저축률</div>
+            <div class="summary-value"><span id="sumRate">44.0</span><span class="unit">%</span></div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">투자 비중</div>
+            <div class="summary-value"><span id="sumInv">82</span><span class="unit">%</span></div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">잔여</div>
+            <div class="summary-value" id="sumRemain" style="color: var(--good);">0<span class="unit">만원</span></div>
+          </div>
+        </div>
+
+        <!-- 배분 막대 -->
+        <div class="allocation-bar" id="allocBar">
+          <div class="allocation-bar-seg short" id="barShort" style="width: 22.7%;" data-pct="50만"></div>
+          <div class="allocation-bar-seg mid" id="barMid" style="width: 50%;" data-pct="110만"></div>
+          <div class="allocation-bar-seg long" id="barLong" style="width: 20.5%;" data-pct="45만"></div>
+          <div class="allocation-bar-seg insurance" id="barIns" style="width: 6.8%;" data-pct="15만"></div>
+        </div>
+
+        <!-- 단기 그룹 -->
+        <div class="category-group">
+          <div class="category-header short-bg">
+            <div class="category-header-title">
+              단기
+              <span class="category-header-period">1~3년</span>
+            </div>
+            <div class="category-header-total"><span id="totalShort">50</span><span class="unit">만원/월</span></div>
+          </div>
+          <div class="category-children">
+            <div class="sub-slider short-tint">
+              <div class="sub-slider-head">
+                <div class="sub-slider-label">
+                  <span class="sub-slider-dot short"></span>
+                  <span class="sub-slider-name">적금</span>
+                </div>
+                <div class="sub-slider-right">
+                  <span class="sub-slider-pct" id="pctSavings">11.4%</span>
+                  <div class="stepper short-tint">
+                    <button type="button" class="stepper-btn" onclick="adjustValue('savings', -5)">−</button>
+                    <input type="number" class="stepper-input" id="inputSavings" value="25" min="0" step="5">
+                    <span class="stepper-suffix">만원</span>
+                    <button type="button" class="stepper-btn" onclick="adjustValue('savings', 5)">+</button>
+                  </div>
+                </div>
+              </div>
+              <div class="sub-slider-note">정기적금 — 결혼·내집마련 단기 목돈, 원금보장 중심</div>
+            </div>
+            <div class="sub-slider short-tint">
+              <div class="sub-slider-head">
+                <div class="sub-slider-label">
+                  <span class="sub-slider-dot short"></span>
+                  <span class="sub-slider-name">주택청약</span>
+                </div>
+                <div class="sub-slider-right">
+                  <span class="sub-slider-pct" id="pctHousing">4.5%</span>
+                  <div class="stepper short-tint">
+                    <button type="button" class="stepper-btn" onclick="adjustValue('housing', -1)">−</button>
+                    <input type="number" class="stepper-input" id="inputHousing" value="10" min="0" max="30" step="1">
+                    <span class="stepper-suffix">만원</span>
+                    <button type="button" class="stepper-btn" onclick="adjustValue('housing', 1)">+</button>
+                  </div>
+                </div>
+              </div>
+              <div class="sub-slider-note">주택청약종합저축 — 청약 가점 관리 (2만/10만/50만원 선택)</div>
+            </div>
+            <div class="sub-slider short-tint">
+              <div class="sub-slider-head">
+                <div class="sub-slider-label">
+                  <span class="sub-slider-dot short"></span>
+                  <span class="sub-slider-name">단기유동성</span>
+                </div>
+                <div class="sub-slider-right">
+                  <span class="sub-slider-pct" id="pctLiquid">6.8%</span>
+                  <div class="stepper short-tint">
+                    <button type="button" class="stepper-btn" onclick="adjustValue('liquid', -5)">−</button>
+                    <input type="number" class="stepper-input" id="inputLiquid" value="15" min="0" step="5">
+                    <span class="stepper-suffix">만원</span>
+                    <button type="button" class="stepper-btn" onclick="adjustValue('liquid', 5)">+</button>
+                  </div>
+                </div>
+              </div>
+              <div class="sub-slider-note">CMA, MMF, 파킹통장 — 비상예비자금 (월소득의 3~6배)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 중기 그룹 -->
+        <div class="category-group">
+          <div class="category-header mid-bg">
+            <div class="category-header-title">
+              중기
+              <span class="category-header-period">3~10년</span>
+            </div>
+            <div class="category-header-total"><span id="totalMid">110</span><span class="unit">만원/월</span></div>
+          </div>
+          <div class="category-children">
+            <div class="sub-slider mid-tint">
+              <div class="sub-slider-head">
+                <div class="sub-slider-label">
+                  <span class="sub-slider-dot mid"></span>
+                  <span class="sub-slider-name">중개형 ISA</span>
+                </div>
+                <div class="sub-slider-right">
+                  <span class="sub-slider-pct" id="pctIsa">22.7%</span>
+                  <div class="stepper mid-tint">
+                    <button type="button" class="stepper-btn" onclick="adjustValue('isa', -5)">−</button>
+                    <input type="number" class="stepper-input" id="inputIsa" value="50" min="0" step="5">
+                    <span class="stepper-suffix">만원</span>
+                    <button type="button" class="stepper-btn" onclick="adjustValue('isa', 5)">+</button>
+                  </div>
+                </div>
+              </div>
+              <div class="sub-slider-note">연 2,000만 한도, 3년+ 비과세 200만 / 분리과세 9.9%</div>
+            </div>
+            <div class="sub-slider mid-tint">
+              <div class="sub-slider-head">
+                <div class="sub-slider-label">
+                  <span class="sub-slider-dot mid"></span>
+                  <span class="sub-slider-name">ETF</span>
+                </div>
+                <div class="sub-slider-right">
+                  <span class="sub-slider-pct" id="pctEtf">11.4%</span>
+                  <div class="stepper mid-tint">
+                    <button type="button" class="stepper-btn" onclick="adjustValue('etf', -5)">−</button>
+                    <input type="number" class="stepper-input" id="inputEtf" value="25" min="0" step="5">
+                    <span class="stepper-suffix">만원</span>
+                    <button type="button" class="stepper-btn" onclick="adjustValue('etf', 5)">+</button>
+                  </div>
+                </div>
+              </div>
+              <div class="sub-slider-note">국내·해외 ETF (일반 계좌) — 분산투자, 낮은 운용보수</div>
+            </div>
+            <div class="sub-slider mid-tint">
+              <div class="sub-slider-head">
+                <div class="sub-slider-label">
+                  <span class="sub-slider-dot mid"></span>
+                  <span class="sub-slider-name">국내주식</span>
+                </div>
+                <div class="sub-slider-right">
+                  <span class="sub-slider-pct" id="pctKrEq">9.1%</span>
+                  <div class="stepper mid-tint">
+                    <button type="button" class="stepper-btn" onclick="adjustValue('krEq', -5)">−</button>
+                    <input type="number" class="stepper-input" id="inputKrEq" value="20" min="0" step="5">
+                    <span class="stepper-suffix">만원</span>
+                    <button type="button" class="stepper-btn" onclick="adjustValue('krEq', 5)">+</button>
+                  </div>
+                </div>
+              </div>
+              <div class="sub-slider-note">코스피·코스닥 직접투자 — 양도세 비과세 (대주주 제외)</div>
+            </div>
+            <div class="sub-slider mid-tint">
+              <div class="sub-slider-head">
+                <div class="sub-slider-label">
+                  <span class="sub-slider-dot mid"></span>
+                  <span class="sub-slider-name">해외주식</span>
+                </div>
+                <div class="sub-slider-right">
+                  <span class="sub-slider-pct" id="pctGlEq">6.8%</span>
+                  <div class="stepper mid-tint">
+                    <button type="button" class="stepper-btn" onclick="adjustValue('glEq', -5)">−</button>
+                    <input type="number" class="stepper-input" id="inputGlEq" value="15" min="0" step="5">
+                    <span class="stepper-suffix">만원</span>
+                    <button type="button" class="stepper-btn" onclick="adjustValue('glEq', 5)">+</button>
+                  </div>
+                </div>
+              </div>
+              <div class="sub-slider-note">미국·신흥국 직접투자 — 양도소득세 22% (250만 공제 후)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 장기 그룹 -->
+        <div class="category-group">
+          <div class="category-header long-bg">
+            <div class="category-header-title">
+              장기
+              <span class="category-header-period">10년+</span>
+            </div>
+            <div class="category-header-total"><span id="totalLong">45</span><span class="unit">만원/월</span></div>
+          </div>
+          <div class="category-children">
+            <div class="sub-slider long-tint">
+              <div class="sub-slider-head">
+                <div class="sub-slider-label">
+                  <span class="sub-slider-dot long"></span>
+                  <span class="sub-slider-name">연금저축 / IRP</span>
+                </div>
+                <div class="sub-slider-right">
+                  <span class="sub-slider-pct" id="pctPension">13.6%</span>
+                  <div class="stepper long-tint">
+                    <button type="button" class="stepper-btn" onclick="adjustValue('pension', -5)">−</button>
+                    <input type="number" class="stepper-input" id="inputPension" value="30" min="0" step="5">
+                    <span class="stepper-suffix">만원</span>
+                    <button type="button" class="stepper-btn" onclick="adjustValue('pension', 5)">+</button>
+                  </div>
+                </div>
+              </div>
+              <div class="sub-slider-note">세액공제 한도 900만 (연금저축 600 + IRP 300) — 연금수령 시 분리과세</div>
+            </div>
+            <div class="sub-slider long-tint">
+              <div class="sub-slider-head">
+                <div class="sub-slider-label">
+                  <span class="sub-slider-dot long"></span>
+                  <span class="sub-slider-name">비과세 변액</span>
+                </div>
+                <div class="sub-slider-right">
+                  <span class="sub-slider-pct" id="pctVl">6.8%</span>
+                  <div class="stepper long-tint">
+                    <button type="button" class="stepper-btn" onclick="adjustValue('vl', -5)">−</button>
+                    <input type="number" class="stepper-input" id="inputVl" value="15" min="0" step="5">
+                    <span class="stepper-suffix">만원</span>
+                    <button type="button" class="stepper-btn" onclick="adjustValue('vl', 5)">+</button>
+                  </div>
+                </div>
+              </div>
+              <div class="sub-slider-note">변액유니버셜·변액연금 — 10년+ 유지 시 비과세, 펀드 자유 변경</div>
+            </div>
+          </div>
+          <!-- 목돈 입력칸 -->
+          <div style="padding: 10px 14px; border-top: 1px dashed var(--line); background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FF 100%);">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+              <div>
+                <div style="font-size: 12px; font-weight: 700; color: var(--brand-dark);">기존 목돈 투입</div>
+                <div style="font-size: 10px; color: var(--ink-mute); margin-top: 1px;">장기 평균 수익률로 복리 운용</div>
+              </div>
+              <div class="stepper long-tint" style="border-color: var(--brand); width: 150px;">
+                <button type="button" class="stepper-btn" onclick="adjustValue('afterLump', -100)">−</button>
+                <input type="number" class="stepper-input" id="inputAfterLump" value="0" min="0" step="100">
+                <span class="stepper-suffix">만원</span>
+                <button type="button" class="stepper-btn" onclick="adjustValue('afterLump', 100)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 보장성 그룹 -->
+        <div class="category-group">
+          <div class="category-header insurance-bg">
+            <div class="category-header-title">
+              보장성 보험
+              <span class="category-header-period">리스크 헷지</span>
+            </div>
+            <div class="category-header-total"><span id="totalIns">15</span><span class="unit">만원/월</span></div>
+          </div>
+          <div class="category-children">
+            <div class="sub-slider insurance-tint">
+              <div class="sub-slider-head">
+                <div class="sub-slider-label">
+                  <span class="sub-slider-dot insurance"></span>
+                  <span class="sub-slider-name">보장성 보험료</span>
+                </div>
+                <div class="sub-slider-right">
+                  <span class="sub-slider-pct" id="pctIns">6.8%</span>
+                  <div class="stepper insurance-tint">
+                    <button type="button" class="stepper-btn" onclick="adjustValue('ins', -5)">−</button>
+                    <input type="number" class="stepper-input" id="inputIns" value="15" min="0" step="5">
+                    <span class="stepper-suffix">만원</span>
+                    <button type="button" class="stepper-btn" onclick="adjustValue('ins', 5)">+</button>
+                  </div>
+                </div>
+              </div>
+              <div class="sub-slider-note">소득의 8~10%가 적정. 질병·상해로 인한 소득 부재 리스크 헷지.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ===== Right: 결과 ===== -->
+  <aside>
+    <!-- 건전성/성장성 지표 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">건전성 · 성장성 지표 비교</div>
+        <div class="card-hint">Before → After</div>
+      </div>
+      <div class="card-body">
+        <div class="indicator-head">
+          <div>지표</div>
+          <div>Before</div>
+          <div>After</div>
+        </div>
+
+        <div class="indicator-row">
+          <div class="indicator-info">
+            <div class="indicator-name">가계수지지표</div>
+            <div class="indicator-guide">지출/소득 · 60% 이하 권장</div>
+          </div>
+          <div class="indicator-val before" id="indBefore1">56%</div>
+          <div class="indicator-val after" id="indAfter1">56%</div>
+        </div>
+
+        <div class="indicator-row">
+          <div class="indicator-info">
+            <div class="indicator-name">총저축 성향지표</div>
+            <div class="indicator-guide">저축/소득 · 40%+ 권장</div>
+          </div>
+          <div class="indicator-val before" id="indBefore2">30%</div>
+          <div class="indicator-val after" id="indAfter2">44%</div>
+        </div>
+
+        <div class="indicator-row">
+          <div class="indicator-info">
+            <div class="indicator-name">투자자산 비중</div>
+            <div class="indicator-guide">(중기+장기)/저축 · 40%+ 권장</div>
+          </div>
+          <div class="indicator-val before" id="indBefore3">25%</div>
+          <div class="indicator-val after" id="indAfter3">70%</div>
+        </div>
+
+        <div class="indicator-row">
+          <div class="indicator-info">
+            <div class="indicator-name">보장성 준비지표</div>
+            <div class="indicator-guide">보험료/소득 · 8~10% 적정</div>
+          </div>
+          <div class="indicator-val before" id="indBefore4">0.6%</div>
+          <div class="indicator-val after" id="indAfter4">2.6%</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height: 16px;"></div>
+
+    <!-- 자산 성장 시뮬레이션 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">자산 성장 시뮬레이션</div>
+        <div class="tax-toggle">
+          <button id="btnTaxPre" class="active" onclick="setTaxMode('pre')">세전</button>
+          <button id="btnTaxPost" onclick="setTaxMode('post')">세후</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="chart-container">
+          <canvas id="growthChart"></canvas>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><span class="legend-swatch legend-before"></span><span id="legendBefore">Before · 세전 복리 평균 4.4%</span></div>
+          <div class="legend-item"><span class="legend-swatch legend-after"></span><span id="legendAfter">After · 세전 복리 평균 5.7%</span></div>
+        </div>
+        <div id="chartAgeNote" style="margin-top:5px; text-align:center; font-size:10.5px; color:var(--ink-mute); font-weight:500;"></div>
+
+        <!-- 수익률 가정 설정 패널 -->
+        <div class="assumptions-panel" id="assumptionsPanel">
+          <button class="assumptions-toggle" onclick="toggleAssumptions()">
+            <span>⚙ 수익률 가정 설정 (단기/중기/장기 차등)</span>
+            <span class="toggle-icon">▼</span>
+          </button>
+          <div class="assumptions-body">
+            <div class="assumptions-content">
+
+              <!-- Before / After 탭 -->
+              <div class="rate-tab-bar">
+                <button class="rate-tab-btn active-before" id="rateTabBefore" onclick="switchRateTab('before')">◀ Before 수익률</button>
+                <button class="rate-tab-btn" id="rateTabAfter" onclick="switchRateTab('after')">After 수익률 ▶</button>
+              </div>
+
+              <!-- ===== Before 탭 ===== -->
+              <div class="rate-tab-pane active" id="ratePaneBefore">
+                <div class="assumption-section">
+                  <div class="assumption-cat-header short-bg">단기 (복리)</div>
+                  <div class="assumption-row">
+                    <div class="assumption-label"><span class="assumption-dot dot-short"></span>적금<span class="tax-rate-tag">15.4%</span></div>
+                    <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="bRateSavings" value="3.5" min="-30" max="20" step="0.1"></div>
+                  </div>
+                  <div class="assumption-row">
+                    <div class="assumption-label"><span class="assumption-dot dot-short"></span>주택청약<span class="tax-rate-tag">15.4%</span></div>
+                    <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="bRateHousing" value="2.5" min="-30" max="20" step="0.1"></div>
+                  </div>
+                  <div class="assumption-row">
+                    <div class="assumption-label"><span class="assumption-dot dot-short"></span>단기유동성<span class="tax-rate-tag">15.4%</span></div>
+                    <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="bRateLiquid" value="3" min="-30" max="20" step="0.1"></div>
+                  </div>
+                </div>
+                <div class="assumption-section">
+                  <div class="assumption-cat-header mid-bg">중기 (복리)</div>
+                  <div class="assumption-row">
+                    <div class="assumption-label"><span class="assumption-dot dot-mid"></span>중개형 ISA<span class="tax-rate-tag">실효 5%</span></div>
+                    <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="bRateIsa" value="6.5" min="-30" max="20" step="0.1"></div>
+                  </div>
+                  <div class="assumption-row">
+                    <div class="assumption-label"><span class="assumption-dot dot-mid"></span>ETF<span class="tax-rate-tag">15.4%</span></div>
+                    <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="bRateEtf" value="6" min="-30" max="20" step="0.1"></div>
+                  </div>
+                  <div class="assumption-row">
+                    <div class="assumption-label"><span class="assumption-dot dot-mid"></span>국내주식<span class="tax-rate-tag zero">비과세</span></div>
+                    <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="bRateKrEq" value="5" min="-30" max="20" step="0.1"></div>
+                  </div>
+                  <div class="assumption-row">
+                    <div class="assumption-label"><span class="assumption-dot dot-mid"></span>해외주식<span class="tax-rate-tag">실효 18%</span></div>
+                    <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="bRateGlEq" value="8" min="-30" max="20" step="0.1"></div>
+                  </div>
+                </div>
+                <div class="assumption-section">
+                  <div class="assumption-cat-header long-bg">장기 (복리)</div>
+                  <div class="assumption-row">
+                    <div class="assumption-label"><span class="assumption-dot dot-long"></span>연금저축·IRP<span class="tax-rate-tag">분리 5.5%</span></div>
+                    <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="bRatePension" value="7" min="-30" max="20" step="0.1"></div>
+                  </div>
+                  <div class="assumption-row">
+                    <div class="assumption-label"><span class="assumption-dot dot-long"></span>비과세 변액<span class="tax-rate-tag zero">비과세</span></div>
+                    <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="bRateVl" value="7.5" min="-30" max="20" step="0.1"></div>
+                  </div>
+                  <div class="preset-row">
+                    <button class="preset-btn" onclick="applyPreset('conservative','before')">보수적</button>
+                    <button class="preset-btn" onclick="applyPreset('balanced','before')">균형</button>
+                    <button class="preset-btn" onclick="applyPreset('aggressive','before')">적극적</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ===== After 탭 ===== -->
+              <div class="rate-tab-pane" id="ratePaneAfter">
+                <div class="assumption-section">
+                  <div class="assumption-cat-header short-bg">단기 (복리)</div>
+                  <div class="assumption-row">
+                    <div class="assumption-label"><span class="assumption-dot dot-short"></span>적금<span class="tax-rate-tag">15.4%</span></div>
+                    <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="rateSavings" value="3.5" min="-30" max="20" step="0.1"></div>
+                  </div>
+                  <div class="assumption-row">
+                    <div class="assumption-label"><span class="assumption-dot dot-short"></span>주택청약<span class="tax-rate-tag">15.4%</span></div>
+                    <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="rateHousing" value="2.5" min="-30" max="20" step="0.1"></div>
+                  </div>
+                  <div class="assumption-row">
+                    <div class="assumption-label"><span class="assumption-dot dot-short"></span>단기유동성<span class="tax-rate-tag">15.4%</span></div>
+                    <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="rateLiquid" value="3" min="-30" max="20" step="0.1"></div>
+                  </div>
+                </div>
+                <div class="assumption-section">
+                  <div class="assumption-cat-header mid-bg">중기 (복리)</div>
+                  <div class="assumption-row">
+                    <div class="assumption-label"><span class="assumption-dot dot-mid"></span>중개형 ISA<span class="tax-rate-tag">실효 5%</span></div>
+                    <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="rateIsa" value="6.5" min="-30" max="20" step="0.1"></div>
+                  </div>
+                  <div class="assumption-row">
+                    <div class="assumption-label"><span class="assumption-dot dot-mid"></span>ETF<span class="tax-rate-tag">15.4%</span></div>
+                    <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="rateEtf" value="6" min="-30" max="20" step="0.1"></div>
+                  </div>
+                  <div class="assumption-row">
+                    <div class="assumption-label"><span class="assumption-dot dot-mid"></span>국내주식<span class="tax-rate-tag zero">비과세</span></div>
+                    <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="rateKrEq" value="5" min="-30" max="20" step="0.1"></div>
+                  </div>
+                  <div class="assumption-row">
+                    <div class="assumption-label"><span class="assumption-dot dot-mid"></span>해외주식<span class="tax-rate-tag">실효 18%</span></div>
+                    <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="rateGlEq" value="8" min="-30" max="20" step="0.1"></div>
+                  </div>
+                </div>
+                <div class="assumption-section">
+                  <div class="assumption-cat-header long-bg">장기 (복리)</div>
+                  <div class="assumption-row">
+                    <div class="assumption-label"><span class="assumption-dot dot-long"></span>연금저축·IRP<span class="tax-rate-tag">분리 5.5%</span></div>
+                    <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="ratePension" value="7" min="-30" max="20" step="0.1"></div>
+                  </div>
+                  <div class="assumption-row">
+                    <div class="assumption-label"><span class="assumption-dot dot-long"></span>비과세 변액<span class="tax-rate-tag zero">비과세</span></div>
+                    <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="rateVl" value="7.5" min="-30" max="20" step="0.1"></div>
+                  </div>
+                  <div class="preset-row">
+                    <button class="preset-btn" onclick="applyPreset('conservative','after')">보수적</button>
+                    <button class="preset-btn" onclick="applyPreset('balanced','after')">균형</button>
+                    <button class="preset-btn" onclick="applyPreset('aggressive','after')">적극적</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="kpi-highlight">
+          <div class="kpi-title">30년 후 예상 자산 차이</div>
+          <div class="kpi-value"><span id="kpiSign">+</span><span id="kpiDiff">0</span><span class="unit">만원</span></div>
+          <div class="kpi-sub" id="kpiSub">재배분 시 현재 대비 약 0% 더 모을 수 있습니다</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+
+  <!-- ===== Bottom: 배분 합의 ===== -->
+  <div class="agreement-card" id="agreementCard">
+    <div class="agreement-header">
+      <div class="agreement-title">1차 미팅 자산 배분 합의서</div>
+      <div class="agreement-date" id="agreementDate">2026년 04월 23일</div>
+    </div>
+
+    <div class="agreement-summary">
+      <div class="agreement-item short">
+        <div class="agreement-period">단기 (1~3년)</div>
+        <div class="agreement-amount"><span id="agrShort">50</span><span class="unit">만원/월</span></div>
+        <div class="agreement-products">적금 / 주택청약 / 단기유동성</div>
+      </div>
+      <div class="agreement-item mid">
+        <div class="agreement-period">중기 (3~10년)</div>
+        <div class="agreement-amount"><span id="agrMid">110</span><span class="unit">만원/월</span></div>
+        <div class="agreement-products">중개형 ISA / ETF / 국내·해외주식</div>
+      </div>
+      <div class="agreement-item long">
+        <div class="agreement-period">장기 (10년+)</div>
+        <div class="agreement-amount"><span id="agrLong">45</span><span class="unit">만원/월</span></div>
+        <div class="agreement-products">연금저축·IRP / 비과세 변액</div>
+      </div>
+      <div class="agreement-item insurance">
+        <div class="agreement-period">보장성 보험</div>
+        <div class="agreement-amount"><span id="agrIns">15</span><span class="unit">만원/월</span></div>
+        <div class="agreement-products">리스크 헷지</div>
+      </div>
+    </div>
+
+    <div class="agreement-text">
+      본인은 <strong id="agrName">________</strong> 담당 자산관리사와 함께 상기 재무 진단 및 재배분 시뮬레이션을 확인하였으며,
+      재배분 후(After) 제시된 <strong>기간별 상품군 및 월 배분액 수준(월 <span id="agrTotal">220</span>만원)</strong>에서
+      자산 배분 방향성에 동의합니다.
+      <br>
+      <span style="font-size: 11px; color: var(--ink-mute);">
+      ※ 본 합의는 상품군·금액 레벨의 배분 방향성에 대한 동의이며, 구체적인 상품 선정 및 계약은 2차 미팅에서 진행합니다.
+      </span>
+    </div>
+
+    <div class="sign-row" style="grid-template-columns: 1fr; max-width: 360px; margin: 0 auto;">
+      <div class="sign-box">
+        <div class="sign-label">상담일자</div>
+        <div class="sign-line" id="signDate" style="padding: 4px 0; font-weight: 600; color: var(--ink); border: none; margin-top: 8px;">2026년  04월  23일</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ========== State ==========
+  const state = {
+    name: "",
+    birthYear: "",   // "92" → 1992년생
+    income1: 500,
+    income2: 0,
+    expense: 280,
+    // Before 상세 (10개 항목) — 월 적립액
+    bSavings: 80,    // 적금
+    bHousing: 10,    // 주택청약
+    bLiquid: 10,     // 단기유동성
+    bIsa: 0,         // 중개형 ISA
+    bEtf: 0,         // ETF
+    bKrEq: 20,       // 국내주식
+    bGlEq: 10,       // 해외주식
+    bPension: 20,    // 연금저축·IRP
+    bVl: 0,          // 비과세 변액
+    bIns: 3,         // 보장성 보험
+    // Before 현재 모인 자산 (만원 단위 목돈)
+    bAssetSavings: 0, bAssetHousing: 0, bAssetLiquid: 0,
+    bAssetIsa: 0,     bAssetEtf: 0,     bAssetKrEq: 0,
+    bAssetGlEq: 0,    bAssetPension: 0, bAssetVl: 0,
+    // After 항목 (월 적립액)
+    savings: 25,
+    housing: 10,
+    liquid: 15,
+    isa: 50,
+    etf: 25,
+    krEq: 20,
+    glEq: 15,
+    pension: 30,
+    vl: 15,
+    ins: 15,
+    // After 목돈 (장기 운용)
+    afterLump: 0,
+    // 수익률 가정 (항목별)
+    taxMode: "pre",        // "pre" | "post"
+    // Before 수익률 (항목별 독립)
+    bRateSavings: 0.035,
+    bRateHousing: 0.025,
+    bRateLiquid: 0.03,
+    bRateIsa: 0.065,
+    bRateEtf: 0.06,
+    bRateKrEq: 0.05,
+    bRateGlEq: 0.08,
+    bRatePension: 0.07,
+    bRateVl: 0.075,
+    // After 수익률 (항목별 독립)
+    rateSavings: 0.035,
+    rateHousing: 0.025,
+    rateLiquid: 0.03,
+    rateIsa: 0.065,
+    rateEtf: 0.06,
+    rateKrEq: 0.05,
+    rateGlEq: 0.08,
+    ratePension: 0.07,
+    rateVl: 0.075,
+  };
+
+  // Before 합계 헬퍼 (저축·투자만, 보장성 제외)
+  function beforeSavingsTotal() {
+    return state.bSavings + state.bHousing + state.bLiquid
+         + state.bIsa + state.bEtf + state.bKrEq + state.bGlEq
+         + state.bPension + state.bVl;
+  }
+
+  // Before 투자자산 (중기+장기)
+  function beforeInvestTotal() {
+    return state.bIsa + state.bEtf + state.bKrEq + state.bGlEq
+         + state.bPension + state.bVl;
+  }
+
+  // 항목별 세율 (세후 모드일 때 적용)
+  const TAX = {
+    before: 0.154,    // Before 포트폴리오 (예·적금 중심 가정)
+    savings: 0.154,   // 이자소득세
+    housing: 0.154,
+    liquid: 0.154,
+    isa: 0.05,        // 비과세 200만 + 초과분 9.9% 분리과세 단순화
+    etf: 0.154,       // 배당소득세
+    krEq: 0.0,        // 양도세 비과세
+    glEq: 0.18,       // 양도소득세 22% 실효 단순화
+    pension: 0.055,   // 연금소득세 분리과세
+    vl: 0.0,          // 10년+ 비과세
+  };
+
+  // 세후 FV: 수익분에만 과세. 손실(gain ≤ 0)이면 과세 없음
+  // 기존 원금(목돈) 복리 운용 FV
+  function fvLump(principal, years, rate) {
+    if (principal <= 0 || years < 0) return principal || 0;
+    if (years === 0) return principal;
+    const n = years * 12;
+    const r12 = rate / 12;
+    if (Math.abs(r12) < 1e-10) return principal;
+    if (1 + r12 <= 0) return 0;
+    return principal * Math.pow(1 + r12, n);
+  }
+
+  // 원금 포함 세후 FV — 납입원금 + 기존원금 합산해서 수익분 과세
+  function fvAfterTax(fvPre, monthly, years, taxRate, lump = 0) {
+    if (taxRate === 0) return fvPre;
+    const principal = monthly * years * 12 + lump;  // 납입 원금 + 기존 원금
+    const gain = fvPre - principal;
+    if (gain <= 0) return fvPre;
+    return fvPre - gain * taxRate;
+  }
+
+  // 복리 FV with 세금 반영 (원금 포함 지원)
+  function fvCompoundTaxed(monthly, years, rate, taxKey, lump = 0) {
+    const fvM = fvCompound(monthly, years, rate);
+    const fvL = fvLump(lump, years, rate);
+    const fvPre = fvM + fvL;
+    if (state.taxMode === "pre") return fvPre;
+    return fvAfterTax(fvPre, monthly, years, TAX[taxKey] || 0, lump);
+  }
+
+  // 단리 FV with 세금 반영
+  function fvSimpleTaxed(monthly, years, rate, taxKey) {
+    const fvPre = fvSimple(monthly, years, rate);
+    if (state.taxMode === "pre") return fvPre;
+    return fvAfterTax(fvPre, monthly, years, TAX[taxKey] || 0);
+  }
+
+  // Before 누적 자산 — Before 전용 수익률 + 현재 보유 자산 포함
+  function beforeFV(years) {
+    return fvCompoundTaxed(state.bSavings,  years, state.bRateSavings, "savings",  state.bAssetSavings)
+         + fvCompoundTaxed(state.bHousing,  years, state.bRateHousing, "housing",  state.bAssetHousing)
+         + fvCompoundTaxed(state.bLiquid,   years, state.bRateLiquid,  "liquid",   state.bAssetLiquid)
+         + fvCompoundTaxed(state.bIsa,      years, state.bRateIsa,     "isa",      state.bAssetIsa)
+         + fvCompoundTaxed(state.bEtf,      years, state.bRateEtf,     "etf",      state.bAssetEtf)
+         + fvCompoundTaxed(state.bKrEq,     years, state.bRateKrEq,    "krEq",     state.bAssetKrEq)
+         + fvCompoundTaxed(state.bGlEq,     years, state.bRateGlEq,    "glEq",     state.bAssetGlEq)
+         + fvCompoundTaxed(state.bPension,  years, state.bRatePension, "pension",  state.bAssetPension)
+         + fvCompoundTaxed(state.bVl,       years, state.bRateVl,      "vl",       state.bAssetVl);
+  }
+
+  // After 누적 자산 (항목별 차등 복리 + 항목별 세율 반영)
+  function afterFV(years) {
+    // 목돈: 장기(연금+변액) 평균 수익률로 복리 운용
+    const lumpRate = (state.ratePension + state.rateVl) / 2;
+    const lumpFV = fvCompoundTaxed(0, years, lumpRate, "pension", state.afterLump);
+    return fvCompoundTaxed(state.savings, years, state.rateSavings, "savings")
+         + fvCompoundTaxed(state.housing, years, state.rateHousing, "housing")
+         + fvCompoundTaxed(state.liquid, years, state.rateLiquid, "liquid")
+         + fvCompoundTaxed(state.isa, years, state.rateIsa, "isa")
+         + fvCompoundTaxed(state.etf, years, state.rateEtf, "etf")
+         + fvCompoundTaxed(state.krEq, years, state.rateKrEq, "krEq")
+         + fvCompoundTaxed(state.glEq, years, state.rateGlEq, "glEq")
+         + fvCompoundTaxed(state.pension, years, state.ratePension, "pension")
+         + fvCompoundTaxed(state.vl, years, state.rateVl, "vl")
+         + lumpFV;
+  }
+
+  // After 평균 명목 수익률 (세전 수익률의 가중평균 — 범례 표시용)
+  function afterAvgRate() {
+    const items = [
+      [state.savings, state.rateSavings],
+      [state.housing, state.rateHousing],
+      [state.liquid, state.rateLiquid],
+      [state.isa, state.rateIsa],
+      [state.etf, state.rateEtf],
+      [state.krEq, state.rateKrEq],
+      [state.glEq, state.rateGlEq],
+      [state.pension, state.ratePension],
+      [state.vl, state.rateVl],
+    ];
+    let totalAmt = 0, weighted = 0;
+    items.forEach(([amt, rate]) => { totalAmt += amt; weighted += amt * rate; });
+    return totalAmt === 0 ? 0 : weighted / totalAmt;
+  }
+
+  // ========== 카테고리 헬퍼 ==========
+
+  // 카테고리 합계 헬퍼
+  function shortTotal() { return state.savings + state.housing + state.liquid; }
+  function midTotal() { return state.isa + state.etf + state.krEq + state.glEq; }
+  function longTotal() { return state.pension + state.vl; }
+
+  // ========== 계산 ==========
+  function income() { return state.income1 + state.income2; }
+
+  // 현재 나이 계산 (생년 2자리: "92" → 1992년, "00" → 2000년, "26" → 2026년)
+  function currentAge() {
+    const by = parseInt(state.birthYear);
+    if (isNaN(by) || by < 0) return null;
+    const thisYear = new Date().getFullYear();          // 2026
+    const cutoff = thisYear % 100;                      // 26 (올해 끝 2자리)
+    const fullYear = by <= cutoff ? 2000 + by : 1900 + by;
+    const age = thisYear - fullYear;
+    return (age > 0 && age < 120) ? age : null;
+  }
+
+  // 차트 X축 labels 생성 (나이 or 연도 기준)
+  function chartLabels() {
+    const offsets = [0, 1, 2, 3, 4, 5, 10, 15, 20, 25, 30];
+    const age = currentAge();
+    if (age !== null && age > 0 && age < 100) {
+      return offsets.map(y => y === 0 ? `${age}세` : `${age + y}세`);
+    }
+    return offsets.map(y => y === 0 ? "현재" : `+${y}년`);
+  }
+  function savingsCap() { return Math.max(0, income() - state.expense); }
+  function afterTotal() { return shortTotal() + midTotal() + longTotal() + state.ins; }
+  function afterInv() { return midTotal() + longTotal(); }
+
+  // 복리 월적립 미래가치 (연율 r, 월 적립 m, n년) — 마이너스 수익률 지원
+  function fvCompound(monthly, years, rate) {
+    if (monthly <= 0 || years <= 0) return 0;
+    const n = years * 12;
+    const r12 = rate / 12;
+    if (Math.abs(r12) < 1e-10) return monthly * n;   // 0%: 원금 합계
+    if (1 + r12 <= 0) return 0;                       // -100% 이하 방어
+    return monthly * (Math.pow(1 + r12, n) - 1) / r12 * (1 + r12);
+  }
+
+  // 단리 월적립 미래가치
+  function fvSimple(monthly, years, rate) {
+    if (monthly <= 0 || years <= 0) return 0;
+    const n = years * 12;
+    return monthly * n + monthly * rate / 12 * n * (n + 1) / 2;
+  }
+
+  // ========== 렌더링 ==========
+  function fmt(n) {
+    if (!isFinite(n) || isNaN(n)) return "0";
+    return Math.round(n).toLocaleString("ko-KR");
+  }
+
+  function pct(n, d) {
+    if (d === 0) return "0.0";
+    return (n / d * 100).toFixed(1);
+  }
+
+  function render() {
+    // 저축 가능 금액
+    const cap = savingsCap();
+    document.getElementById("savingsValue").textContent = fmt(cap);
+
+    // 배분 합계 / 잔여
+    const total = afterTotal();
+    const remain = cap - total;
+    document.getElementById("sumTotal").textContent = fmt(total);
+    document.getElementById("sumRate").textContent = pct(total, income());
+    document.getElementById("sumInv").textContent = total > 0 ? pct(afterInv(), total) : "0.0";
+    const remainEl = document.getElementById("sumRemain");
+    remainEl.innerHTML = fmt(remain) + '<span class="unit">만원</span>';
+    remainEl.style.color = remain < 0 ? "var(--bad)" : (remain === 0 ? "var(--good)" : "var(--warn)");
+
+    // 저축초과 경고
+    document.getElementById("savingsWarn").classList.toggle("show", remain < 0);
+
+    // 10개 스테퍼 입력값 동기화 (다른 곳에서 state가 바뀌었을 때 반영)
+    const stepperInputs = [
+      ["inputSavings", "savings"], ["inputHousing", "housing"], ["inputLiquid", "liquid"],
+      ["inputIsa", "isa"], ["inputEtf", "etf"], ["inputKrEq", "krEq"], ["inputGlEq", "glEq"],
+      ["inputPension", "pension"], ["inputVl", "vl"],
+      ["inputIns", "ins"],
+    ];
+    stepperInputs.forEach(([id, key]) => {
+      const el = document.getElementById(id);
+      // 사용자가 입력 중인 필드는 덮어쓰지 않음
+      if (document.activeElement !== el) {
+        el.value = state[key];
+      }
+    });
+
+    // 카테고리 합계 (헤더에 표시)
+    const sT = shortTotal(), mT = midTotal(), lT = longTotal();
+    document.getElementById("totalShort").textContent = sT;
+    document.getElementById("totalMid").textContent = mT;
+    document.getElementById("totalLong").textContent = lT;
+    document.getElementById("totalIns").textContent = state.ins;
+
+    // 비중 (전체 배분 합계 대비)
+    if (total > 0) {
+      // 10개 항목별 비중
+      const subPct = [
+        ["pctSavings", "savings"], ["pctHousing", "housing"], ["pctLiquid", "liquid"],
+        ["pctIsa", "isa"], ["pctEtf", "etf"], ["pctKrEq", "krEq"], ["pctGlEq", "glEq"],
+        ["pctPension", "pension"], ["pctVl", "vl"],
+        ["pctIns", "ins"],
+      ];
+      subPct.forEach(([id, key]) => {
+        document.getElementById(id).textContent = pct(state[key], total) + "%";
+      });
+
+      // 배분 막대 (카테고리 단위)
+      document.getElementById("barShort").style.width = (sT / total * 100) + "%";
+      document.getElementById("barMid").style.width = (mT / total * 100) + "%";
+      document.getElementById("barLong").style.width = (lT / total * 100) + "%";
+      document.getElementById("barIns").style.width = (state.ins / total * 100) + "%";
+
+      document.getElementById("barShort").dataset.pct = sT > 8 ? sT + "만" : "";
+      document.getElementById("barMid").dataset.pct = mT > 8 ? mT + "만" : "";
+      document.getElementById("barLong").dataset.pct = lT > 8 ? lT + "만" : "";
+      document.getElementById("barIns").dataset.pct = state.ins > 8 ? state.ins + "만" : "";
+    }
+
+    // ===== 지표 계산 =====
+    const inc = income();
+    const bTotal = beforeSavingsTotal();
+    const bInv = beforeInvestTotal();
+
+    // Before 합계 표시
+    document.getElementById("beforeSum").textContent = bTotal;
+    // Before 현재 자산 합계
+    const bAssetTotal = (state.bAssetSavings||0) + (state.bAssetHousing||0) + (state.bAssetLiquid||0)
+                      + (state.bAssetIsa||0) + (state.bAssetEtf||0) + (state.bAssetKrEq||0)
+                      + (state.bAssetGlEq||0) + (state.bAssetPension||0) + (state.bAssetVl||0);
+    const bAssetEl = document.getElementById("beforeAssetSum");
+    if (bAssetEl) bAssetEl.textContent = fmt(bAssetTotal);
+
+    // 1. 가계수지지표 (지출/소득)
+    const bRatio = inc > 0 ? state.expense / inc * 100 : 0;
+    const aRatio = inc > 0 ? state.expense / inc * 100 : 0;  // After는 동일
+    setIndicator("indBefore1", "indAfter1", bRatio, aRatio, 60, "below");
+
+    // 2. 총저축 성향지표 (저축/소득)
+    const bSave = inc > 0 ? bTotal / inc * 100 : 0;
+    const aSave = inc > 0 ? total / inc * 100 : 0;
+    setIndicator("indBefore2", "indAfter2", bSave, aSave, 40, "above");
+
+    // 3. 투자자산 비중 (중기+장기)/저축
+    const bInvRatio = bTotal > 0 ? bInv / bTotal * 100 : 0;
+    const aInvRatio = total > 0 ? afterInv() / total * 100 : 0;
+    setIndicator("indBefore3", "indAfter3", bInvRatio, aInvRatio, 40, "above");
+
+    // 4. 보장성 준비지표
+    const bInsRatio = inc > 0 ? state.bIns / inc * 100 : 0;
+    const aInsRatio = inc > 0 ? state.ins / inc * 100 : 0;
+    setIndicator("indBefore4", "indAfter4", bInsRatio, aInsRatio, 9, "range");
+
+    // ===== 합의서 동기화 =====
+    document.getElementById("agrShort").textContent = sT;
+    document.getElementById("agrMid").textContent = mT;
+    document.getElementById("agrLong").textContent = lT;
+    document.getElementById("agrIns").textContent = state.ins;
+    document.getElementById("agrTotal").textContent = total;
+    document.getElementById("agrName").textContent = state.name || "________";
+
+    // ===== 차트 업데이트 =====
+    updateChart();
+
+    // 나이 기준 안내 텍스트 갱신
+    const ageNote = document.getElementById("chartAgeNote");
+    if (ageNote) {
+      const age = currentAge();
+      const taxLabel = state.taxMode === "pre" ? "세전" : "세후";
+      if (age !== null && age > 0 && age < 100) {
+        ageNote.textContent = `기준: 만 ${age}세 (생년 '${state.birthYear}년') · ${taxLabel} · 복리 가정`;
+      } else {
+        ageNote.textContent = `기준: 현재 시점 · ${taxLabel} · 복리 가정 (생년 입력 시 나이로 표시)`;
+      }
+    }
+
+    // 30년 후 차이 KPI
+    const b30 = beforeFV(30);
+    const a30 = afterFV(30);
+    const diff30 = a30 - b30;
+    const isNeg = diff30 < 0;
+    document.getElementById("kpiSign").textContent = isNeg ? "−" : "+";
+    document.getElementById("kpiDiff").textContent = fmt(Math.abs(diff30));
+    // KPI 카드 색상: 마이너스면 경고색
+    const kpiCard = document.querySelector(".kpi-highlight");
+    if (kpiCard) {
+      kpiCard.style.background = isNeg
+        ? "linear-gradient(135deg, var(--bad-bg) 0%, #F9D7DA 100%)"
+        : "linear-gradient(135deg, var(--good-bg) 0%, #D4F0E5 100%)";
+      kpiCard.style.borderColor = isNeg
+        ? "rgba(220, 53, 69, 0.2)"
+        : "rgba(16, 166, 111, 0.2)";
+      const kpiTitle  = kpiCard.querySelector(".kpi-title");
+      const kpiValue  = kpiCard.querySelector(".kpi-value");
+      const kpiSubEl  = kpiCard.querySelector(".kpi-sub");
+      const color = isNeg ? "var(--bad)" : "var(--good)";
+      if (kpiTitle)  kpiTitle.style.color  = color;
+      if (kpiValue)  kpiValue.style.color  = color;
+      if (kpiSubEl)  kpiSubEl.style.color  = isNeg ? "var(--bad)" : "var(--ink-soft)";
+    }
+    const growthPct = b30 !== 0 ? ((a30 - b30) / Math.abs(b30) * 100).toFixed(0) : 0;
+    document.getElementById("kpiSub").textContent = isNeg
+      ? `After가 Before보다 약 ${Math.abs(growthPct)}% 적게 모입니다`
+      : `재배분 시 현재 대비 약 ${growthPct}% 더 모을 수 있습니다`;
+  }
+
+  function setIndicator(beforeId, afterId, bVal, aVal, guide, direction) {
+    const bEl = document.getElementById(beforeId);
+    const aEl = document.getElementById(afterId);
+    bEl.textContent = bVal.toFixed(1) + "%";
+    aEl.textContent = aVal.toFixed(1) + "%";
+
+    // 상태 색상
+    bEl.className = "indicator-val before";
+    aEl.className = "indicator-val";
+
+    if (direction === "above") {
+      aEl.className += aVal >= guide ? " good" : " bad";
+    } else if (direction === "below") {
+      aEl.className += aVal <= guide ? " good" : " bad";
+    } else if (direction === "range") {
+      // 보장성: 8~10% 권장. 그 이하도 이상도 완화 표현
+      if (aVal >= 8 && aVal <= 10) aEl.className += " good";
+      else if (aVal < 5 || aVal > 12) aEl.className += " bad";
+      else aEl.className += " after";
+    }
+  }
+
+  // ========== Chart.js ==========
+  let chart = null;
+
+  function initChart() {
+    const ctx = document.getElementById("growthChart").getContext("2d");
+    chart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: chartLabels(),
+        datasets: [
+          {
+            label: "Before",
+            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            borderColor: "#E87722",
+            backgroundColor: "rgba(232, 119, 34, 0.08)",
+            borderWidth: 2.5,
+            fill: true,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 6,
+            pointBackgroundColor: "#E87722",
+          },
+          {
+            label: "After",
+            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            borderColor: "#0B6FC2",
+            backgroundColor: "rgba(11, 111, 194, 0.1)",
+            borderWidth: 2.5,
+            fill: true,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 6,
+            pointBackgroundColor: "#0B6FC2",
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: {
+              font: { family: "Pretendard Variable", size: 11, weight: 600 },
+              color: "#8A8A9A",
+            },
+          },
+          y: {
+            grid: { color: "#F0F0F5", drawBorder: false },
+            // min 미설정 → 마이너스 자동 표시
+            ticks: {
+              font: { family: "Pretendard Variable", size: 10 },
+              color: "#8A8A9A",
+              callback: function(v) {
+                const abs = Math.abs(v);
+                const prefix = v < 0 ? "-" : "";
+                if (abs >= 10000) return prefix + (abs / 10000).toFixed(0) + "억";
+                if (abs >= 1000)  return prefix + (abs / 1000).toFixed(0) + "천";
+                return v;
+              },
+            },
+          },
+        },
+        // 0 기준선 강조 플러그인
+        plugins: {
+          annotation: undefined,  // 별도 플러그인 없이 zero 라인은 grid 색으로 처리
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: "rgba(10, 10, 26, 0.95)",
+            titleFont: { family: "Pretendard Variable", size: 12, weight: 700 },
+            bodyFont: { family: "Pretendard Variable", size: 12 },
+            padding: 10,
+            cornerRadius: 6,
+            callbacks: {
+              label: function(ctx) {
+                const val = ctx.parsed.y;
+                const sign = val < 0 ? "-" : "";
+                const abs = Math.abs(val);
+                if (abs >= 10000) return ctx.dataset.label + ": " + sign + (abs / 10000).toFixed(1) + "억원";
+                return ctx.dataset.label + ": " + sign + fmt(abs) + "만원";
+              },
+            },
+          },
+        },
+        interaction: { intersect: false, mode: "index" },
+      },
+    });
+  }
+
+  // Before 평균 수익률 (Before 전용 수익률 기준 가중평균)
+  function beforeAvgRate() {
+    const items = [
+      [state.bSavings,  state.bRateSavings],
+      [state.bHousing,  state.bRateHousing],
+      [state.bLiquid,   state.bRateLiquid],
+      [state.bIsa,      state.bRateIsa],
+      [state.bEtf,      state.bRateEtf],
+      [state.bKrEq,     state.bRateKrEq],
+      [state.bGlEq,     state.bRateGlEq],
+      [state.bPension,  state.bRatePension],
+      [state.bVl,       state.bRateVl],
+    ];
+    let totalAmt = 0, weighted = 0;
+    items.forEach(([amt, rate]) => { totalAmt += amt; weighted += amt * rate; });
+    return totalAmt === 0 ? 0 : weighted / totalAmt;
+  }
+
+  function updateChart() {
+    if (!chart) return;
+    // 5년까지는 1년 단위, 이후는 5년 단위 / 나이 입력 시 세(歲) 기준
+    const years = [0, 1, 2, 3, 4, 5, 10, 15, 20, 25, 30];
+    const beforeData = years.map(y => beforeFV(y));
+    const afterData  = years.map(y => afterFV(y));
+    chart.data.labels = chartLabels();
+    chart.data.datasets[0].data = beforeData;
+    chart.data.datasets[1].data = afterData;
+    // 데이터셋 라벨도 동적 업데이트
+    const taxLabel = state.taxMode === "pre" ? "세전" : "세후";
+    const beforeLabel = `Before (복리 평균 ${(beforeAvgRate()*100).toFixed(1)}%, ${taxLabel})`;
+    const afterLabel = `After (복리 평균 ${(afterAvgRate()*100).toFixed(1)}%, ${taxLabel})`;
+    chart.data.datasets[0].label = beforeLabel;
+    chart.data.datasets[1].label = afterLabel;
+    // 범례 텍스트 갱신
+    document.getElementById("legendBefore").textContent =
+      `Before · ${taxLabel} 복리 평균 ${(beforeAvgRate()*100).toFixed(1)}%`;
+    document.getElementById("legendAfter").textContent =
+      `After · ${taxLabel} 복리 평균 ${(afterAvgRate()*100).toFixed(1)}%`;
+    chart.update("none");
+  }
+
+  // ========== Event Binding ==========
+  function bindInputs() {
+    const bindings = [
+      ["customerName", "name",    false],
+      ["birthYear",    "birthYear", false],
+      ["income1",      "income1", true],
+      ["income2",      "income2", true],
+      ["expense",      "expense", true],
+    ];
+    bindings.forEach(([id, key, isNum]) => {
+      const el = document.getElementById(id);
+      el.addEventListener("input", () => {
+        state[key] = isNum ? (parseFloat(el.value) || 0) : el.value;
+        render();
+      });
+    });
+
+    // Before 현재 자산 9개 바인딩
+    const bAssetItems = [
+      ["bAssetSavings","bAssetSavings"],["bAssetHousing","bAssetHousing"],["bAssetLiquid","bAssetLiquid"],
+      ["bAssetIsa","bAssetIsa"],["bAssetEtf","bAssetEtf"],["bAssetKrEq","bAssetKrEq"],
+      ["bAssetGlEq","bAssetGlEq"],["bAssetPension","bAssetPension"],["bAssetVl","bAssetVl"],
+    ];
+    bAssetItems.forEach(([id, key]) => {
+      const el = document.getElementById(id);
+      el.addEventListener("input", () => {
+        const v = parseFloat(el.value);
+        state[key] = isNaN(v) || v < 0 ? 0 : v;
+        render();
+      });
+      el.addEventListener("blur", () => { if (!el.value) el.value = state[key]; });
+    });
+
+    // After 목돈 바인딩
+    const lumpEl = document.getElementById("inputAfterLump");
+    lumpEl.addEventListener("input", () => {
+      const v = parseFloat(lumpEl.value);
+      state.afterLump = isNaN(v) || v < 0 ? 0 : v;
+      render();
+    });
+    lumpEl.addEventListener("blur", () => { if (!lumpEl.value) lumpEl.value = state.afterLump; });
+
+    // Before 10개 항목 바인딩
+    const beforeItems = [
+      ["bSavings", "bSavings"],
+      ["bHousing", "bHousing"],
+      ["bLiquid", "bLiquid"],
+      ["bIsa", "bIsa"],
+      ["bEtf", "bEtf"],
+      ["bKrEq", "bKrEq"],
+      ["bGlEq", "bGlEq"],
+      ["bPension", "bPension"],
+      ["bVl", "bVl"],
+      ["bIns", "bIns"],
+    ];
+    beforeItems.forEach(([id, key]) => {
+      const el = document.getElementById(id);
+      el.addEventListener("input", () => {
+        const v = parseFloat(el.value);
+        state[key] = isNaN(v) || v < 0 ? 0 : v;
+        render();
+      });
+      el.addEventListener("blur", () => {
+        if (el.value === "" || isNaN(parseFloat(el.value))) el.value = state[key];
+      });
+    });
+
+    // 스테퍼 숫자 입력 바인딩 (10개)
+    const stepperKeys = [
+      ["inputSavings", "savings"],
+      ["inputHousing", "housing"],
+      ["inputLiquid", "liquid"],
+      ["inputIsa", "isa"],
+      ["inputEtf", "etf"],
+      ["inputKrEq", "krEq"],
+      ["inputGlEq", "glEq"],
+      ["inputPension", "pension"],
+      ["inputVl", "vl"],
+      ["inputIns", "ins"],
+    ];
+    stepperKeys.forEach(([id, key]) => {
+      const el = document.getElementById(id);
+      el.addEventListener("input", () => {
+        const v = parseInt(el.value);
+        state[key] = isNaN(v) || v < 0 ? 0 : v;
+        render();
+      });
+      // blur 시 빈값이면 0으로 정리
+      el.addEventListener("blur", () => {
+        if (el.value === "" || isNaN(parseInt(el.value))) {
+          el.value = state[key];
+        }
+      });
+    });
+
+    // Before 수익률 바인딩 (9개)
+    const bRateBindings = [
+      ["bRateSavings", "bRateSavings"], ["bRateHousing", "bRateHousing"], ["bRateLiquid", "bRateLiquid"],
+      ["bRateIsa", "bRateIsa"], ["bRateEtf", "bRateEtf"], ["bRateKrEq", "bRateKrEq"],
+      ["bRateGlEq", "bRateGlEq"], ["bRatePension", "bRatePension"], ["bRateVl", "bRateVl"],
+    ];
+    bRateBindings.forEach(([id, key]) => {
+      const el = document.getElementById(id);
+      el.addEventListener("input", () => {
+        const v = parseFloat(el.value);
+        state[key] = isNaN(v) ? 0 : v / 100;
+        render();
+      });
+    });
+
+    // After 수익률 바인딩 (9개)
+    const rateBindings = [
+      ["rateSavings", "rateSavings"], ["rateHousing", "rateHousing"], ["rateLiquid", "rateLiquid"],
+      ["rateIsa", "rateIsa"], ["rateEtf", "rateEtf"], ["rateKrEq", "rateKrEq"],
+      ["rateGlEq", "rateGlEq"], ["ratePension", "ratePension"], ["rateVl", "rateVl"],
+    ];
+    rateBindings.forEach(([id, key]) => {
+      const el = document.getElementById(id);
+      el.addEventListener("input", () => {
+        const v = parseFloat(el.value);
+        state[key] = isNaN(v) ? 0 : v / 100;
+        render();
+      });
+    });
+  }
+
+  // 스테퍼 +/- 버튼: 항목값 증감
+  function adjustValue(key, delta) {
+    const next = (state[key] || 0) + delta;
+    const maxMap = { housing: 30 };
+    const max = maxMap[key] !== undefined ? maxMap[key] : Infinity;
+    state[key] = Math.min(max, Math.max(0, next));
+    // afterLump는 input도 동기화
+    if (key === "afterLump") {
+      const el = document.getElementById("inputAfterLump");
+      if (el) el.value = state.afterLump;
+    }
+    render();
+  }
+
+  // 가정 패널 펼침/접힘
+  function toggleAssumptions() {
+    document.getElementById("assumptionsPanel").classList.toggle("open");
+  }
+
+  // 세전/세후 모드 토글
+  function setTaxMode(mode) {
+    state.taxMode = mode;
+    document.getElementById("btnTaxPre").classList.toggle("active", mode === "pre");
+    document.getElementById("btnTaxPost").classList.toggle("active", mode === "post");
+    render();
+  }
+
+  // 수익률 패널 Before/After 탭 전환
+  function switchRateTab(tab) {
+    document.getElementById("ratePaneBefore").classList.toggle("active", tab === "before");
+    document.getElementById("ratePaneAfter").classList.toggle("active",  tab === "after");
+    document.getElementById("rateTabBefore").className =
+      "rate-tab-btn" + (tab === "before" ? " active-before" : "");
+    document.getElementById("rateTabAfter").className =
+      "rate-tab-btn" + (tab === "after" ? " active-after" : "");
+  }
+
+  // 수익률 프리셋 적용 — target: 'before' | 'after'
+  function applyPreset(name, target) {
+    const presets = {
+      conservative: { savings: 2.5, housing: 2.0, liquid: 2.5, isa: 5,   etf: 4.5, krEq: 4,  glEq: 6,  pension: 5.5, vl: 6   },
+      balanced:     { savings: 3.5, housing: 2.5, liquid: 3,   isa: 6.5, etf: 6,   krEq: 5,  glEq: 8,  pension: 7,   vl: 7.5 },
+      aggressive:   { savings: 4,   housing: 3,   liquid: 3.5, isa: 8,   etf: 7.5, krEq: 7,  glEq: 10, pension: 8.5, vl: 9   },
+    };
+    const p = presets[name];
+    if (!p) return;
+    const prefix = target === "before" ? "bR" : "r";  // bRateSavings vs rateSavings
+    const idPrefix = target === "before" ? "bRate" : "rate";
+    Object.keys(p).forEach(k => {
+      const stateKey = prefix + "ate" + k.charAt(0).toUpperCase() + k.slice(1);
+      const inputId  = idPrefix + k.charAt(0).toUpperCase() + k.slice(1);
+      const el = document.getElementById(inputId);
+      if (el) el.value = p[k];
+      state[stateKey] = p[k] / 100;
+    });
+    render();
+  }
+
+  function resetAll() {
+    if (!confirm("모든 입력값을 초기화할까요?")) return;
+    Object.assign(state, {
+      name: "", birthYear: "", income1: 500, income2: 0, expense: 280,
+      // Before 10개 항목
+      bSavings: 80, bHousing: 10, bLiquid: 10,
+      bIsa: 0, bEtf: 0, bKrEq: 20, bGlEq: 10,
+      bPension: 20, bVl: 0, bIns: 3,
+      bAssetSavings: 0, bAssetHousing: 0, bAssetLiquid: 0,
+      bAssetIsa: 0, bAssetEtf: 0, bAssetKrEq: 0,
+      bAssetGlEq: 0, bAssetPension: 0, bAssetVl: 0,
+      savings: 25, housing: 10, liquid: 15,
+      isa: 50, etf: 25, krEq: 20, glEq: 15,
+      pension: 30, vl: 15, ins: 15,
+      afterLump: 0,
+      taxMode: "pre",
+      bRateSavings: 0.035, bRateHousing: 0.025, bRateLiquid: 0.03,
+      bRateIsa: 0.065, bRateEtf: 0.06, bRateKrEq: 0.05, bRateGlEq: 0.08,
+      bRatePension: 0.07, bRateVl: 0.075,
+      rateSavings: 0.035, rateHousing: 0.025, rateLiquid: 0.03,
+      rateIsa: 0.065, rateEtf: 0.06, rateKrEq: 0.05, rateGlEq: 0.08,
+      ratePension: 0.07, rateVl: 0.075,
+    });
+    document.getElementById("customerName").value = "";
+    document.getElementById("birthYear").value = "";
+    document.getElementById("job").value = "";
+    document.getElementById("goal").value = "";
+    document.getElementById("income1").value = state.income1;
+    document.getElementById("income2").value = state.income2;
+    document.getElementById("expense").value = state.expense;
+    // Before 현재 자산 초기화
+    ["bAssetSavings","bAssetHousing","bAssetLiquid","bAssetIsa","bAssetEtf",
+     "bAssetKrEq","bAssetGlEq","bAssetPension","bAssetVl"].forEach(k => {
+      const el = document.getElementById(k); if (el) el.value = 0;
+    });
+    // After 목돈 초기화
+    const lumpEl2 = document.getElementById("inputAfterLump");
+    if (lumpEl2) lumpEl2.value = 0;
+    document.getElementById("bSavings").value = state.bSavings;
+    document.getElementById("bHousing").value = state.bHousing;
+    document.getElementById("bLiquid").value = state.bLiquid;
+    document.getElementById("bIsa").value = state.bIsa;
+    document.getElementById("bEtf").value = state.bEtf;
+    document.getElementById("bKrEq").value = state.bKrEq;
+    document.getElementById("bGlEq").value = state.bGlEq;
+    document.getElementById("bPension").value = state.bPension;
+    document.getElementById("bVl").value = state.bVl;
+    document.getElementById("bIns").value = state.bIns;
+    // 10개 스테퍼 입력 초기화
+    document.getElementById("inputSavings").value = state.savings;
+    document.getElementById("inputHousing").value = state.housing;
+    document.getElementById("inputLiquid").value = state.liquid;
+    document.getElementById("inputIsa").value = state.isa;
+    document.getElementById("inputEtf").value = state.etf;
+    document.getElementById("inputKrEq").value = state.krEq;
+    document.getElementById("inputGlEq").value = state.glEq;
+    document.getElementById("inputPension").value = state.pension;
+    document.getElementById("inputVl").value = state.vl;
+    document.getElementById("inputIns").value = state.ins;
+    // Before 수익률 초기화
+    ["bRateSavings","bRateHousing","bRateLiquid","bRateIsa","bRateEtf","bRateKrEq","bRateGlEq","bRatePension","bRateVl"].forEach(k => {
+      const el = document.getElementById(k);
+      if (el) el.value = state[k] * 100;
+    });
+    // After 수익률 초기화
+    document.getElementById("rateSavings").value = state.rateSavings * 100;
+    document.getElementById("rateHousing").value = state.rateHousing * 100;
+    document.getElementById("rateLiquid").value = state.rateLiquid * 100;
+    document.getElementById("rateIsa").value = state.rateIsa * 100;
+    document.getElementById("rateEtf").value = state.rateEtf * 100;
+    document.getElementById("rateKrEq").value = state.rateKrEq * 100;
+    document.getElementById("rateGlEq").value = state.rateGlEq * 100;
+    document.getElementById("ratePension").value = state.ratePension * 100;
+    document.getElementById("rateVl").value = state.rateVl * 100;
+    setTaxMode("pre");
+    render();
+  }
+
+  function scrollToAgreement() {
+    document.getElementById("agreementCard").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // 날짜 자동
+  function setDate() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    document.getElementById("agreementDate").textContent = `${y}년 ${m}월 ${d}일`;
+    document.getElementById("signDate").textContent = `${y}년  ${m}월  ${d}일`;
+  }
+
+  // ========== Init ==========
+  window.addEventListener("DOMContentLoaded", () => {
+    setDate();
+    initChart();
+    bindInputs();
+    render();
+  });
+</script>
+
+</body>
+</html>
