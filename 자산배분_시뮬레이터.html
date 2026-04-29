@@ -1136,7 +1136,272 @@
   .alert-badge.warn { background: var(--warn-bg); color: var(--warn); }
   .alert-badge.bad { background: var(--bad-bg); color: var(--bad); }
 
-  /* 인쇄 모드 */
+  /* ===== 재무 목표 섹션 ===== */
+  .goal-section {
+    grid-column: 1 / -1;
+    margin-top: 8px;
+  }
+  .goal-section-title {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 14px;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.3px;
+  }
+  .goal-section-sub {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-mute);
+  }
+  .goal-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .goal-card {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .goal-card-header {
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+  }
+  .goal-card-header.housing { background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); }
+  .goal-card-header.child   { background: linear-gradient(135deg, #D97706 0%, #B45309 100%); }
+  .goal-card-header.retire  { background: linear-gradient(135deg, #059669 0%, #047857 100%); }
+  .goal-icon { font-size: 20px; }
+  .goal-name { font-size: 15px; font-weight: 800; flex: 1; }
+  .goal-source-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+  .goal-card-body { padding: 16px 18px; }
+  .goal-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .goal-input-row { display: flex; flex-direction: column; gap: 4px; }
+  .goal-label { font-size: 10.5px; font-weight: 700; color: var(--ink-mute); letter-spacing: 0.2px; }
+  .goal-input-wrap { position: relative; display: flex; align-items: center; }
+  .goal-input {
+    width: 100%;
+    padding: 7px 30px 7px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    -moz-appearance: textfield;
+  }
+  .goal-input.small { font-size: 12px; padding: 5px 26px 5px 8px; }
+  .goal-input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-glow); }
+  .goal-input::-webkit-inner-spin-button, .goal-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .goal-input-unit {
+    position: absolute; right: 9px;
+    font-size: 10px; font-weight: 700; color: var(--ink-mute); pointer-events: none;
+  }
+  .goal-result { }
+  .goal-breakdown {
+    background: #FAFAFD;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+  }
+  .goal-breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 0;
+    font-size: 11.5px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .goal-breakdown-row:last-child { border-bottom: none; }
+  .goal-breakdown-row.total { padding-top: 6px; font-weight: 700; }
+  .goal-bd-label { color: var(--ink-soft); font-weight: 500; }
+  .goal-bd-val { font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .goal-breakdown-row.total .goal-bd-val { font-size: 13px; }
+
+  .goal-progress-wrap { margin-bottom: 12px; }
+  .goal-progress-bar {
+    height: 10px;
+    background: #EEEEF5;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 5px;
+  }
+  .goal-progress-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.4s cubic-bezier(0.2, 0.9, 0.2, 1);
+  }
+  .goal-progress-fill.housing { background: linear-gradient(90deg, #3B82F6, #2563EB); }
+  .goal-progress-fill.child   { background: linear-gradient(90deg, #F59E0B, #D97706); }
+  .goal-progress-fill.retire  { background: linear-gradient(90deg, #10B981, #059669); }
+  .goal-progress-fill.surplus { background: linear-gradient(90deg, #6EE7B7, #34D399); }
+  .goal-progress-label { text-align: right; font-size: 11px; font-weight: 700; color: var(--ink-soft); }
+
+  .goal-gap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  .goal-gap.shortage { background: var(--bad-bg); }
+  .goal-gap.surplus  { background: var(--good-bg); }
+  .goal-gap-label { font-size: 11px; font-weight: 700; }
+  .goal-gap.shortage .goal-gap-label { color: var(--bad); }
+  .goal-gap.surplus  .goal-gap-label { color: var(--good); }
+  .goal-gap-val { font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .goal-gap.shortage .goal-gap-val { color: var(--bad); }
+  .goal-gap.surplus  .goal-gap-val { color: var(--good); }
+
+  /* 대출 계산기 */
+  .loan-calc {
+    border: 1px solid #DBEAFE;
+    border-radius: 8px;
+    padding: 12px 14px;
+    background: #EFF6FF;
+  }
+  .loan-calc-title { font-size: 11px; font-weight: 700; color: #1D4ED8; margin-bottom: 8px; letter-spacing: 0.2px; }
+  .loan-calc-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .loan-row { display: flex; flex-direction: column; gap: 3px; }
+  .loan-row label { font-size: 10.5px; color: #3B82F6; font-weight: 600; }
+  .loan-result {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #BFDBFE;
+  }
+  .loan-result-label { font-size: 11px; font-weight: 700; color: #1D4ED8; }
+  .loan-result-val { font-size: 16px; font-weight: 800; color: #1D4ED8; font-variant-numeric: tabular-nums; }
+
+  @media print {
+    .goal-section { grid-column: 1 / -1; page-break-before: always; }
+    .goal-cards { grid-template-columns: repeat(3, 1fr); }
+  }
+
+
+  /* 목표 편집 UI */
+  .goal-name-input {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 15px;
+    font-weight: 800;
+    font-family: inherit;
+    width: 0;
+    flex: 1;
+    min-width: 0;
+    outline: none;
+    padding: 0;
+  }
+  .goal-name-input::placeholder { color: rgba(255,255,255,0.6); }
+  .goal-name-input:focus { border-bottom: 1px solid rgba(255,255,255,0.6); }
+
+  .goal-color-btn {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 2px 5px;
+    line-height: 1;
+  }
+  .goal-delete-btn {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 2px 7px;
+    font-family: inherit;
+    opacity: 0.8;
+  }
+  .goal-delete-btn:hover { opacity: 1; background: rgba(220,53,69,0.5); }
+
+  .goal-port-select {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 12px;
+  }
+  .goal-port-chip {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 9px;
+    border-radius: 12px;
+    border: 1px solid var(--line-strong);
+    background: white;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.13s ease;
+    user-select: none;
+  }
+  .goal-port-chip input[type=checkbox] { display: none; }
+  .goal-port-chip.checked {
+    border-color: var(--brand);
+    background: var(--brand-light);
+    color: var(--brand-dark);
+  }
+  .goal-port-chip:hover { border-color: var(--brand); }
+
+  .goal-add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px;
+    border: 2px dashed var(--line-strong);
+    border-radius: 14px;
+    background: transparent;
+    color: var(--ink-mute);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    width: 100%;
+  }
+  .goal-add-btn:hover { border-color: var(--brand); color: var(--brand); background: var(--brand-light); }
+
+  .goal-loan-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 11px;
+    font-weight: 700;
+    color: #1D4ED8;
+  }
+  .goal-loan-toggle input { cursor: pointer; }
+
+  /* ===== 인쇄 모드 ===== */
   @media print {
     .app-header, .header-actions { display: none; }
     .app-container {
@@ -1219,6 +1484,17 @@
           </div>
         </div>
         <div class="input-group">
+          <label class="input-label">성과금 (연간 ÷ 12 환산)</label>
+          <div style="display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center;">
+            <div class="input-suffix" data-suffix="만원">
+              <input type="number" class="input-field" id="bonusAnnual" value="0" min="0" placeholder="연간 성과금">
+            </div>
+            <span style="font-size:11px; color:var(--ink-mute); white-space:nowrap; font-weight:600;">
+              = <span id="bonusMonthly">0</span>만원/월
+            </span>
+          </div>
+        </div>
+        <div class="input-group">
           <label class="input-label">월 지출 합계 (고정+변동)</label>
           <div class="input-suffix" data-suffix="만원">
             <input type="number" class="input-field" id="expense" value="280" min="0">
@@ -1288,7 +1564,7 @@
             <div class="before-input-wrap"><input type="number" class="before-input" id="bPension" value="20" min="0" step="5"><span class="before-suffix">만</span></div>
             <div class="before-input-wrap"><input type="number" class="before-input asset-input" id="bAssetPension" value="0" min="0" step="100"><span class="before-suffix" style="color:var(--brand-dark);">만</span></div>
           </div>
-          <div class="before-row"><span class="before-label">비과세 변액</span>
+          <div class="before-row"><span class="before-label">비과세 연금/보험</span>
             <div class="before-input-wrap"><input type="number" class="before-input" id="bVl" value="0" min="0" step="5"><span class="before-suffix">만</span></div>
             <div class="before-input-wrap"><input type="number" class="before-input asset-input" id="bAssetVl" value="0" min="0" step="100"><span class="before-suffix" style="color:var(--brand-dark);">만</span></div>
           </div>
@@ -1308,6 +1584,28 @@
         <div style="margin-top: 5px; padding: 8px 12px; background: var(--brand-light); border-radius: 7px; display: flex; justify-content: space-between; align-items: center;">
           <span style="font-size: 11px; font-weight: 700; color: var(--brand-dark);">현재 자산 합계</span>
           <span style="font-size: 13px; font-weight: 800; color: var(--brand-dark); font-variant-numeric: tabular-nums;"><span id="beforeAssetSum">0</span> <span style="font-size: 10px;">만원</span></span>
+        </div>
+        <!-- Before 목돈 -->
+        <div style="margin-top: 6px; padding: 10px 12px; border: 1px dashed rgba(232,119,34,0.35); border-radius: 7px; background: #FFF8F3;">
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--before); margin-bottom: 7px;">기존 목돈 (Before)</div>
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 5px;">
+            <span style="font-size: 11px; color: var(--ink-soft); font-weight: 600; white-space:nowrap;">투입 금액</span>
+            <div style="position:relative; display:flex; align-items:center; gap:4px; flex:1;">
+              <input type="number" id="inputBeforeLump" value="0" min="0" step="100"
+                style="width:100%; padding:5px 26px 5px 8px; border:1px solid rgba(232,119,34,0.4); border-radius:6px; font-size:12px; font-weight:700; color:var(--before); background:white; font-family:inherit; text-align:right; -moz-appearance:textfield;"
+                oninput="state.beforeLump=parseFloat(this.value)||0; render();">
+              <span style="position:absolute; right:7px; font-size:10px; color:var(--ink-mute); font-weight:700; pointer-events:none;">만원</span>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+            <span style="font-size: 11px; color: var(--ink-soft); font-weight: 600; white-space:nowrap;">수익률</span>
+            <div style="position:relative; display:flex; align-items:center; flex:1;">
+              <input type="number" id="inputBeforeLumpRate" value="3.5" min="-30" max="30" step="0.1"
+                style="width:100%; padding:5px 24px 5px 8px; border:1px solid rgba(232,119,34,0.4); border-radius:6px; font-size:12px; font-weight:700; color:var(--before); background:white; font-family:inherit; text-align:right; -moz-appearance:textfield;"
+                oninput="state.beforeLumpRate=parseFloat(this.value)/100||0; render();">
+              <span style="position:absolute; right:7px; font-size:10px; color:var(--ink-mute); font-weight:700; pointer-events:none;">%</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1382,24 +1680,6 @@
               <div class="sub-slider-head">
                 <div class="sub-slider-label">
                   <span class="sub-slider-dot short"></span>
-                  <span class="sub-slider-name">주택청약</span>
-                </div>
-                <div class="sub-slider-right">
-                  <span class="sub-slider-pct" id="pctHousing">4.5%</span>
-                  <div class="stepper short-tint">
-                    <button type="button" class="stepper-btn" onclick="adjustValue('housing', -1)">−</button>
-                    <input type="number" class="stepper-input" id="inputHousing" value="10" min="0" max="30" step="1">
-                    <span class="stepper-suffix">만원</span>
-                    <button type="button" class="stepper-btn" onclick="adjustValue('housing', 1)">+</button>
-                  </div>
-                </div>
-              </div>
-              <div class="sub-slider-note">주택청약종합저축 — 청약 가점 관리 (2만/10만/50만원 선택)</div>
-            </div>
-            <div class="sub-slider short-tint">
-              <div class="sub-slider-head">
-                <div class="sub-slider-label">
-                  <span class="sub-slider-dot short"></span>
                   <span class="sub-slider-name">단기유동성</span>
                 </div>
                 <div class="sub-slider-right">
@@ -1427,6 +1707,24 @@
             <div class="category-header-total"><span id="totalMid">110</span><span class="unit">만원/월</span></div>
           </div>
           <div class="category-children">
+            <div class="sub-slider mid-tint">
+              <div class="sub-slider-head">
+                <div class="sub-slider-label">
+                  <span class="sub-slider-dot mid"></span>
+                  <span class="sub-slider-name">주택청약</span>
+                </div>
+                <div class="sub-slider-right">
+                  <span class="sub-slider-pct" id="pctHousing">4.5%</span>
+                  <div class="stepper mid-tint">
+                    <button type="button" class="stepper-btn" onclick="adjustValue('housing', -1)">−</button>
+                    <input type="number" class="stepper-input" id="inputHousing" value="10" min="0" max="30" step="1">
+                    <span class="stepper-suffix">만원</span>
+                    <button type="button" class="stepper-btn" onclick="adjustValue('housing', 1)">+</button>
+                  </div>
+                </div>
+              </div>
+              <div class="sub-slider-note">주택청약종합저축 — 청약 가점 관리, 중장기 내집마련 목적</div>
+            </div>
             <div class="sub-slider mid-tint">
               <div class="sub-slider-head">
                 <div class="sub-slider-label">
@@ -1534,7 +1832,7 @@
               <div class="sub-slider-head">
                 <div class="sub-slider-label">
                   <span class="sub-slider-dot long"></span>
-                  <span class="sub-slider-name">비과세 변액</span>
+                  <span class="sub-slider-name">비과세 연금/보험</span>
                 </div>
                 <div class="sub-slider-right">
                   <span class="sub-slider-pct" id="pctVl">6.8%</span>
@@ -1546,21 +1844,28 @@
                   </div>
                 </div>
               </div>
-              <div class="sub-slider-note">변액유니버셜·변액연금 — 10년+ 유지 시 비과세, 펀드 자유 변경</div>
+              <div class="sub-slider-note">변액연금·저축보험 등 — 10년+ 유지 시 비과세, 연금 전환 가능</div>
             </div>
           </div>
           <!-- 목돈 입력칸 -->
           <div style="padding: 10px 14px; border-top: 1px dashed var(--line); background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FF 100%);">
-            <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
-              <div>
-                <div style="font-size: 12px; font-weight: 700; color: var(--brand-dark);">기존 목돈 투입</div>
-                <div style="font-size: 10px; color: var(--ink-mute); margin-top: 1px;">장기 평균 수익률로 복리 운용</div>
+            <div style="font-size: 11px; font-weight: 800; color: var(--brand-dark); margin-bottom: 8px; letter-spacing: 0.2px;">기존 목돈 투입</div>
+            <div style="display:flex; align-items:center; gap:6px; margin-bottom:5px;">
+              <span style="font-size:10.5px; color:var(--ink-soft); font-weight:600; width:44px;">금액</span>
+              <div style="position:relative; flex:1;">
+                <input type="number" id="inputAfterLump" value="0" min="0" step="100"
+                  style="width:100%; padding:5px 26px 5px 8px; border:1px solid rgba(72,52,255,0.25); border-radius:6px; font-size:12px; font-weight:700; color:var(--brand-dark); background:white; font-family:inherit; text-align:right; -moz-appearance:textfield;"
+                  oninput="state.afterLumpAmt=parseFloat(this.value)||0; render();">
+                <span style="position:absolute; right:7px; font-size:9.5px; color:var(--ink-mute); font-weight:700; pointer-events:none;">만원</span>
               </div>
-              <div class="stepper long-tint" style="border-color: var(--brand); width: 150px;">
-                <button type="button" class="stepper-btn" onclick="adjustValue('afterLump', -100)">−</button>
-                <input type="number" class="stepper-input" id="inputAfterLump" value="0" min="0" step="100">
-                <span class="stepper-suffix">만원</span>
-                <button type="button" class="stepper-btn" onclick="adjustValue('afterLump', 100)">+</button>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-size:10.5px; color:var(--ink-soft); font-weight:600; width:44px;">수익률</span>
+              <div style="position:relative; flex:1;">
+                <input type="number" id="inputAfterLumpRate" value="7" min="-30" max="30" step="0.1"
+                  style="width:100%; padding:5px 20px 5px 8px; border:1px solid rgba(72,52,255,0.25); border-radius:6px; font-size:12px; font-weight:700; color:var(--brand-dark); background:white; font-family:inherit; text-align:right; -moz-appearance:textfield;"
+                  oninput="state.afterLumpRate=parseFloat(this.value)/100||0; render();">
+                <span style="position:absolute; right:7px; font-size:9.5px; color:var(--ink-mute); font-weight:700; pointer-events:none;">%</span>
               </div>
             </div>
           </div>
@@ -1646,7 +1951,7 @@
         <div class="indicator-row">
           <div class="indicator-info">
             <div class="indicator-name">보장성 준비지표</div>
-            <div class="indicator-guide">보험료/소득 · 8~10% 적정</div>
+            <div class="indicator-guide">보험료/소득 · 5~8% 적정</div>
           </div>
           <div class="indicator-val before" id="indBefore4">0.6%</div>
           <div class="indicator-val after" id="indAfter4">2.6%</div>
@@ -1733,7 +2038,7 @@
                     <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="bRatePension" value="7" min="-30" max="20" step="0.1"></div>
                   </div>
                   <div class="assumption-row">
-                    <div class="assumption-label"><span class="assumption-dot dot-long"></span>비과세 변액<span class="tax-rate-tag zero">비과세</span></div>
+                    <div class="assumption-label"><span class="assumption-dot dot-long"></span>비과세 연금/보험<span class="tax-rate-tag zero">비과세</span></div>
                     <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="bRateVl" value="7.5" min="-30" max="20" step="0.1"></div>
                   </div>
                   <div class="preset-row">
@@ -1787,7 +2092,7 @@
                     <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="ratePension" value="7" min="-30" max="20" step="0.1"></div>
                   </div>
                   <div class="assumption-row">
-                    <div class="assumption-label"><span class="assumption-dot dot-long"></span>비과세 변액<span class="tax-rate-tag zero">비과세</span></div>
+                    <div class="assumption-label"><span class="assumption-dot dot-long"></span>비과세 연금/보험<span class="tax-rate-tag zero">비과세</span></div>
                     <div class="assumption-input-wrap"><input type="number" class="assumption-input" id="rateVl" value="7.5" min="-30" max="20" step="0.1"></div>
                   </div>
                   <div class="preset-row">
@@ -1812,6 +2117,20 @@
   </aside>
 
 
+  <!-- ===== 재무 목표 달성 섹션 ===== -->
+  <div class="goal-section" id="goalSection">
+    <div class="goal-section-title" style="justify-content:space-between; align-items:center;">
+      <div style="display:flex; align-items:baseline; gap:12px;">
+        <span>🎯 재무 목표 달성 분석</span>
+        <span class="goal-section-sub">목표 이름·금액·기간·연결 포트를 자유롭게 설정하세요</span>
+      </div>
+      <button onclick="addGoal()" style="padding:8px 16px; background:var(--brand); color:white; border:none; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap;">+ 목표 추가</button>
+    </div>
+    <div class="goal-cards" id="goalCards">
+      <!-- 동적으로 렌더링 -->
+    </div>
+  </div><!-- .goal-section -->
+
   <!-- ===== Bottom: 배분 합의 ===== -->
   <div class="agreement-card" id="agreementCard">
     <div class="agreement-header">
@@ -1823,17 +2142,17 @@
       <div class="agreement-item short">
         <div class="agreement-period">단기 (1~3년)</div>
         <div class="agreement-amount"><span id="agrShort">50</span><span class="unit">만원/월</span></div>
-        <div class="agreement-products">적금 / 주택청약 / 단기유동성</div>
+        <div class="agreement-products">적금 / 단기유동성</div>
       </div>
       <div class="agreement-item mid">
         <div class="agreement-period">중기 (3~10년)</div>
         <div class="agreement-amount"><span id="agrMid">110</span><span class="unit">만원/월</span></div>
-        <div class="agreement-products">중개형 ISA / ETF / 국내·해외주식</div>
+        <div class="agreement-products">주택청약 / ISA / ETF / 국내·해외주식</div>
       </div>
       <div class="agreement-item long">
         <div class="agreement-period">장기 (10년+)</div>
         <div class="agreement-amount"><span id="agrLong">45</span><span class="unit">만원/월</span></div>
-        <div class="agreement-products">연금저축·IRP / 비과세 변액</div>
+        <div class="agreement-products">연금저축·IRP / 비과세 연금/보험</div>
       </div>
       <div class="agreement-item insurance">
         <div class="agreement-period">보장성 보험</div>
@@ -1868,6 +2187,7 @@
     name: "",
     birthYear: "",   // "92" → 1992년생
     income1: 500,
+    bonusAnnual: 0,  // 연간 성과금 (÷12 환산)
     income2: 0,
     expense: 280,
     // Before 상세 (10개 항목) — 월 적립액
@@ -1879,7 +2199,7 @@
     bKrEq: 20,       // 국내주식
     bGlEq: 10,       // 해외주식
     bPension: 20,    // 연금저축·IRP
-    bVl: 0,          // 비과세 변액
+    bVl: 0,          // 비과세 연금/보험
     bIns: 3,         // 보장성 보험
     // Before 현재 모인 자산 (만원 단위 목돈)
     bAssetSavings: 0, bAssetHousing: 0, bAssetLiquid: 0,
@@ -1896,8 +2216,12 @@
     pension: 30,
     vl: 15,
     ins: 15,
+    // Before 목돈
+    beforeLump: 0,
+    beforeLumpRate: 0.035,
     // After 목돈 (장기 운용)
-    afterLump: 0,
+    afterLumpAmt: 0,
+    afterLumpRate: 0.07,  // 목돈 수익률 (기본 7%)
     // 수익률 가정 (항목별)
     taxMode: "pre",        // "pre" | "post"
     // Before 수익률 (항목별 독립)
@@ -1986,8 +2310,9 @@
     return fvAfterTax(fvPre, monthly, years, TAX[taxKey] || 0);
   }
 
-  // Before 누적 자산 — Before 전용 수익률 + 현재 보유 자산 포함
+  // Before 누적 자산 — Before 전용 수익률 + 현재 보유 자산 + Before 목돈 포함
   function beforeFV(years) {
+    const lumpFV = fvCompoundTaxed(0, years, state.beforeLumpRate, "savings", state.beforeLump);
     return fvCompoundTaxed(state.bSavings,  years, state.bRateSavings, "savings",  state.bAssetSavings)
          + fvCompoundTaxed(state.bHousing,  years, state.bRateHousing, "housing",  state.bAssetHousing)
          + fvCompoundTaxed(state.bLiquid,   years, state.bRateLiquid,  "liquid",   state.bAssetLiquid)
@@ -1996,14 +2321,14 @@
          + fvCompoundTaxed(state.bKrEq,     years, state.bRateKrEq,    "krEq",     state.bAssetKrEq)
          + fvCompoundTaxed(state.bGlEq,     years, state.bRateGlEq,    "glEq",     state.bAssetGlEq)
          + fvCompoundTaxed(state.bPension,  years, state.bRatePension, "pension",  state.bAssetPension)
-         + fvCompoundTaxed(state.bVl,       years, state.bRateVl,      "vl",       state.bAssetVl);
+         + fvCompoundTaxed(state.bVl,       years, state.bRateVl,      "vl",       state.bAssetVl)
+         + lumpFV;
   }
 
   // After 누적 자산 (항목별 차등 복리 + 항목별 세율 반영)
   function afterFV(years) {
-    // 목돈: 장기(연금+변액) 평균 수익률로 복리 운용
-    const lumpRate = (state.ratePension + state.rateVl) / 2;
-    const lumpFV = fvCompoundTaxed(0, years, lumpRate, "pension", state.afterLump);
+    // 목돈: 단일 복리 운용
+    const lumpFV = fvCompoundTaxed(0, years, state.afterLumpRate, "pension", state.afterLumpAmt);
     return fvCompoundTaxed(state.savings, years, state.rateSavings, "savings")
          + fvCompoundTaxed(state.housing, years, state.rateHousing, "housing")
          + fvCompoundTaxed(state.liquid, years, state.rateLiquid, "liquid")
@@ -2037,12 +2362,12 @@
   // ========== 카테고리 헬퍼 ==========
 
   // 카테고리 합계 헬퍼
-  function shortTotal() { return state.savings + state.housing + state.liquid; }
-  function midTotal() { return state.isa + state.etf + state.krEq + state.glEq; }
+  function shortTotal() { return state.savings + state.liquid; }
+  function midTotal() { return state.housing + state.isa + state.etf + state.krEq + state.glEq; }
   function longTotal() { return state.pension + state.vl; }
 
   // ========== 계산 ==========
-  function income() { return state.income1 + state.income2; }
+  function income() { return state.income1 + state.income2 + state.bonusAnnual / 12; }
 
   // 현재 나이 계산 (생년 2자리: "92" → 1992년, "00" → 2000년, "26" → 2026년)
   function currentAge() {
@@ -2097,6 +2422,10 @@
   }
 
   function render() {
+    // 성과금 월 환산 표시
+    const bmEl = document.getElementById('bonusMonthly');
+    if (bmEl) bmEl.textContent = Math.round(state.bonusAnnual / 12);
+
     // 저축 가능 금액
     const cap = savingsCap();
     document.getElementById("savingsValue").textContent = fmt(cap);
@@ -2173,7 +2502,7 @@
                       + (state.bAssetIsa||0) + (state.bAssetEtf||0) + (state.bAssetKrEq||0)
                       + (state.bAssetGlEq||0) + (state.bAssetPension||0) + (state.bAssetVl||0);
     const bAssetEl = document.getElementById("beforeAssetSum");
-    if (bAssetEl) bAssetEl.textContent = fmt(bAssetTotal);
+    if (bAssetEl) bAssetEl.textContent = fmt(bAssetTotal + (state.beforeLump || 0));
 
     // 1. 가계수지지표 (지출/소득)
     const bRatio = inc > 0 ? state.expense / inc * 100 : 0;
@@ -2193,7 +2522,7 @@
     // 4. 보장성 준비지표
     const bInsRatio = inc > 0 ? state.bIns / inc * 100 : 0;
     const aInsRatio = inc > 0 ? state.ins / inc * 100 : 0;
-    setIndicator("indBefore4", "indAfter4", bInsRatio, aInsRatio, 9, "range");
+    setIndicator("indBefore4", "indAfter4", bInsRatio, aInsRatio, 6.5, "range");
 
     // ===== 합의서 동기화 =====
     document.getElementById("agrShort").textContent = sT;
@@ -2246,6 +2575,309 @@
     document.getElementById("kpiSub").textContent = isNeg
       ? `After가 Before보다 약 ${Math.abs(growthPct)}% 적게 모입니다`
       : `재배분 시 현재 대비 약 ${growthPct}% 더 모을 수 있습니다`;
+
+    // 목표 달성 계산
+    // After 목돈 합계 표시
+    const altEl = document.getElementById("afterLumpTotal");
+    // afterLumpTotal 제거됨 (단일 목돈)
+
+    updateGoals();
+  }
+
+  // ========== 목표 시스템 ==========
+
+  // 포트 색상 팔레트 (순환)
+  const GOAL_COLORS = [
+    { bg: "linear-gradient(135deg,#2563EB,#1D4ED8)", cls: "housing" },
+    { bg: "linear-gradient(135deg,#D97706,#B45309)", cls: "child"   },
+    { bg: "linear-gradient(135deg,#059669,#047857)", cls: "retire"  },
+    { bg: "linear-gradient(135deg,#7C3AED,#6D28D9)", cls: "purple"  },
+    { bg: "linear-gradient(135deg,#DB2777,#BE185D)", cls: "pink"    },
+  ];
+  const GOAL_ICONS = ["🏠","👶","🌅","🎓","✈️","💍","🏥","💼","🌏","⛵"];
+
+  // 포트 연결 옵션 정의
+  const PORT_OPTIONS = [
+    { key:"short",    label:"단기 적립",  fv: (y) => shortFV(y) },
+    { key:"mid",      label:"중기 적립",  fv: (y) => midFVGoal(y) },
+    { key:"long",     label:"장기 적립",  fv: (y) => longFVGoal(y) },
+    { key:"lump",     label:"목돈",       fv: (y) => lumpFVAfter(y) },
+  ];
+
+  // 목표 데이터 (초기 3개)
+  let goals = [
+    { id:"g0", icon:"🏠", name:"주택마련 자금",   amt:60000, years:5,  colorIdx:0, ports:["short","mid","lump"],  loan:true,  loanRate:3.5, loanYears:30 },
+    { id:"g1", icon:"👶", name:"자녀양육 자금",   amt:20000, years:15, colorIdx:1, ports:["short","mid"],           loan:false, loanRate:3.5, loanYears:20 },
+    { id:"g2", icon:"🌅", name:"노후 자산",       amt:100000,years:30, colorIdx:2, ports:["long","lump"],          loan:false, loanRate:3.5, loanYears:20 },
+  ];
+  let goalIdCounter = 3;
+
+  function addGoal() {
+    if (goals.length >= 5) { alert("목표는 최대 5개까지 추가할 수 있습니다."); return; }
+    const colorIdx = goals.length % GOAL_COLORS.length;
+    goals.push({ id:"g"+(goalIdCounter++), icon:"⭐", name:"새 목표", amt:10000, years:10, colorIdx, ports:["mid"], loan:false, loanRate:3.5, loanYears:20 });
+    renderGoalCards();
+    updateGoals();
+  }
+
+  function deleteGoal(id) {
+    if (goals.length <= 1) { alert("목표는 최소 1개 이상이어야 합니다."); return; }
+    goals = goals.filter(g => g.id !== id);
+    renderGoalCards();
+    updateGoals();
+  }
+
+  function togglePort(id, portKey) {
+    const g = goals.find(g => g.id === id);
+    if (!g) return;
+    const idx = g.ports.indexOf(portKey);
+    if (idx >= 0) g.ports.splice(idx, 1);
+    else g.ports.push(portKey);
+    // 칩 활성화 토글
+    const chip = document.getElementById(`chip_${id}_${portKey}`);
+    if (chip) chip.classList.toggle("checked", g.ports.includes(portKey));
+    updateGoals();
+  }
+
+  function renderGoalCards() {
+    const container = document.getElementById("goalCards");
+    if (!container) return;
+    container.innerHTML = "";
+    goals.forEach(g => container.appendChild(buildGoalCard(g)));
+  }
+
+  function buildGoalCard(g) {
+    const color = GOAL_COLORS[g.colorIdx % GOAL_COLORS.length];
+    const div = document.createElement("div");
+    div.className = "goal-card";
+    div.id = "goalCard_" + g.id;
+
+    // 포트 칩 HTML
+    const chipsHtml = PORT_OPTIONS.map(opt => {
+      const checked = g.ports.includes(opt.key);
+      return `<div class="goal-port-chip ${checked?"checked":""}" id="chip_${g.id}_${opt.key}" onclick="togglePort('${g.id}','${opt.key}')">
+        ${opt.label}
+      </div>`;
+    }).join("");
+
+    // 대출 계산기 HTML (토글 가능)
+    const loanHtml = `
+      <label class="goal-loan-toggle">
+        <input type="checkbox" id="loanToggle_${g.id}" ${g.loan?"checked":""} onchange="goals.find(x=>x.id==='${g.id}').loan=this.checked; document.getElementById('loanBox_${g.id}').style.display=this.checked?'block':'none';">
+        대출 상환 계산기
+      </label>
+      <div id="loanBox_${g.id}" style="display:${g.loan?"block":"none"};">
+        <div class="loan-calc">
+          <div class="loan-calc-inputs">
+            <div class="loan-row">
+              <label>대출 금리</label>
+              <div class="goal-input-wrap">
+                <input type="number" class="goal-input small" id="loanRate_${g.id}" value="${g.loanRate}" min="0" max="20" step="0.1"
+                  oninput="goals.find(x=>x.id==='${g.id}').loanRate=parseFloat(this.value)||0; updateGoals();">
+                <span class="goal-input-unit">%</span>
+              </div>
+            </div>
+            <div class="loan-row">
+              <label>상환 기간</label>
+              <div class="goal-input-wrap">
+                <input type="number" class="goal-input small" id="loanYears_${g.id}" value="${g.loanYears}" min="1" max="40" step="1"
+                  oninput="goals.find(x=>x.id==='${g.id}').loanYears=parseFloat(this.value)||20; updateGoals();">
+                <span class="goal-input-unit">년</span>
+              </div>
+            </div>
+          </div>
+          <div class="loan-result">
+            <span class="loan-result-label">월 상환액</span>
+            <span class="loan-result-val" id="loanMonthly_${g.id}">—</span>
+          </div>
+        </div>
+      </div>`;
+
+    div.innerHTML = `
+      <div class="goal-card-header" style="background:${color.bg};">
+        <span style="font-size:18px; cursor:pointer;" onclick="cycleIcon('${g.id}')" title="아이콘 변경">${g.icon}</span>
+        <input class="goal-name-input" id="goalName_${g.id}" value="${g.name}" placeholder="목표 이름"
+          oninput="goals.find(x=>x.id==='${g.id}').name=this.value;">
+        <button class="goal-delete-btn" onclick="deleteGoal('${g.id}')" title="목표 삭제">✕</button>
+      </div>
+      <div class="goal-card-body">
+        <!-- 포트 선택 -->
+        <div style="font-size:10px; font-weight:700; color:var(--ink-mute); margin-bottom:5px; letter-spacing:0.3px; text-transform:uppercase;">연결 포트폴리오</div>
+        <div class="goal-port-select">${chipsHtml}</div>
+
+        <!-- 목표 금액·기간 -->
+        <div class="goal-inputs" style="margin-bottom:10px;">
+          <div class="goal-input-row">
+            <label class="goal-label">목표 금액</label>
+            <div class="goal-input-wrap">
+              <input type="number" class="goal-input" id="goalAmt_${g.id}" value="${g.amt}" min="0" step="1000"
+                oninput="goals.find(x=>x.id==='${g.id}').amt=parseFloat(this.value)||0; updateGoals();">
+              <span class="goal-input-unit">만원</span>
+            </div>
+          </div>
+          <div class="goal-input-row">
+            <label class="goal-label">목표 기간</label>
+            <div class="goal-input-wrap">
+              <input type="number" class="goal-input" id="goalYears_${g.id}" value="${g.years}" min="1" max="40" step="1"
+                oninput="goals.find(x=>x.id==='${g.id}').years=parseFloat(this.value)||1; updateGoals();">
+              <span class="goal-input-unit">년</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 결과 -->
+        <div class="goal-breakdown" style="margin-bottom:10px;">
+          <div id="goalBreakdown_${g.id}">
+            <div class="goal-breakdown-row total">
+              <span class="goal-bd-label">예상 충당액</span>
+              <span class="goal-bd-val" id="goalTotal_${g.id}">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="goal-progress-wrap" style="margin-bottom:8px;">
+          <div class="goal-progress-bar">
+            <div class="goal-progress-fill ${color.cls}" id="goalFill_${g.id}" style="width:0%"></div>
+          </div>
+          <div class="goal-progress-label"><span id="goalPct_${g.id}">0%</span> 달성</div>
+        </div>
+        <div id="goalGapBox_${g.id}" class="goal-gap shortage" style="margin-bottom:8px;">
+          <div class="goal-gap-label" id="goalGapLabel_${g.id}">부족액</div>
+          <div class="goal-gap-val" id="goalGap_${g.id}">—</div>
+        </div>
+        ${loanHtml}
+      </div>`;
+    return div;
+  }
+
+  function cycleIcon(id) {
+    const g = goals.find(g => g.id === id);
+    if (!g) return;
+    const idx = GOAL_ICONS.indexOf(g.icon);
+    g.icon = GOAL_ICONS[(idx + 1) % GOAL_ICONS.length];
+    const el = document.getElementById("goalCard_" + id);
+    if (el) el.querySelector(".goal-card-header span").textContent = g.icon;
+  }
+
+  // ========== 목표별 FV 헬퍼 ==========
+
+  // 단기 적립 FV (After 단기 포트 기준)
+  function shortFV(years) {
+    return fvCompoundTaxed(state.savings, years, state.rateSavings, "savings")
+         + fvCompoundTaxed(state.liquid,  years, state.rateLiquid,  "liquid");
+  }
+
+  // 중기 적립 FV
+  function midFVGoal(years) {
+    return fvCompoundTaxed(state.housing, years, state.rateHousing, "housing")
+         + fvCompoundTaxed(state.isa,     years, state.rateIsa,     "isa")
+         + fvCompoundTaxed(state.etf,     years, state.rateEtf,     "etf")
+         + fvCompoundTaxed(state.krEq,    years, state.rateKrEq,    "krEq")
+         + fvCompoundTaxed(state.glEq,    years, state.rateGlEq,    "glEq");
+  }
+
+  // 장기 적립 FV
+  function longFVGoal(years) {
+    return fvCompoundTaxed(state.pension, years, state.ratePension, "pension")
+         + fvCompoundTaxed(state.vl,      years, state.rateVl,      "vl");
+  }
+
+  // After 목돈 FV (단일)
+  function lumpFVAfter(years) {
+    return fvCompoundTaxed(0, years, state.afterLumpRate, "pension", state.afterLumpAmt);
+  }
+  // 하위호환용 alias
+  function lumpFVHousing(years) { return lumpFVAfter(years); }
+  function lumpFVRetire(years)  { return lumpFVAfter(years); }
+
+  // 원리금균등상환 월 상환액 (만원)
+  function monthlyPayment(loanMan, annualRate, loanYears) {
+    if (loanMan <= 0) return 0;
+    const principal = loanMan * 10000;
+    const r = annualRate / 12;
+    const n = loanYears * 12;
+    if (r === 0) return principal / n / 10000;
+    return principal * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1) / 10000;
+  }
+
+  function fmtGoal(val) {
+    if (!isFinite(val) || isNaN(val)) return "0만원";
+    const abs = Math.abs(val);
+    if (abs >= 10000) return (val < 0 ? "-" : "") + (abs / 10000).toFixed(1) + "억원";
+    return (val < 0 ? "-" : "") + Math.round(abs).toLocaleString("ko-KR") + "만원";
+  }
+
+  function updateGoals() {
+    goals.forEach(g => {
+      // 연결 포트 FV 합산
+      let total = 0;
+      const breakdown = {};
+      g.ports.forEach(portKey => {
+        const opt = PORT_OPTIONS.find(p => p.key === portKey);
+        if (!opt) return;
+        const fv = opt.fv(g.years);
+        breakdown[portKey] = fv;
+        total += fv;
+      });
+
+      // 충당율 & 갭
+      const pct = g.amt > 0 ? Math.min(total / g.amt * 100, 100) : 100;
+      const gap = g.amt - total;
+
+      // 분해 표시 (연결 포트만)
+      const bdEl = document.getElementById("goalBreakdown_" + g.id);
+      if (bdEl) {
+        const rows = Object.entries(breakdown).map(([key, fv]) => {
+          const opt = PORT_OPTIONS.find(p => p.key === key);
+          return `<div class="goal-breakdown-row">
+            <span class="goal-bd-label">${opt?.label || key}</span>
+            <span class="goal-bd-val">${fmtGoal(fv)}</span>
+          </div>`;
+        }).join("") + `<div class="goal-breakdown-row total">
+          <span class="goal-bd-label">예상 충당액</span>
+          <span class="goal-bd-val" id="goalTotal_${g.id}">${fmtGoal(total)}</span>
+        </div>`;
+        bdEl.innerHTML = rows;
+      }
+
+      // 진행 바
+      const fill = document.getElementById("goalFill_" + g.id);
+      if (fill) fill.style.width = pct + "%";
+      const pctEl = document.getElementById("goalPct_" + g.id);
+      if (pctEl) pctEl.textContent = pct.toFixed(1) + "%";
+
+      // 갭 박스
+      const gapBox = document.getElementById("goalGapBox_" + g.id);
+      const gapLabel = document.getElementById("goalGapLabel_" + g.id);
+      const gapVal = document.getElementById("goalGap_" + g.id);
+      if (gapBox && gapLabel && gapVal) {
+        if (gap > 0) {
+          gapBox.className = "goal-gap shortage";
+          gapLabel.textContent = "부족액 (추가 필요)";
+          gapVal.textContent = fmtGoal(gap);
+        } else {
+          gapBox.className = "goal-gap surplus";
+          gapLabel.textContent = "여유 자금";
+          gapVal.textContent = fmtGoal(-gap);
+        }
+      }
+
+      // 대출 계산기 (부족 + 토글 on 시)
+      const loanBox = document.getElementById("loanBox_" + g.id);
+      if (loanBox && g.loan && gap > 0) {
+        const monthly = monthlyPayment(gap, g.loanRate / 100, g.loanYears);
+        const mEl = document.getElementById("loanMonthly_" + g.id);
+        if (mEl) mEl.textContent = monthly.toFixed(1) + "만원";
+      }
+    });
+  }
+
+  function setText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+  function setWidth(id, pct) {
+    const el = document.getElementById(id);
+    if (el) el.style.width = pct + "%";
   }
 
   function setIndicator(beforeId, afterId, bVal, aVal, guide, direction) {
@@ -2264,8 +2896,8 @@
       aEl.className += aVal <= guide ? " good" : " bad";
     } else if (direction === "range") {
       // 보장성: 8~10% 권장. 그 이하도 이상도 완화 표현
-      if (aVal >= 8 && aVal <= 10) aEl.className += " good";
-      else if (aVal < 5 || aVal > 12) aEl.className += " bad";
+      if (aVal >= 5 && aVal <= 8) aEl.className += " good";
+      else if (aVal < 3 || aVal > 10) aEl.className += " bad";
       else aEl.className += " after";
     }
   }
@@ -2407,6 +3039,7 @@
       ["birthYear",    "birthYear", false],
       ["income1",      "income1", true],
       ["income2",      "income2", true],
+      ["bonusAnnual",  "bonusAnnual", true],
       ["expense",      "expense", true],
     ];
     bindings.forEach(([id, key, isNum]) => {
@@ -2434,13 +3067,7 @@
     });
 
     // After 목돈 바인딩
-    const lumpEl = document.getElementById("inputAfterLump");
-    lumpEl.addEventListener("input", () => {
-      const v = parseFloat(lumpEl.value);
-      state.afterLump = isNaN(v) || v < 0 ? 0 : v;
-      render();
-    });
-    lumpEl.addEventListener("blur", () => { if (!lumpEl.value) lumpEl.value = state.afterLump; });
+    // afterLumpHousing/Retire는 oninput으로 처리됨
 
     // Before 10개 항목 바인딩
     const beforeItems = [
@@ -2524,6 +3151,9 @@
         render();
       });
     });
+
+    // 목표 입력 실시간 재계산
+    // 목표 입력은 oninput으로 처리 (동적 생성)
   }
 
   // 스테퍼 +/- 버튼: 항목값 증감
@@ -2533,9 +3163,10 @@
     const max = maxMap[key] !== undefined ? maxMap[key] : Infinity;
     state[key] = Math.min(max, Math.max(0, next));
     // afterLump는 input도 동기화
-    if (key === "afterLump") {
-      const el = document.getElementById("inputAfterLump");
-      if (el) el.value = state.afterLump;
+    // afterLumpHousing/Retire는 oninput으로 직접 처리
+    if (key === "beforeLump") {
+      const el = document.getElementById("inputBeforeLump");
+      if (el) el.value = state.beforeLump;
     }
     render();
   }
@@ -2587,7 +3218,7 @@
   function resetAll() {
     if (!confirm("모든 입력값을 초기화할까요?")) return;
     Object.assign(state, {
-      name: "", birthYear: "", income1: 500, income2: 0, expense: 280,
+      name: "", birthYear: "", income1: 500, income2: 0, bonusAnnual: 0, expense: 280,
       // Before 10개 항목
       bSavings: 80, bHousing: 10, bLiquid: 10,
       bIsa: 0, bEtf: 0, bKrEq: 20, bGlEq: 10,
@@ -2598,7 +3229,10 @@
       savings: 25, housing: 10, liquid: 15,
       isa: 50, etf: 25, krEq: 20, glEq: 15,
       pension: 30, vl: 15, ins: 15,
-      afterLump: 0,
+      afterLumpAmt: 0,
+      afterLumpRate: 0.07,
+      beforeLump: 0,
+      beforeLumpRate: 0.035,
       taxMode: "pre",
       bRateSavings: 0.035, bRateHousing: 0.025, bRateLiquid: 0.03,
       bRateIsa: 0.065, bRateEtf: 0.06, bRateKrEq: 0.05, bRateGlEq: 0.08,
@@ -2613,6 +3247,7 @@
     document.getElementById("goal").value = "";
     document.getElementById("income1").value = state.income1;
     document.getElementById("income2").value = state.income2;
+    document.getElementById("bonusAnnual").value = 0;
     document.getElementById("expense").value = state.expense;
     // Before 현재 자산 초기화
     ["bAssetSavings","bAssetHousing","bAssetLiquid","bAssetIsa","bAssetEtf",
@@ -2620,8 +3255,14 @@
       const el = document.getElementById(k); if (el) el.value = 0;
     });
     // After 목돈 초기화
-    const lumpEl2 = document.getElementById("inputAfterLump");
-    if (lumpEl2) lumpEl2.value = 0;
+    const lumpEl = document.getElementById("inputAfterLump");
+    if (lumpEl) lumpEl.value = 0;
+    const lumpRateEl = document.getElementById("inputAfterLumpRate");
+    if (lumpRateEl) lumpRateEl.value = 7;
+    const bLumpEl = document.getElementById("inputBeforeLump");
+    if (bLumpEl) bLumpEl.value = 0;
+    const bLumpRateEl = document.getElementById("inputBeforeLumpRate");
+    if (bLumpRateEl) bLumpRateEl.value = 3.5;
     document.getElementById("bSavings").value = state.bSavings;
     document.getElementById("bHousing").value = state.bHousing;
     document.getElementById("bLiquid").value = state.bLiquid;
@@ -2681,6 +3322,7 @@
     setDate();
     initChart();
     bindInputs();
+    renderGoalCards();
     render();
   });
 </script>
