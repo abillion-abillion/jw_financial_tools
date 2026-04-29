@@ -2606,16 +2606,16 @@
 
   // 목표 데이터 (초기 3개)
   let goals = [
-    { id:"g0", icon:"🏠", name:"주택마련 자금",   amt:60000, years:5,  colorIdx:0, ports:["short","mid","lump"],  loan:true,  loanRate:3.5, loanYears:30 },
-    { id:"g1", icon:"👶", name:"자녀양육 자금",   amt:20000, years:15, colorIdx:1, ports:["short","mid"],           loan:false, loanRate:3.5, loanYears:20 },
-    { id:"g2", icon:"🌅", name:"노후 자산",       amt:100000,years:30, colorIdx:2, ports:["long","lump"],          loan:false, loanRate:3.5, loanYears:20 },
+    { id:"g0", icon:"🏠", name:"주택마련 자금",   amt:60000, years:5,  colorIdx:0, ports:["short","mid","lump"],  loan:true,  loanAmt:null, loanRate:3.5, loanYears:30 },
+    { id:"g1", icon:"👶", name:"자녀양육 자금",   amt:20000, years:15, colorIdx:1, ports:["short","mid"],          loan:false, loanAmt:null, loanRate:3.5, loanYears:20 },
+    { id:"g2", icon:"🌅", name:"노후 자산",       amt:100000,years:30, colorIdx:2, ports:["long","lump"],          loan:false, loanAmt:null, loanRate:3.5, loanYears:20 },
   ];
   let goalIdCounter = 3;
 
   function addGoal() {
     if (goals.length >= 5) { alert("목표는 최대 5개까지 추가할 수 있습니다."); return; }
     const colorIdx = goals.length % GOAL_COLORS.length;
-    goals.push({ id:"g"+(goalIdCounter++), icon:"⭐", name:"새 목표", amt:10000, years:10, colorIdx, ports:["mid"], loan:false, loanRate:3.5, loanYears:20 });
+    goals.push({ id:"g"+(goalIdCounter++), icon:"⭐", name:"새 목표", amt:10000, years:10, colorIdx, ports:["mid"], loan:false, loanAmt:null, loanRate:3.5, loanYears:20 });
     renderGoalCards();
     updateGoals();
   }
@@ -2684,6 +2684,25 @@
                   oninput="goals.find(x=>x.id==='${g.id}').loanYears=parseFloat(this.value)||20; updateGoals();">
                 <span class="goal-input-unit">년</span>
               </div>
+            </div>
+          </div>
+          <!-- 대출금액 입력 -->
+          <div style="margin-bottom:8px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+              <label style="font-size:10.5px; font-weight:700; color:#1D4ED8;">대출 금액</label>
+              <button onclick="resetLoanAmt('${g.id}')"
+                style="font-size:10px; font-weight:700; color:#3B82F6; background:#EFF6FF; border:1px solid #BFDBFE; border-radius:4px; padding:2px 7px; cursor:pointer; font-family:inherit;">
+                부족액 자동
+              </button>
+            </div>
+            <div class="goal-input-wrap">
+              <input type="number" class="goal-input" id="loanAmt_${g.id}"
+                value="${g.loanAmt !== null ? g.loanAmt : ''}"
+                placeholder="자동 (부족액)"
+                min="0" step="100"
+                oninput="goals.find(x=>x.id==='${g.id}').loanAmt=this.value===''?null:parseFloat(this.value)||0; updateGoals();"
+                style="font-size:12px;">
+              <span class="goal-input-unit">만원</span>
             </div>
           </div>
           <div class="loan-result">
@@ -2861,14 +2880,35 @@
         }
       }
 
-      // 대출 계산기 (부족 + 토글 on 시)
+      // 대출 계산기 (토글 on 시 — 대출금액 직접 입력 또는 부족액 자동)
       const loanBox = document.getElementById("loanBox_" + g.id);
-      if (loanBox && g.loan && gap > 0) {
-        const monthly = monthlyPayment(gap, g.loanRate / 100, g.loanYears);
-        const mEl = document.getElementById("loanMonthly_" + g.id);
-        if (mEl) mEl.textContent = monthly.toFixed(1) + "만원";
+      if (loanBox && g.loan) {
+        const loanAmt = g.loanAmt !== null ? g.loanAmt : Math.max(0, gap);
+        // 대출금액 input placeholder 동기화 (자동모드 시 현재 부족액 표시)
+        const loanAmtEl = document.getElementById("loanAmt_" + g.id);
+        if (loanAmtEl && g.loanAmt === null) {
+          loanAmtEl.placeholder = gap > 0 ? `자동 (${fmtGoal(gap)})` : "부족액 없음";
+        }
+        if (loanAmt > 0) {
+          const monthly = monthlyPayment(loanAmt, g.loanRate / 100, g.loanYears);
+          const mEl = document.getElementById("loanMonthly_" + g.id);
+          if (mEl) mEl.textContent = monthly.toFixed(1) + "만원";
+        } else {
+          const mEl = document.getElementById("loanMonthly_" + g.id);
+          if (mEl) mEl.textContent = "—";
+        }
       }
     });
+  }
+
+  // 대출금액 자동 리셋 (부족액으로 복귀)
+  function resetLoanAmt(id) {
+    const g = goals.find(g => g.id === id);
+    if (!g) return;
+    g.loanAmt = null;
+    const el = document.getElementById("loanAmt_" + id);
+    if (el) { el.value = ""; }
+    updateGoals();
   }
 
   function setText(id, val) {
