@@ -439,6 +439,50 @@
     gap: 8px;
     flex-shrink: 0;
   }
+  /* After 현재자산 미니 입력 */
+  .asset-mini-wrap {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .asset-mini-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--brand);
+    white-space: nowrap;
+    opacity: 0.8;
+  }
+  .asset-mini-input {
+    width: 58px;
+    padding: 3px 18px 3px 5px;
+    border: 1px solid rgba(72,52,255,0.2);
+    border-radius: 5px;
+    background: var(--brand-light);
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--brand-dark);
+    text-align: right;
+    font-family: inherit;
+    font-variant-numeric: tabular-nums;
+    -moz-appearance: textfield;
+  }
+  .asset-mini-input::-webkit-inner-spin-button,
+  .asset-mini-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .asset-mini-input:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 2px var(--brand-glow);
+  }
+  .asset-mini-suffix {
+    font-size: 9px;
+    color: var(--brand);
+    font-weight: 600;
+    margin-left: -16px;
+    pointer-events: none;
+    position: relative;
+    z-index: 1;
+    opacity: 0.7;
+  }
   .sub-slider-label {
     display: flex;
     align-items: center;
@@ -1436,6 +1480,11 @@
   <div class="header-actions">
     <button class="btn btn-ghost" onclick="resetAll()">↺ 초기화</button>
     <button class="btn btn-ghost" onclick="window.print()">🖨 인쇄</button>
+    <button class="btn btn-ghost" onclick="exportCustomer()" title="현재 고객 데이터를 JSON 파일로 저장">⬇ 저장</button>
+    <label class="btn btn-ghost" style="cursor:pointer;" title="저장된 JSON 파일 불러오기">
+      ⬆ 불러오기
+      <input type="file" accept=".json" style="display:none;" onchange="importCustomer(event)">
+    </label>
     <button class="btn btn-primary" onclick="scrollToAgreement()">배분 합의 ↓</button>
   </div>
 </header>
@@ -1524,6 +1573,10 @@
         <!-- 단기 -->
         <div style="margin-bottom: 7px;">
           <div style="font-size: 10px; font-weight: 700; color: #E87722; letter-spacing: 0.3px; padding: 3px 0 2px 10px; text-transform: uppercase;">단기</div>
+          <div class="before-row"><span class="before-label">예금</span>
+            <div class="before-input-wrap"><input type="number" class="before-input" id="bDeposit" value="0" min="0" step="5"><span class="before-suffix">만</span></div>
+            <div class="before-input-wrap"><input type="number" class="before-input asset-input" id="bAssetDeposit" value="0" min="0" step="100"><span class="before-suffix" style="color:var(--brand-dark);">만</span></div>
+          </div>
           <div class="before-row"><span class="before-label">적금</span>
             <div class="before-input-wrap"><input type="number" class="before-input" id="bSavings" value="80" min="0" step="5"><span class="before-suffix">만</span></div>
             <div class="before-input-wrap"><input type="number" class="before-input asset-input" id="bAssetSavings" value="0" min="0" step="100"><span class="before-suffix" style="color:var(--brand-dark);">만</span></div>
@@ -1662,9 +1715,39 @@
               <div class="sub-slider-head">
                 <div class="sub-slider-label">
                   <span class="sub-slider-dot short"></span>
+                  <span class="sub-slider-name">예금</span>
+                </div>
+                <div class="sub-slider-right">
+                  <div class="asset-mini-wrap" title="현재 보유 자산">
+                    <span class="asset-mini-label">보유↓</span>
+                    <input type="number" class="asset-mini-input" id="aAsset_deposit" value="0" min="0" step="100"
+                      oninput="state.aAssetDeposit=parseFloat(this.value)||0; render();">
+                    <span class="asset-mini-suffix">만</span>
+                  </div>
+                  <span class="sub-slider-pct" id="pctDeposit">0%</span>
+                  <div class="stepper short-tint">
+                    <button type="button" class="stepper-btn" onclick="adjustValue('deposit', -5)">−</button>
+                    <input type="number" class="stepper-input" id="inputDeposit" value="0" min="0" step="5">
+                    <span class="stepper-suffix">만원</span>
+                    <button type="button" class="stepper-btn" onclick="adjustValue('deposit', 5)">+</button>
+                  </div>
+                </div>
+              </div>
+              <div class="sub-slider-note">정기예금 — 원금보장, 단기 목돈 운용 (이자소득세 15.4%)</div>
+            </div>
+            <div class="sub-slider short-tint">
+              <div class="sub-slider-head">
+                <div class="sub-slider-label">
+                  <span class="sub-slider-dot short"></span>
                   <span class="sub-slider-name">적금</span>
                 </div>
                 <div class="sub-slider-right">
+                  <div class="asset-mini-wrap" title="현재 보유 자산">
+                    <span class="asset-mini-label">보유↓</span>
+                    <input type="number" class="asset-mini-input" id="aAsset_savings" value="0" min="0" step="100"
+                      oninput="state.aAssetSavings=parseFloat(this.value)||0; render();">
+                    <span class="asset-mini-suffix">만</span>
+                  </div>
                   <span class="sub-slider-pct" id="pctSavings">11.4%</span>
                   <div class="stepper short-tint">
                     <button type="button" class="stepper-btn" onclick="adjustValue('savings', -5)">−</button>
@@ -1683,6 +1766,12 @@
                   <span class="sub-slider-name">단기유동성</span>
                 </div>
                 <div class="sub-slider-right">
+                  <div class="asset-mini-wrap" title="현재 보유 자산">
+                    <span class="asset-mini-label">보유↓</span>
+                    <input type="number" class="asset-mini-input" id="aAsset_liquid" value="0" min="0" step="100"
+                      oninput="state.aAssetLiquid=parseFloat(this.value)||0; render();">
+                    <span class="asset-mini-suffix">만</span>
+                  </div>
                   <span class="sub-slider-pct" id="pctLiquid">6.8%</span>
                   <div class="stepper short-tint">
                     <button type="button" class="stepper-btn" onclick="adjustValue('liquid', -5)">−</button>
@@ -1714,6 +1803,12 @@
                   <span class="sub-slider-name">주택청약</span>
                 </div>
                 <div class="sub-slider-right">
+                  <div class="asset-mini-wrap" title="현재 보유 자산">
+                    <span class="asset-mini-label">보유↓</span>
+                    <input type="number" class="asset-mini-input" id="aAsset_housing" value="0" min="0" step="100"
+                      oninput="state.aAssetHousing=parseFloat(this.value)||0; render();">
+                    <span class="asset-mini-suffix">만</span>
+                  </div>
                   <span class="sub-slider-pct" id="pctHousing">4.5%</span>
                   <div class="stepper mid-tint">
                     <button type="button" class="stepper-btn" onclick="adjustValue('housing', -1)">−</button>
@@ -1732,6 +1827,12 @@
                   <span class="sub-slider-name">중개형 ISA</span>
                 </div>
                 <div class="sub-slider-right">
+                  <div class="asset-mini-wrap" title="현재 보유 자산">
+                    <span class="asset-mini-label">보유↓</span>
+                    <input type="number" class="asset-mini-input" id="aAsset_isa" value="0" min="0" step="100"
+                      oninput="state.aAssetIsa=parseFloat(this.value)||0; render();">
+                    <span class="asset-mini-suffix">만</span>
+                  </div>
                   <span class="sub-slider-pct" id="pctIsa">22.7%</span>
                   <div class="stepper mid-tint">
                     <button type="button" class="stepper-btn" onclick="adjustValue('isa', -5)">−</button>
@@ -1750,6 +1851,12 @@
                   <span class="sub-slider-name">ETF</span>
                 </div>
                 <div class="sub-slider-right">
+                  <div class="asset-mini-wrap" title="현재 보유 자산">
+                    <span class="asset-mini-label">보유↓</span>
+                    <input type="number" class="asset-mini-input" id="aAsset_etf" value="0" min="0" step="100"
+                      oninput="state.aAssetEtf=parseFloat(this.value)||0; render();">
+                    <span class="asset-mini-suffix">만</span>
+                  </div>
                   <span class="sub-slider-pct" id="pctEtf">11.4%</span>
                   <div class="stepper mid-tint">
                     <button type="button" class="stepper-btn" onclick="adjustValue('etf', -5)">−</button>
@@ -1768,6 +1875,12 @@
                   <span class="sub-slider-name">국내주식</span>
                 </div>
                 <div class="sub-slider-right">
+                  <div class="asset-mini-wrap" title="현재 보유 자산">
+                    <span class="asset-mini-label">보유↓</span>
+                    <input type="number" class="asset-mini-input" id="aAsset_krEq" value="0" min="0" step="100"
+                      oninput="state.aAssetKrEq=parseFloat(this.value)||0; render();">
+                    <span class="asset-mini-suffix">만</span>
+                  </div>
                   <span class="sub-slider-pct" id="pctKrEq">9.1%</span>
                   <div class="stepper mid-tint">
                     <button type="button" class="stepper-btn" onclick="adjustValue('krEq', -5)">−</button>
@@ -1786,6 +1899,12 @@
                   <span class="sub-slider-name">해외주식</span>
                 </div>
                 <div class="sub-slider-right">
+                  <div class="asset-mini-wrap" title="현재 보유 자산">
+                    <span class="asset-mini-label">보유↓</span>
+                    <input type="number" class="asset-mini-input" id="aAsset_glEq" value="0" min="0" step="100"
+                      oninput="state.aAssetGlEq=parseFloat(this.value)||0; render();">
+                    <span class="asset-mini-suffix">만</span>
+                  </div>
                   <span class="sub-slider-pct" id="pctGlEq">6.8%</span>
                   <div class="stepper mid-tint">
                     <button type="button" class="stepper-btn" onclick="adjustValue('glEq', -5)">−</button>
@@ -1817,6 +1936,12 @@
                   <span class="sub-slider-name">연금저축 / IRP</span>
                 </div>
                 <div class="sub-slider-right">
+                  <div class="asset-mini-wrap" title="현재 보유 자산">
+                    <span class="asset-mini-label">보유↓</span>
+                    <input type="number" class="asset-mini-input" id="aAsset_pension" value="0" min="0" step="100"
+                      oninput="state.aAssetPension=parseFloat(this.value)||0; render();">
+                    <span class="asset-mini-suffix">만</span>
+                  </div>
                   <span class="sub-slider-pct" id="pctPension">13.6%</span>
                   <div class="stepper long-tint">
                     <button type="button" class="stepper-btn" onclick="adjustValue('pension', -5)">−</button>
@@ -1835,6 +1960,12 @@
                   <span class="sub-slider-name">비과세 연금/보험</span>
                 </div>
                 <div class="sub-slider-right">
+                  <div class="asset-mini-wrap" title="현재 보유 자산">
+                    <span class="asset-mini-label">보유↓</span>
+                    <input type="number" class="asset-mini-input" id="aAsset_vl" value="0" min="0" step="100"
+                      oninput="state.aAssetVl=parseFloat(this.value)||0; render();">
+                    <span class="asset-mini-suffix">만</span>
+                  </div>
                   <span class="sub-slider-pct" id="pctVl">6.8%</span>
                   <div class="stepper long-tint">
                     <button type="button" class="stepper-btn" onclick="adjustValue('vl', -5)">−</button>
@@ -1888,6 +2019,12 @@
                   <span class="sub-slider-name">보장성 보험료</span>
                 </div>
                 <div class="sub-slider-right">
+                  <div class="asset-mini-wrap" title="현재 보유 자산">
+                    <span class="asset-mini-label">보유↓</span>
+                    <input type="number" class="asset-mini-input" id="aAsset_ins" value="0" min="0" step="100"
+                      oninput="state.aAssetIns=parseFloat(this.value)||0; render();">
+                    <span class="asset-mini-suffix">만</span>
+                  </div>
                   <span class="sub-slider-pct" id="pctIns">6.8%</span>
                   <div class="stepper insurance-tint">
                     <button type="button" class="stepper-btn" onclick="adjustValue('ins', -5)">−</button>
@@ -2142,7 +2279,7 @@
       <div class="agreement-item short">
         <div class="agreement-period">단기 (1~3년)</div>
         <div class="agreement-amount"><span id="agrShort">50</span><span class="unit">만원/월</span></div>
-        <div class="agreement-products">적금 / 단기유동성</div>
+        <div class="agreement-products">예금 / 적금 / 단기유동성</div>
       </div>
       <div class="agreement-item mid">
         <div class="agreement-period">중기 (3~10년)</div>
@@ -2191,6 +2328,7 @@
     income2: 0,
     expense: 280,
     // Before 상세 (10개 항목) — 월 적립액
+    bDeposit: 0,     // 예금
     bSavings: 80,    // 적금
     bHousing: 10,    // 주택청약
     bLiquid: 10,     // 단기유동성
@@ -2202,10 +2340,11 @@
     bVl: 0,          // 비과세 연금/보험
     bIns: 3,         // 보장성 보험
     // Before 현재 모인 자산 (만원 단위 목돈)
-    bAssetSavings: 0, bAssetHousing: 0, bAssetLiquid: 0,
+    bAssetDeposit: 0, bAssetSavings: 0, bAssetHousing: 0, bAssetLiquid: 0,
     bAssetIsa: 0,     bAssetEtf: 0,     bAssetKrEq: 0,
     bAssetGlEq: 0,    bAssetPension: 0, bAssetVl: 0,
     // After 항목 (월 적립액)
+    deposit: 0,
     savings: 25,
     housing: 10,
     liquid: 15,
@@ -2219,12 +2358,27 @@
     // Before 목돈
     beforeLump: 0,
     beforeLumpRate: 0.035,
+    // After 현재자산
+    aAssetDeposit: 0,
+    aAssetSavings: 0,
+    aAssetHousing: 0,
+    aAssetLiquid: 0,
+    aAssetIsa: 0,
+    aAssetEtf: 0,
+    aAssetKrEq: 0,
+    aAssetGlEq: 0,
+    aAssetPension: 0,
+    aAssetVl: 0,
+    aAssetIns: 0,
     // After 목돈 (장기 운용)
     afterLumpAmt: 0,
     afterLumpRate: 0.07,  // 목돈 수익률 (기본 7%)
     // 수익률 가정 (항목별)
     taxMode: "pre",        // "pre" | "post"
+    rateDeposit: 0.035,  // After 예금 수익률
+    rateDeposit: 0.035,  // After 예금 수익률
     // Before 수익률 (항목별 독립)
+    bRateDeposit: 0.035,
     bRateSavings: 0.035,
     bRateHousing: 0.025,
     bRateLiquid: 0.03,
@@ -2248,7 +2402,7 @@
 
   // Before 합계 헬퍼 (저축·투자만, 보장성 제외)
   function beforeSavingsTotal() {
-    return state.bSavings + state.bHousing + state.bLiquid
+    return state.bDeposit + state.bSavings + state.bHousing + state.bLiquid
          + state.bIsa + state.bEtf + state.bKrEq + state.bGlEq
          + state.bPension + state.bVl;
   }
@@ -2262,6 +2416,7 @@
   // 항목별 세율 (세후 모드일 때 적용)
   const TAX = {
     before: 0.154,    // Before 포트폴리오 (예·적금 중심 가정)
+    deposit: 0.154,   // 이자소득세
     savings: 0.154,   // 이자소득세
     housing: 0.154,
     liquid: 0.154,
@@ -2313,7 +2468,8 @@
   // Before 누적 자산 — Before 전용 수익률 + 현재 보유 자산 + Before 목돈 포함
   function beforeFV(years) {
     const lumpFV = fvCompoundTaxed(0, years, state.beforeLumpRate, "savings", state.beforeLump);
-    return fvCompoundTaxed(state.bSavings,  years, state.bRateSavings, "savings",  state.bAssetSavings)
+    return fvCompoundTaxed(state.bDeposit,  years, state.bRateDeposit,  "deposit",  state.bAssetDeposit)
+         + fvCompoundTaxed(state.bSavings,  years, state.bRateSavings, "savings",  state.bAssetSavings)
          + fvCompoundTaxed(state.bHousing,  years, state.bRateHousing, "housing",  state.bAssetHousing)
          + fvCompoundTaxed(state.bLiquid,   years, state.bRateLiquid,  "liquid",   state.bAssetLiquid)
          + fvCompoundTaxed(state.bIsa,      years, state.bRateIsa,     "isa",      state.bAssetIsa)
@@ -2329,21 +2485,23 @@
   function afterFV(years) {
     // 목돈: 단일 복리 운용
     const lumpFV = fvCompoundTaxed(0, years, state.afterLumpRate, "pension", state.afterLumpAmt);
-    return fvCompoundTaxed(state.savings, years, state.rateSavings, "savings")
-         + fvCompoundTaxed(state.housing, years, state.rateHousing, "housing")
-         + fvCompoundTaxed(state.liquid, years, state.rateLiquid, "liquid")
-         + fvCompoundTaxed(state.isa, years, state.rateIsa, "isa")
-         + fvCompoundTaxed(state.etf, years, state.rateEtf, "etf")
-         + fvCompoundTaxed(state.krEq, years, state.rateKrEq, "krEq")
-         + fvCompoundTaxed(state.glEq, years, state.rateGlEq, "glEq")
-         + fvCompoundTaxed(state.pension, years, state.ratePension, "pension")
-         + fvCompoundTaxed(state.vl, years, state.rateVl, "vl")
+    return fvCompoundTaxed(state.deposit, years, state.rateDeposit,  "deposit", state.aAssetDeposit)
+         + fvCompoundTaxed(state.savings, years, state.rateSavings, "savings", state.aAssetSavings)
+         + fvCompoundTaxed(state.housing, years, state.rateHousing, "housing", state.aAssetHousing)
+         + fvCompoundTaxed(state.liquid, years, state.rateLiquid, "liquid", state.aAssetLiquid)
+         + fvCompoundTaxed(state.isa, years, state.rateIsa, "isa", state.aAssetIsa)
+         + fvCompoundTaxed(state.etf, years, state.rateEtf, "etf", state.aAssetEtf)
+         + fvCompoundTaxed(state.krEq, years, state.rateKrEq, "krEq", state.aAssetKrEq)
+         + fvCompoundTaxed(state.glEq, years, state.rateGlEq, "glEq", state.aAssetGlEq)
+         + fvCompoundTaxed(state.pension, years, state.ratePension, "pension", state.aAssetPension)
+         + fvCompoundTaxed(state.vl, years, state.rateVl, "vl", state.aAssetVl)
          + lumpFV;
   }
 
   // After 평균 명목 수익률 (세전 수익률의 가중평균 — 범례 표시용)
   function afterAvgRate() {
     const items = [
+      [state.deposit, state.rateDeposit],
       [state.savings, state.rateSavings],
       [state.housing, state.rateHousing],
       [state.liquid, state.rateLiquid],
@@ -2362,7 +2520,7 @@
   // ========== 카테고리 헬퍼 ==========
 
   // 카테고리 합계 헬퍼
-  function shortTotal() { return state.savings + state.liquid; }
+  function shortTotal() { return state.deposit + state.savings + state.liquid; }
   function midTotal() { return state.housing + state.isa + state.etf + state.krEq + state.glEq; }
   function longTotal() { return state.pension + state.vl; }
 
@@ -2469,7 +2627,7 @@
     if (total > 0) {
       // 10개 항목별 비중
       const subPct = [
-        ["pctSavings", "savings"], ["pctHousing", "housing"], ["pctLiquid", "liquid"],
+        ["pctDeposit", "deposit"], ["pctSavings", "savings"], ["pctHousing", "housing"], ["pctLiquid", "liquid"],
         ["pctIsa", "isa"], ["pctEtf", "etf"], ["pctKrEq", "krEq"], ["pctGlEq", "glEq"],
         ["pctPension", "pension"], ["pctVl", "vl"],
         ["pctIns", "ins"],
@@ -2498,7 +2656,7 @@
     // Before 합계 표시
     document.getElementById("beforeSum").textContent = bTotal;
     // Before 현재 자산 합계
-    const bAssetTotal = (state.bAssetSavings||0) + (state.bAssetHousing||0) + (state.bAssetLiquid||0)
+    const bAssetTotal = (state.bAssetDeposit||0) + (state.bAssetSavings||0) + (state.bAssetHousing||0) + (state.bAssetLiquid||0)
                       + (state.bAssetIsa||0) + (state.bAssetEtf||0) + (state.bAssetKrEq||0)
                       + (state.bAssetGlEq||0) + (state.bAssetPension||0) + (state.bAssetVl||0);
     const bAssetEl = document.getElementById("beforeAssetSum");
@@ -2584,7 +2742,130 @@
     updateGoals();
   }
 
-  // ========== 목표 시스템 ==========
+  // ========== 고객 데이터 저장/불러오기 ==========
+
+  function exportCustomer() {
+    const customerName = state.name || "고객";
+    // 텍스트 필드 저장
+    const jobEl = document.getElementById("job");
+    const goalEl = document.getElementById("goal");
+    state._job = jobEl ? jobEl.value : "";
+    state._goal = goalEl ? goalEl.value : "";
+    const data = {
+      _version: "1.0",
+      _savedAt: new Date().toISOString(),
+      _customerName: customerName,
+      state: { ...state },
+      goals: JSON.parse(JSON.stringify(goals)),
+    };
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const date = new Date().toLocaleDateString("ko-KR").replace(/\./g, "").replace(/ /g, "");
+    a.href = url;
+    a.download = `${customerName}_재무설계_${date}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importCustomer(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (!data.state) throw new Error("올바른 형식의 파일이 아닙니다.");
+
+        // state 복원
+        Object.assign(state, data.state);
+
+        // goals 복원
+        if (data.goals && Array.isArray(data.goals)) {
+          goals = data.goals;
+          goalIdCounter = Math.max(...goals.map(g => parseInt(g.id.replace("g","")) + 1), goalIdCounter);
+        }
+
+        // DOM 전체 동기화 (주요 입력 필드)
+        const syncFields = [
+          "customerName","birthYear","income1","income2","bonusAnnual","expense",
+          "bDeposit","bSavings","bHousing","bLiquid","bIsa","bEtf","bKrEq","bGlEq","bPension","bVl","bIns",
+          "bAssetDeposit","bAssetSavings","bAssetHousing","bAssetLiquid","bAssetIsa","bAssetEtf",
+          "bAssetKrEq","bAssetGlEq","bAssetPension","bAssetVl",
+          "inputDeposit","inputSavings","inputHousing","inputLiquid",
+          "inputIsa","inputEtf","inputKrEq","inputGlEq","inputPension","inputVl","inputIns",
+          "inputAfterLump","inputAfterLumpRate","inputBeforeLump","inputBeforeLumpRate",
+        ];
+        // state 키 매핑
+        const domToState = {
+          "customerName":"name", "birthYear":"birthYear",
+          "income1":"income1", "income2":"income2", "bonusAnnual":"bonusAnnual", "expense":"expense",
+          "bDeposit":"bDeposit","bSavings":"bSavings","bHousing":"bHousing","bLiquid":"bLiquid",
+          "bIsa":"bIsa","bEtf":"bEtf","bKrEq":"bKrEq","bGlEq":"bGlEq","bPension":"bPension","bVl":"bVl","bIns":"bIns",
+          "bAssetDeposit":"bAssetDeposit","bAssetSavings":"bAssetSavings","bAssetHousing":"bAssetHousing","bAssetLiquid":"bAssetLiquid",
+          "bAssetIsa":"bAssetIsa","bAssetEtf":"bAssetEtf","bAssetKrEq":"bAssetKrEq",
+          "bAssetGlEq":"bAssetGlEq","bAssetPension":"bAssetPension","bAssetVl":"bAssetVl",
+          "inputDeposit":"deposit","inputSavings":"savings","inputHousing":"housing","inputLiquid":"liquid",
+          "inputIsa":"isa","inputEtf":"etf","inputKrEq":"krEq","inputGlEq":"glEq",
+          "inputPension":"pension","inputVl":"vl","inputIns":"ins",
+          "inputAfterLump":"afterLumpAmt","inputAfterLumpRate_pct":"afterLumpRate",
+          "inputBeforeLump":"beforeLump","inputBeforeLumpRate_pct":"beforeLumpRate",
+        };
+        syncFields.forEach(id => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          const stateKey = domToState[id] || id;
+          let val = state[stateKey];
+          if (val === undefined) return;
+          // 수익률 필드는 %로 변환
+          if (id.includes("Rate") && !id.includes("pct")) {
+            el.value = val; // 이미 소수
+          } else {
+            el.value = val;
+          }
+        });
+        // 수익률 입력 별도 처리 (소수→%)
+        const rateFieldMap = {
+          "inputAfterLumpRate": state.afterLumpRate * 100,
+          "inputBeforeLumpRate": state.beforeLumpRate * 100,
+        };
+        Object.entries(rateFieldMap).forEach(([id, pctVal]) => {
+          const el = document.getElementById(id);
+          if (el) el.value = pctVal;
+        });
+        // After 현재자산 동기화
+        const afterAssetKeys = ["Deposit","Savings","Housing","Liquid","Isa","Etf","KrEq","GlEq","Pension","Vl","Ins"];
+        afterAssetKeys.forEach(k => {
+          const el = document.getElementById(`aAsset_${k.charAt(0).toLowerCase() + k.slice(1)}`);
+          if (el) el.value = state[`aAsset${k}`] || 0;
+        });
+        // job, goal 텍스트 필드
+        const jobEl = document.getElementById("job"); if (jobEl && state._job) jobEl.value = state._job;
+        const goalEl = document.getElementById("goal"); if (goalEl && state._goal) goalEl.value = state._goal;
+
+        // taxMode, beforeMode 복원
+        setTaxMode(state.taxMode || "pre");
+
+        // goals 카드 다시 렌더링
+        renderGoalCards();
+        render();
+        alert(`✓ "${data._customerName}" 고객 데이터가 불러와졌습니다.`);
+      } catch (err) {
+        alert("파일 불러오기 실패: " + err.message);
+      }
+      event.target.value = ""; // 같은 파일 재선택 가능하도록
+    };
+    reader.readAsText(file);
+  }
+
+  // job/goal 텍스트 필드도 저장 대상에 포함
+  function getExtraFields() {
+    const jobEl = document.getElementById("job");
+    const goalEl = document.getElementById("goal");
+    state._job = jobEl ? jobEl.value : "";
+    state._goal = goalEl ? goalEl.value : "";
+  }
 
   // 포트 색상 팔레트 (순환)
   const GOAL_COLORS = [
@@ -2781,7 +3062,8 @@
 
   // 단기 적립 FV (After 단기 포트 기준)
   function shortFV(years) {
-    return fvCompoundTaxed(state.savings, years, state.rateSavings, "savings")
+    return fvCompoundTaxed(state.deposit, years, state.rateDeposit,  "deposit", state.aAssetDeposit)
+         + fvCompoundTaxed(state.savings, years, state.rateSavings, "savings")
          + fvCompoundTaxed(state.liquid,  years, state.rateLiquid,  "liquid");
   }
 
@@ -3034,6 +3316,7 @@
   // Before 평균 수익률 (Before 전용 수익률 기준 가중평균)
   function beforeAvgRate() {
     const items = [
+      [state.bDeposit,  state.bRateDeposit],
       [state.bSavings,  state.bRateSavings],
       [state.bHousing,  state.bRateHousing],
       [state.bLiquid,   state.bRateLiquid],
@@ -3092,6 +3375,7 @@
 
     // Before 현재 자산 9개 바인딩
     const bAssetItems = [
+      ["bAssetDeposit","bAssetDeposit"],
       ["bAssetSavings","bAssetSavings"],["bAssetHousing","bAssetHousing"],["bAssetLiquid","bAssetLiquid"],
       ["bAssetIsa","bAssetIsa"],["bAssetEtf","bAssetEtf"],["bAssetKrEq","bAssetKrEq"],
       ["bAssetGlEq","bAssetGlEq"],["bAssetPension","bAssetPension"],["bAssetVl","bAssetVl"],
@@ -3111,6 +3395,7 @@
 
     // Before 10개 항목 바인딩
     const beforeItems = [
+      ["bDeposit", "bDeposit"],
       ["bSavings", "bSavings"],
       ["bHousing", "bHousing"],
       ["bLiquid", "bLiquid"],
@@ -3136,6 +3421,7 @@
 
     // 스테퍼 숫자 입력 바인딩 (10개)
     const stepperKeys = [
+      ["inputDeposit", "deposit"],
       ["inputSavings", "savings"],
       ["inputHousing", "housing"],
       ["inputLiquid", "liquid"],
@@ -3164,12 +3450,14 @@
 
     // Before 수익률 바인딩 (9개)
     const bRateBindings = [
+      ["bRateDeposit", "bRateDeposit"],
       ["bRateSavings", "bRateSavings"], ["bRateHousing", "bRateHousing"], ["bRateLiquid", "bRateLiquid"],
       ["bRateIsa", "bRateIsa"], ["bRateEtf", "bRateEtf"], ["bRateKrEq", "bRateKrEq"],
       ["bRateGlEq", "bRateGlEq"], ["bRatePension", "bRatePension"], ["bRateVl", "bRateVl"],
     ];
     bRateBindings.forEach(([id, key]) => {
       const el = document.getElementById(id);
+      if (!el) return;
       el.addEventListener("input", () => {
         const v = parseFloat(el.value);
         state[key] = isNaN(v) ? 0 : v / 100;
@@ -3177,14 +3465,17 @@
       });
     });
 
-    // After 수익률 바인딩 (9개)
-    const rateBindings = [
+    // 수익률 가정 입력 바인딩 (% → 소수, 항목별)
+    const rateBindings2 = [
+      ["rateDeposit", "rateDeposit"],
+      ["rateDepositAfter", "rateDeposit"],
       ["rateSavings", "rateSavings"], ["rateHousing", "rateHousing"], ["rateLiquid", "rateLiquid"],
       ["rateIsa", "rateIsa"], ["rateEtf", "rateEtf"], ["rateKrEq", "rateKrEq"],
       ["rateGlEq", "rateGlEq"], ["ratePension", "ratePension"], ["rateVl", "rateVl"],
     ];
-    rateBindings.forEach(([id, key]) => {
+    rateBindings2.forEach(([id, key]) => {
       const el = document.getElementById(id);
+      if (!el) return;  // 현재 탭에 없는 input은 skip
       el.addEventListener("input", () => {
         const v = parseFloat(el.value);
         state[key] = isNaN(v) ? 0 : v / 100;
@@ -3260,21 +3551,33 @@
     Object.assign(state, {
       name: "", birthYear: "", income1: 500, income2: 0, bonusAnnual: 0, expense: 280,
       // Before 10개 항목
-      bSavings: 80, bHousing: 10, bLiquid: 10,
+      bDeposit: 0, bSavings: 80, bHousing: 10, bLiquid: 10,
       bIsa: 0, bEtf: 0, bKrEq: 20, bGlEq: 10,
       bPension: 20, bVl: 0, bIns: 3,
-      bAssetSavings: 0, bAssetHousing: 0, bAssetLiquid: 0,
+      bAssetDeposit: 0, bAssetSavings: 0, bAssetHousing: 0, bAssetLiquid: 0,
       bAssetIsa: 0, bAssetEtf: 0, bAssetKrEq: 0,
       bAssetGlEq: 0, bAssetPension: 0, bAssetVl: 0,
-      savings: 25, housing: 10, liquid: 15,
+      deposit: 0, savings: 25, housing: 10, liquid: 15,
       isa: 50, etf: 25, krEq: 20, glEq: 15,
       pension: 30, vl: 15, ins: 15,
+      aAssetDeposit: 0,
+      aAssetSavings: 0,
+      aAssetHousing: 0,
+      aAssetLiquid: 0,
+      aAssetIsa: 0,
+      aAssetEtf: 0,
+      aAssetKrEq: 0,
+      aAssetGlEq: 0,
+      aAssetPension: 0,
+      aAssetVl: 0,
+      aAssetIns: 0,
       afterLumpAmt: 0,
       afterLumpRate: 0.07,
       beforeLump: 0,
       beforeLumpRate: 0.035,
       taxMode: "pre",
-      bRateSavings: 0.035, bRateHousing: 0.025, bRateLiquid: 0.03,
+      bRateDeposit: 0.035,
+    bRateSavings: 0.035, bRateHousing: 0.025, bRateLiquid: 0.03,
       bRateIsa: 0.065, bRateEtf: 0.06, bRateKrEq: 0.05, bRateGlEq: 0.08,
       bRatePension: 0.07, bRateVl: 0.075,
       rateSavings: 0.035, rateHousing: 0.025, rateLiquid: 0.03,
@@ -3290,11 +3593,22 @@
     document.getElementById("bonusAnnual").value = 0;
     document.getElementById("expense").value = state.expense;
     // Before 현재 자산 초기화
-    ["bAssetSavings","bAssetHousing","bAssetLiquid","bAssetIsa","bAssetEtf",
+    ["bAssetDeposit","bAssetDeposit","bAssetSavings","bAssetHousing","bAssetLiquid","bAssetIsa","bAssetEtf",
      "bAssetKrEq","bAssetGlEq","bAssetPension","bAssetVl"].forEach(k => {
       const el = document.getElementById(k); if (el) el.value = 0;
     });
     // After 목돈 초기화
+    const ae_deposit = document.getElementById("aAsset_deposit"); if (ae_deposit) ae_deposit.value = 0;
+    const ae_savings = document.getElementById("aAsset_savings"); if (ae_savings) ae_savings.value = 0;
+    const ae_housing = document.getElementById("aAsset_housing"); if (ae_housing) ae_housing.value = 0;
+    const ae_liquid = document.getElementById("aAsset_liquid"); if (ae_liquid) ae_liquid.value = 0;
+    const ae_isa = document.getElementById("aAsset_isa"); if (ae_isa) ae_isa.value = 0;
+    const ae_etf = document.getElementById("aAsset_etf"); if (ae_etf) ae_etf.value = 0;
+    const ae_krEq = document.getElementById("aAsset_krEq"); if (ae_krEq) ae_krEq.value = 0;
+    const ae_glEq = document.getElementById("aAsset_glEq"); if (ae_glEq) ae_glEq.value = 0;
+    const ae_pension = document.getElementById("aAsset_pension"); if (ae_pension) ae_pension.value = 0;
+    const ae_vl = document.getElementById("aAsset_vl"); if (ae_vl) ae_vl.value = 0;
+    const ae_ins = document.getElementById("aAsset_ins"); if (ae_ins) ae_ins.value = 0;
     const lumpEl = document.getElementById("inputAfterLump");
     if (lumpEl) lumpEl.value = 0;
     const lumpRateEl = document.getElementById("inputAfterLumpRate");
@@ -3303,6 +3617,7 @@
     if (bLumpEl) bLumpEl.value = 0;
     const bLumpRateEl = document.getElementById("inputBeforeLumpRate");
     if (bLumpRateEl) bLumpRateEl.value = 3.5;
+    document.getElementById("bDeposit").value = state.bDeposit;
     document.getElementById("bSavings").value = state.bSavings;
     document.getElementById("bHousing").value = state.bHousing;
     document.getElementById("bLiquid").value = state.bLiquid;
