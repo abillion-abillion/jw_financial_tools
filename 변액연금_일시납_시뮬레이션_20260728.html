@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>변액연금 시뮬레이터 (일시납) · JW Financial [대외비]</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+:root{
+  --navy:#1B3A6B;--navy-l:#2A5298;--navy-pale:#EBF0F8;--navy-deep:#0f2444;
+  --amber:#E07B39;--amber-pale:#FDF0E8;
+  --green:#1E7A4E;--green-pale:#E8F5EE;
+  --red:#B03A3A;--red-pale:#FAEAEA;--red-vivid:#D32F2F;
+  --purple:#6B3FA0;--purple-pale:#F0EBF8;
+  --bg:#F5F7FA;--surface:#FFFFFF;--border:#DDE4EE;
+  --text:#1a1a2e;--muted:#7a8499;
+  --mono:'IBM Plex Mono',monospace;--sans:'Noto Sans KR',sans-serif;
+  --r:10px;--sh:0 2px 12px rgba(27,58,107,0.07);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6;}
+
+/* ── HEADER ── */
+.app-header{background:var(--navy-deep);color:#fff;padding:12px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,.22);}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-mark{width:30px;height:30px;background:var(--amber);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#fff;}
+.logo-text{font-size:15px;font-weight:700;}
+.logo-text span{color:var(--amber);font-weight:300;}
+.confidential-badge{display:flex;align-items:center;gap:6px;background:rgba(179,47,47,.85);border:1px solid rgba(255,120,120,.4);padding:5px 12px;border-radius:5px;font-size:11px;font-weight:700;letter-spacing:.06em;color:#fff;}
+
+/* ── LAYOUT ── */
+.app-body{display:grid;grid-template-columns:300px 1fr;min-height:calc(100vh - 54px);}
+
+/* ── INPUT PANEL ── */
+.input-panel{background:var(--surface);border-right:1px solid var(--border);padding:20px 16px;overflow-y:auto;position:sticky;top:54px;height:calc(100vh - 54px);}
+.panel-title{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:14px;padding-bottom:7px;border-bottom:1px solid var(--border);}
+.input-group{margin-bottom:14px;}
+.input-label{font-size:12px;font-weight:500;color:var(--navy);margin-bottom:5px;display:flex;align-items:center;justify-content:space-between;}
+.input-hint{font-size:10px;color:var(--muted);font-weight:400;}
+.radio-group{display:flex;gap:7px;}
+.radio-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;cursor:pointer;font-size:12px;font-weight:500;color:var(--muted);transition:all .15s;background:var(--bg);user-select:none;}
+.radio-btn input{display:none;}
+.radio-btn:has(input:checked){border-color:var(--navy);background:var(--navy-pale);color:var(--navy);}
+.input-row{display:flex;gap:7px;align-items:center;}
+input[type="number"],select{width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;color:var(--text);background:var(--bg);outline:none;transition:border-color .15s;-moz-appearance:textfield;}
+input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;}
+input[type="number"]:focus{border-color:var(--navy);background:#fff;}
+.input-suffix{font-size:11px;color:var(--muted);white-space:nowrap;min-width:24px;}
+input[type="range"]{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:var(--border);border-radius:2px;outline:none;cursor:pointer;margin-top:5px;}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--navy);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2);cursor:pointer;}
+input[type="range"].amber-range::-webkit-slider-thumb{background:var(--amber);}
+.slider-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:2px;}
+.slider-value{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--navy);text-align:right;margin-bottom:2px;}
+.slider-value.amber{color:var(--amber);}
+.divider-line{height:1px;background:var(--border);margin:14px 0;}
+.fixed-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;background:var(--navy-pale);color:var(--navy);padding:7px 11px;border-radius:7px;font-weight:500;width:100%;}
+.calc-btn{width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-size:13px;font-weight:700;cursor:pointer;transition:background .15s,transform .1s;margin-top:4px;}
+.calc-btn:hover{background:var(--navy-l);}
+.calc-btn:active{transform:scale(.98);}
+
+/* ── RESULT ── */
+.result-panel{padding:22px 24px;overflow-y:auto;}
+.section-heading{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.section-heading::before{content:'';width:14px;height:3px;background:var(--amber);border-radius:2px;display:inline-block;}
+
+/* Customer bar */
+.customer-bar{background:var(--navy-deep);color:#fff;border-radius:var(--r);padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.customer-name{font-size:15px;font-weight:700;}
+.customer-sub{font-size:11px;opacity:.7;margin-top:2px;}
+.customer-tags{display:flex;gap:5px;flex-wrap:wrap;}
+.ctag{font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.9);font-weight:500;}
+.ctag.amber{background:rgba(224,123,57,.3);color:#f9b47a;}
+.ctag.green{background:rgba(30,122,78,.3);color:#7fd9a8;}
+
+/* Phase cards */
+.phase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.phase-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:var(--sh);position:relative;overflow:hidden;}
+.phase-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--border);}
+.phase-card.featured::before{background:var(--navy);}
+.phase-card.featured{border-color:rgba(27,58,107,.35);box-shadow:0 4px 20px rgba(27,58,107,.12);}
+.phase-label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.04em;margin-bottom:12px;}
+.phase-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
+.phase-row-lbl{font-size:11px;color:var(--muted);}
+.phase-row-val{font-size:12px;font-weight:600;color:var(--text);}
+.phase-row-val.muted-sm{font-size:10px;color:var(--muted);font-weight:400;}
+.phase-sep{height:1px;background:var(--border);margin:10px 0;}
+.phase-big{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--navy);margin-top:4px;}
+.phase-big-label{font-size:10px;color:var(--muted);margin-bottom:2px;}
+
+/* Pension cards */
+.pension-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;}
+.pension-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);}
+.pension-card-hd{padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.ptbadge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;}
+.b10{background:var(--navy);color:#fff;}
+.b20{background:var(--amber);color:#fff;}
+.bl10{background:var(--green);color:#fff;}
+.bl20{background:var(--purple);color:#fff;}
+.pension-period{font-size:10px;color:var(--muted);}
+.ptable{width:100%;border-collapse:collapse;}
+.ptable thead tr{background:var(--bg);}
+.ptable th{font-size:9px;font-weight:500;color:var(--muted);padding:6px 10px;text-align:left;border-bottom:1px solid var(--border);}
+.ptable th:not(:first-child){text-align:right;}
+.ptable td{padding:8px 10px;font-size:11px;border-bottom:1px solid #f0f3f8;vertical-align:middle;}
+.ptable td:not(:first-child){text-align:right;}
+.ptable tr:last-child td{border-bottom:none;}
+.ptable tr:hover td{background:#fafbfd;}
+.monthly-big{font-family:var(--mono);font-size:14px;font-weight:600;}
+.c-navy{color:var(--navy);}
+.c-amber{color:var(--amber);}
+.c-green{color:var(--green);}
+.c-purple{color:var(--purple);}
+.total-sm{font-size:10px;color:var(--muted);}
+.bar-cell{display:flex;align-items:center;gap:5px;}
+.mini-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.mini-bar-fill{height:100%;border-radius:2px;}
+
+/* Compare box */
+.compare-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:20px;box-shadow:var(--sh);}
+.compare-hd{background:var(--navy);color:#fff;padding:10px 16px;font-size:12px;font-weight:700;}
+.compare-grid{display:grid;grid-template-columns:repeat(4,1fr);}
+.compare-item{padding:14px;border-right:1px solid var(--border);text-align:center;}
+.compare-item:last-child{border-right:none;}
+.c-type{font-size:9px;font-weight:700;color:var(--muted);margin-bottom:3px;}
+.c-monthly{font-family:var(--mono);font-size:17px;font-weight:600;margin-bottom:2px;}
+.c-total{font-size:10px;color:var(--muted);}
+.c-note{font-size:10px;color:var(--muted);margin-top:2px;}
+
+/* Rec cards */
+.rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.rec-card{border-radius:var(--r);padding:16px;border:1.5px solid;}
+.rec-card.rn{border-color:var(--navy);background:var(--navy-pale);}
+.rec-card.ra{border-color:var(--amber);background:var(--amber-pale);}
+.rec-card.rp{border-color:var(--purple);background:var(--purple-pale);}
+.rec-icon{font-size:20px;margin-bottom:6px;}
+.rec-tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;margin-bottom:6px;}
+.rec-title{font-size:12px;font-weight:700;margin-bottom:5px;line-height:1.4;}
+.rec-desc{font-size:10px;color:var(--muted);line-height:1.7;margin-bottom:8px;}
+.rec-result{font-family:var(--mono);font-size:13px;font-weight:600;}
+
+
+/* ── ETF SECTION ── */
+.etf-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:20px;box-shadow:var(--sh);}
+.etf-hd{background:linear-gradient(135deg,#0f2444 0%,#1B3A6B 100%);color:#fff;padding:14px 18px;}
+.etf-hd-title{font-size:13px;font-weight:700;margin-bottom:3px;}
+.etf-hd-sub{font-size:10px;opacity:.72;line-height:1.6;}
+.etf-body{padding:18px 20px;}
+.etf-assumption-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;padding:10px 12px;background:var(--bg);border-radius:7px;}
+.etf-tag{font-size:10px;padding:2px 8px;border-radius:20px;border:1px solid var(--border);color:var(--muted);}
+.etf-tag strong{color:var(--text);font-weight:600;}
+
+/* tax structure boxes */
+.tax-struct-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.tax-box{border-radius:8px;padding:12px 14px;}
+.tax-box.va-box{background:var(--navy-pale);border:1px solid rgba(27,58,107,.2);}
+.tax-box.etf-box{background:#f5f0f8;border:1px solid rgba(107,63,160,.2);}
+.tax-box-title{font-size:10px;font-weight:700;margin-bottom:6px;}
+.tax-box-body{font-size:11px;line-height:1.8;}
+
+/* 3-col compare */
+.etf-3col{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
+.etf-col{border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.etf-col-hd{padding:9px 10px;font-size:9.5px;font-weight:700;text-align:center;line-height:1.3;}
+.hd-va{background:var(--navy-pale);color:var(--navy);}
+.hd-etf{background:#0f2444;color:#fff;}
+.hd-diff{background:var(--amber-pale);color:#a06010;}
+.hd-overseas{background:#5a2d8a;color:#fff;}
+.etf-row{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;border-top:1px solid #f0f3f8;font-size:11px;}
+.etf-row:first-of-type{border-top:none;}
+.etf-row-lbl{font-size:10px;color:var(--muted);}
+.etf-row-val{font-family:var(--mono);font-size:12px;font-weight:500;}
+
+/* Prize boxes (소구) */
+.prize-section{margin-bottom:20px;}
+.prize-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);}
+.prize-hd{background:var(--navy);color:#fff;padding:10px 16px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.prize-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;}
+.prize-item{padding:14px 12px;border-right:1px solid var(--border);border-top:1px solid var(--border);text-align:center;position:relative;}
+.prize-item:nth-child(-n+4){border-top:none;}
+.prize-item:nth-child(4n){border-right:none;}
+.prize-item.active{background:linear-gradient(135deg,rgba(27,58,107,.06) 0%,rgba(27,58,107,.02) 100%);border-color:rgba(27,58,107,.25);}
+.prize-item.active::before{content:'✓ 달성';position:absolute;top:6px;right:6px;font-size:9px;font-weight:700;color:var(--green);background:var(--green-pale);padding:1px 5px;border-radius:10px;}
+.prize-emoji{font-size:26px;margin-bottom:4px;}
+.prize-amount{font-size:10px;font-weight:700;color:var(--navy);margin-bottom:2px;}
+.prize-title{font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.prize-desc{font-size:9px;color:var(--muted);line-height:1.5;}
+
+/* Tax table */
+.tax-table-section{margin-bottom:20px;}
+.tax-table-wrap{overflow-x:auto;}
+.tax-table{width:100%;border-collapse:collapse;}
+.tax-table th{background:var(--bg);font-size:10px;font-weight:600;color:var(--muted);padding:7px 10px;text-align:center;border:1px solid var(--border);}
+.tax-table td{padding:8px 10px;font-size:11px;border:1px solid var(--border);text-align:center;}
+.tax-table tr.highlighted td{background:var(--red-pale);font-weight:700;color:var(--red-vivid);}
+.tax-table tr.highlighted td:first-child::before{content:'▶ ';}
+.tax-row-label{font-size:10px;text-align:left!important;}
+
+/* Advantage boxes */
+.adv-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;}
+.adv-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh);}
+.adv-keyword{font-size:20px;font-weight:700;color:var(--navy);margin-bottom:4px;line-height:1.2;}
+.adv-sub{font-size:11px;color:var(--muted);line-height:1.7;margin-top:6px;}
+.adv-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:var(--navy);color:#fff;border-radius:50%;font-size:11px;font-weight:700;margin-right:6px;flex-shrink:0;}
+
+/* Footer */
+.result-footer{border-top:1px solid var(--border);padding-top:12px;margin-top:10px;font-size:10px;color:#b0bac8;line-height:1.8;}
+.result-footer strong{color:var(--muted);font-weight:500;}
+
+/* Action */
+.action-row{display:flex;gap:8px;margin-bottom:18px;}
+.action-btn{display:flex;align-items:center;gap:5px;padding:8px 14px;border-radius:7px;font-family:var(--sans);font-size:11px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--navy);transition:all .15s;}
+.action-btn:hover{border-color:var(--navy);background:var(--navy-pale);}
+.action-btn.primary{background:var(--red);color:#fff;border-color:var(--red);}
+.action-btn.primary:hover{background:#922e2e;}
+
+/* Empty */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 40px;color:var(--muted);gap:10px;}
+
+@media(max-width:900px){
+  .app-body{grid-template-columns:1fr;}
+  .input-panel{position:static;height:auto;}
+  .phase-grid,.pension-grid,.rec-grid,.etf-3col,.compare-grid,.adv-grid,.prize-grid{grid-template-columns:1fr;}
+}
+@media print{
+  .app-header,.input-panel,.action-row{display:none!important;}
+  .app-body{grid-template-columns:1fr;}
+  .result-panel{padding:12px;}
+  body{background:#fff;}
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="logo">
+    <div class="logo-mark">JW</div>
+    <div class="logo-text">JW Financial <span>· 변액연금 시뮬레이터 (일시납)</span></div>
+  </div>
+  <div class="confidential-badge">🔒 대외비 — 사내 전용 자료 · 고객 배포 금지</div>
+</div>
+
+<div class="app-body">
+
+<div class="input-panel">
+  <div class="panel-title">고객 조건 입력</div>
+
+  <div class="input-group">
+    <div class="input-label">성별</div>
+    <div class="radio-group">
+      <label class="radio-btn"><input type="radio" name="gender" value="M" checked> 남성</label>
+      <label class="radio-btn"><input type="radio" name="gender" value="F"> 여성</label>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="input-label">출생연도 <span class="input-hint" id="ageDisplay">만 58세</span></div>
+    <div class="input-row">
+      <input type="number" id="birthYear" value="1968" min="1940" max="2005">
+      <span class="input-suffix">년생</span>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="input-label">일시납 보험료 <span class="input-hint" id="premDisplay">1억원</span></div>
+    <div class="slider-value" id="premVal">100,000,000원</div>
+    <input type="range" id="premSlider" min="3000" max="50000" value="10000" step="500">
+    <div class="slider-labels"><span>3천만</span><span>2.5억</span><span>5억</span></div>
+    <div class="input-row" style="margin-top:7px;">
+      <input type="number" id="premInput" value="10000" min="3000" max="50000" step="500">
+      <span class="input-suffix">만원</span>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="input-label">납입방식</div>
+    <div class="fixed-badge">🔒 일시납 (최소거치 10년)</div>
+  </div>
+
+  <div class="divider-line"></div>
+
+  <div class="input-group">
+    <div class="input-label">연금개시 나이 <span class="input-hint" id="pensionYearHint">2053년</span></div>
+    <div class="input-row">
+      <input type="number" id="pensionAge" value="85" min="68" max="90">
+      <span class="input-suffix">세</span>
+    </div>
+    <div style="font-size:10px;color:var(--muted);margin-top:4px;" id="deferHint">거치기간: 27년 (최소거치 10년 필수)</div>
+  </div>
+
+  <div class="input-group">
+    <div class="input-label">최소거치기간 (첫 10년) 수익률</div>
+    <div class="slider-value" id="r1Val">8.00%</div>
+    <input type="range" id="r1Slider" min="0" max="15" value="8" step="0.05">
+    <div class="slider-labels"><span>0%</span><span>7.5%</span><span>15%</span></div>
+    <div class="input-row" style="margin-top:7px;">
+      <input type="number" id="r1Input" value="8.00" min="0" max="15" step="0.05">
+      <span class="input-suffix">%</span>
+    </div>
+    <div style="font-size:9px;color:var(--muted);margin-top:4px;">사업비 대량 차감기 + 5~10년차 분할보너스 지급기</div>
+  </div>
+
+  <div class="input-group">
+    <div class="input-label">추가 거치기간 수익률</div>
+    <div class="slider-value amber" id="r2Val">8.00%</div>
+    <input type="range" id="r2Slider" class="amber-range" min="0" max="15" value="8" step="0.05">
+    <div class="slider-labels"><span>0%</span><span>7.5%</span><span>15%</span></div>
+    <div class="input-row" style="margin-top:7px;">
+      <input type="number" id="r2Input" value="8.00" min="0" max="15" step="0.05">
+      <span class="input-suffix">%</span>
+    </div>
+    <div style="font-size:9px;color:var(--muted);margin-top:4px;">10년 이후~연금개시 (매월 계약관리비 0.05%만 차감)</div>
+  </div>
+
+  <div class="divider-line"></div>
+
+  <div class="input-group">
+    <div class="input-label">확정연금 수령기간 <span class="input-hint" id="certYearsHint">20년</span></div>
+    <div class="slider-value" id="certYearsVal">20년</div>
+    <input type="range" id="certYearsSlider" min="5" max="30" value="20" step="1">
+    <div class="slider-labels"><span>5년</span><span>17년</span><span>30년</span></div>
+    <div class="input-row" style="margin-top:7px;">
+      <input type="number" id="certYearsInput" value="20" min="5" max="30" step="1">
+      <span class="input-suffix">년</span>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="input-label">종신연금 보증기간 <span class="input-hint" id="lifeYearsHint">20년</span></div>
+    <div class="slider-value amber" id="lifeYearsVal">20년</div>
+    <input type="range" id="lifeYearsSlider" class="amber-range" min="5" max="30" value="20" step="1">
+    <div class="slider-labels"><span>5년</span><span>17년</span><span>30년</span></div>
+    <div class="input-row" style="margin-top:7px;">
+      <input type="number" id="lifeYearsInput" value="20" min="5" max="30" step="1">
+      <span class="input-suffix">년</span>
+    </div>
+    <div style="font-size:9px;color:var(--muted);margin-top:6px;">보증기간 동안 2배 집중 수령 후 종신 지급</div>
+  </div>
+
+  <div class="divider-line"></div>
+  <button class="calc-btn" onclick="calculate()">시뮬레이션 실행 →</button>
+  <div style="font-size:10px;color:var(--muted);margin-top:6px;text-align:center;">값 변경 시 자동 계산</div>
+</div>
+
+<div class="result-panel" id="resultPanel">
+  <div class="empty-state" id="emptyState">
+    <div style="font-size:40px;opacity:.4;">📊</div>
+    <div style="font-size:14px;font-weight:500;">좌측 조건 입력 후 시뮬레이션을 실행하세요</div>
+  </div>
+  <div id="resultContent" style="display:none;"></div>
+</div>
+
+</div>
+
+<script>
+/* ── 기대여명 (국가데이터처 2024년 생명표, 2025.12 발표) ──
+   공식 앵커값(60·70·80·90세)은 보도자료 확정치와 일치.
+   그 사이 1세 단위(55~90)는 단조 선형보간 추정치, 55세는 외삽.
+   앵커(년): M 60=23.7 70=15.5 80=8.5 90=4.0 / F 60=28.4 70=19.2 80=10.9 90=5.1 */
+const LE={
+  M:{55:27.8,56:27.0,57:26.2,58:25.3,59:24.5,60:23.7,61:22.9,62:22.1,63:21.2,64:20.4,65:19.6,66:18.8,67:18.0,68:17.1,69:16.3,70:15.5,71:14.8,72:14.1,73:13.4,74:12.7,75:12.0,76:11.3,77:10.6,78:9.9,79:9.2,80:8.5,81:8.1,82:7.6,83:7.2,84:6.7,85:6.2,86:5.8,87:5.3,88:4.9,89:4.5,90:4.0},
+  F:{55:33.0,56:32.1,57:31.2,58:30.2,59:29.3,60:28.4,61:27.5,62:26.6,63:25.6,64:24.7,65:23.8,66:22.9,67:22.0,68:21.0,69:20.1,70:19.2,71:18.4,72:17.5,73:16.7,74:15.9,75:15.1,76:14.2,77:13.4,78:12.6,79:11.7,80:10.9,81:10.3,82:9.7,83:9.2,84:8.6,85:8.0,86:7.4,87:6.8,88:6.3,89:5.7,90:5.1}
+};
+
+/* ── 입력 동기화 ── */
+function syncPrem(v){
+  document.getElementById('premSlider').value=v;
+  document.getElementById('premInput').value=v;
+  document.getElementById('premVal').textContent=Number(v*10000).toLocaleString()+'원';
+  // 금액을 억/만원 단위로 표시
+  const won=v*10000;
+  const label=won>=1e8?(won/1e8).toFixed(won%1e8===0?0:2)+'억원':v+'만원';
+  document.getElementById('premDisplay').textContent=label;
+}
+function syncR(id,slid,displayId,isAmber,v,isManual){
+  const f=parseFloat(v)||0;
+  const rounded=Math.round(f/0.05)*0.05;
+  document.getElementById(slid).value=rounded;
+  if(!isManual){
+    document.getElementById(id).value=rounded.toFixed(2);
+  }
+  document.getElementById(displayId).textContent=rounded.toFixed(2)+'%';
+}
+document.getElementById('premSlider').addEventListener('input',e=>{syncPrem(e.target.value);autoCalc();});
+document.getElementById('premInput').addEventListener('input',e=>{syncPrem(e.target.value);autoCalc();});
+document.getElementById('r1Slider').addEventListener('input',e=>{syncR('r1Input','r1Slider','r1Val',false,e.target.value,false);autoCalc();});
+document.getElementById('r1Input').addEventListener('input',e=>{syncR('r1Input','r1Slider','r1Val',false,e.target.value,true);autoCalc();});
+document.getElementById('r2Slider').addEventListener('input',e=>{syncR('r2Input','r2Slider','r2Val',true,e.target.value,false);autoCalc();});
+document.getElementById('r2Input').addEventListener('input',e=>{syncR('r2Input','r2Slider','r2Val',true,e.target.value,true);autoCalc();});
+['birthYear','pensionAge'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{updateHints();autoCalc();}));
+document.querySelectorAll('input[name="gender"]').forEach(r=>r.addEventListener('change',autoCalc));
+function syncYears(key,v){
+  document.getElementById(key+'Slider').value=v;
+  document.getElementById(key+'Input').value=v;
+  document.getElementById(key+'Val').textContent=v+'년';
+  document.getElementById(key+'Hint').textContent=v+'년';
+}
+['certYears','lifeYears'].forEach(key=>{
+  document.getElementById(key+'Slider').addEventListener('input',e=>{
+    syncYears(key,e.target.value);autoCalc();});
+  const inp=document.getElementById(key+'Input');
+  inp.addEventListener('input',e=>{
+    const v=e.target.value;
+    // 타이핑 중에는 슬라이더/라벨만 반영(빈칸 허용), clamp는 blur에서
+    if(v!==''){const n=Math.max(5,Math.min(30,parseInt(v)||5));
+      document.getElementById(key+'Slider').value=n;
+      document.getElementById(key+'Val').textContent=n+'년';
+      document.getElementById(key+'Hint').textContent=n+'년';}
+    autoCalc();});
+  inp.addEventListener('change',e=>{
+    const n=Math.max(5,Math.min(30,parseInt(e.target.value)||20));
+    syncYears(key,n);autoCalc();});
+});
+
+function updateHints(){
+  const by=parseInt(document.getElementById('birthYear').value)||1968;
+  const pa=parseInt(document.getElementById('pensionAge').value)||85;
+  const nowY=new Date().getFullYear();
+  const age=nowY-by;
+  document.getElementById('ageDisplay').textContent='만 '+age+'세';
+  document.getElementById('pensionYearHint').textContent=(by+pa)+'년 개시';
+  // 일시납은 현재부터 연금개시까지 전체가 거치기간, 최소 10년
+  const defer=Math.max(0,pa-age);
+  const isMinOK=defer>=10;
+  document.getElementById('deferHint').textContent='거치기간: '+defer+'년 (일시납 '+age+'세 → 연금 '+pa+'세)'+(isMinOK?'':' ⚠️ 최소 10년 필요');
+}
+updateHints();
+
+let calcTimer=null;
+function autoCalc(){clearTimeout(calcTimer);calcTimer=setTimeout(calculate,350);}
+
+/* ── 핵심 계산 (일시납 변액연금 로직) ──
+   PDF 안내서(2026-7-28 발행) 사업비 구조 반영, 예시표와 오차 0.15% 이내 검증 완료
+   • 초기 사업비: 1차월 계약체결 2.83% + 계약관리 4.5% = 7.33% 일괄 차감
+   • 2~15차월: 매월 계약체결 0.12% + 계약관리 0.05% + 위험보험료(무시)
+   • 16차월~연금개시: 매월 계약관리 0.05%만
+   • 분할보너스: 5년(60개월) 후~10년(120개월)까지 매월 원금×0.25%
+   • 일시납은 납입완료 일시보너스(월납 6%) 없음
+   • 순수익률 = 투자수익률 - 보증비용 0.05% (특별계정 운용보수는 기준가에 반영됨)
+*/
+function calcVA(lumpSum, r1, r2, deferYears){
+  // 순수익률: 보증비용 0.05%만 차감
+  const annualNet1 = Math.max(0, r1 - 0.0005);
+  const annualNet2 = Math.max(0, r2 - 0.0005);
+  const rm1 = Math.pow(1 + annualNet1, 1/12) - 1;
+  const rm2 = Math.pow(1 + annualNet2, 1/12) - 1;
+
+  // 초기 차감
+  const initialFee = lumpSum * (0.0283 + 0.045); // 7.33%
+  let acc = lumpSum - initialFee;
+
+  const fee_2to15 = lumpSum * (0.0012 + 0.0005); // 0.17%
+  const fee_after = lumpSum * 0.0005;             // 0.05%
+  const splitM   = lumpSum * 0.0025;              // 0.25% (분할보너스)
+
+  // 첫 10년 (최소거치기간, r1 적용) — 사업비 대량 차감 + 분할보너스 지급
+  const initMonths = Math.min(deferYears, 10) * 12;
+  let bonusSplitTotal = 0;
+  let acc10 = 0; // 10년 시점 적립액
+  for(let m = 1; m <= initMonths; m++){
+    if(m >= 2 && m <= 15) acc -= fee_2to15;
+    else if(m > 15)       acc -= fee_after;
+    acc *= (1 + rm1);
+    if(m >= 61 && m <= 120){
+      acc += splitM;
+      bonusSplitTotal += splitM;
+    }
+    if(m === 120) acc10 = acc;
+  }
+  if(initMonths < 120) acc10 = acc; // 10년 미만이면 최종값
+
+  // 추가 거치기간 (10년 초과분, r2 적용) — 매월 0.05%만 차감
+  const extraMonths = Math.max(0, (deferYears - 10)) * 12;
+  for(let m = 1; m <= extraMonths; m++){
+    acc -= fee_after;
+    acc *= (1 + rm2);
+  }
+
+  // 사업비 합계 (표시용)
+  const feeTotal = initialFee
+    + fee_2to15 * Math.min(14, Math.max(0, initMonths - 1))  // 2~15월 최대 14회
+    + fee_after * Math.max(0, initMonths - 15)               // 첫 10년 중 16월 이후
+    + fee_after * extraMonths;                                // 10년 초과분
+
+  return {
+    totalPaid: lumpSum,
+    accComp: acc10,             // 10년 경과 시점 적립액
+    bonusTotal: bonusSplitTotal,
+    bonusLump: 0,               // 일시납은 일시보너스 없음
+    bonusSplitMonthly: splitM,
+    bonusSplitTotal,
+    fund: Math.max(0, acc),     // 연금개시 시점 재원
+    costTotal: feeTotal
+  };
+}
+
+function calcETFTax(gain){
+  if(gain<=0) return 0;
+  const th=20000000;
+  if(gain<=th) return gain*0.154;
+  const base=th*0.154;
+  const over=gain-th;
+  const brackets=[[12000000,.066],[46000000,.165],[88000000,.264],[150000000,.385],[300000000,.418],[500000000,.440],[1000000000,.462],[Infinity,.495]];
+  let tax=0,prev=0;
+  for(const [lim,rate] of brackets){
+    if(over<=prev) break;
+    tax+=( Math.min(over,lim)-prev)*rate;
+    prev=lim;
+    if(over<=lim) break;
+  }
+  return base+tax;
+}
+
+// 해외상장 ETF 양도세: 수령기간 동안 매년 균등 양도 가정
+// 매년 실현차익 = 총차익/certYears, 250만원 기본공제 후 22% 분리과세
+function calcOverseasTax(gain,certYears){
+  if(gain<=0) return 0;
+  const yrs=Math.max(1,certYears);
+  const yearlyGain=gain/yrs;
+  const taxable=Math.max(0,yearlyGain-2500000); // 연 250만원 기본공제
+  const yearlyTax=taxable*0.22;                  // 20% + 지방세 2%
+  return yearlyTax*yrs;
+}
+
+function calcETF(lumpSum,r1,r2,deferYears,certYears){
+  // 일시납 ETF: 처음에 lumpSum 전액 매수, 이후 거치기간 동안 수익률 적용
+  const rm1=r1/12, rm2=r2/12;
+  let acc=lumpSum;
+  const initMonths=Math.min(deferYears,10)*12;
+  const extraMonths=Math.max(0,(deferYears-10))*12;
+  for(let t=1;t<=initMonths;t++) acc=acc*(1+rm1);
+  for(let t=1;t<=extraMonths;t++) acc=acc*(1+rm2);
+  const totalCost=lumpSum;
+  const gain=Math.max(0,acc-totalCost);
+  // 국내상장 해외주식 ETF: 배당소득세 15.4% + 금융소득종합과세
+  const tax=calcETFTax(gain);
+  // 해외상장 ETF: 양도소득 분리과세 22% (20%+지방세2%)
+  const oTax=calcOverseasTax(gain,certYears||20);           // 분할양도(매년 250만 공제)
+  const oTaxLump=Math.max(0,gain-2500000)*0.22;             // 일시매도(250만 1회 공제)
+  return{totalCost,grossFund:acc,gain,
+    tax,afterTax:acc-tax,effRate:gain>0?tax/gain:0,isGlobal:gain>20000000,
+    oTax,oAfterTax:acc-oTax,oEffRate:gain>0?oTax/gain:0,
+    oTaxLump,oAfterTaxLump:acc-oTaxLump,oEffRateLump:gain>0?oTaxLump/gain:0};
+}
+
+function calcPension(fund,type,lifeExp,certYears,lifeYears){
+  const rm=0.0235/12, fee=0.995;
+  const af=m=>(1-Math.pow(1+rm,-m))/rm;
+  if(type==='cert'){const m=certYears*12;return fund/af(m)*fee;}
+  // 종신: 보증기간(lifeYears) 동안 2배 집중 수령 → 기준월액 산출
+  const gm=lifeYears*12;
+  const lifeM=Math.round(lifeExp*12);
+  const rem=Math.max(0,lifeM-gm);
+  return fund/(2*af(gm)+(rem>0?af(rem)*Math.pow(1+rm,-gm):0))*fee;
+}
+
+/* ── 그래프용 시계열 (일시납 로직) ── */
+function buildTS(lumpSum,r1,r2,deferYears,curAge,pa,receiveYrs){
+  const annualNet1 = Math.max(0, r1 - 0.0005);
+  const annualNet2 = Math.max(0, r2 - 0.0005);
+  const rm1 = Math.pow(1 + annualNet1, 1/12) - 1;
+  const rm2 = Math.pow(1 + annualNet2, 1/12) - 1;
+  const etfRm1 = r1/12, etfRm2 = r2/12;
+
+  const fee_2to15 = lumpSum * (0.0017);
+  const fee_after = lumpSum * 0.0005;
+  const splitM    = lumpSum * 0.0025;
+
+  const ages=[],vaLine=[],etfLine=[],paidLine=[];
+  const paid=lumpSum;
+
+  // 초기 사업비 대량 차감 (VA만)
+  let va = lumpSum - lumpSum * (0.0283 + 0.045);
+  let etf = lumpSum;
+
+  const initYrs = Math.min(deferYears, 10);
+  const extraYrs = Math.max(0, deferYears - 10);
+
+  // 첫 10년 (r1)
+  for(let yr=0; yr<initYrs; yr++){
+    for(let mm=0; mm<12; mm++){
+      const m = yr*12 + mm + 1;
+      if(m >= 2 && m <= 15) va -= fee_2to15;
+      else if(m > 15)       va -= fee_after;
+      va *= (1 + rm1);
+      etf = etf * (1 + etfRm1);
+      if(m >= 61 && m <= 120) va += splitM;
+    }
+    ages.push(curAge+yr+1); vaLine.push(va); etfLine.push(etf); paidLine.push(paid);
+  }
+
+  // 10년 초과 거치 (r2)
+  for(let yr=0; yr<extraYrs; yr++){
+    for(let mm=0; mm<12; mm++){
+      va -= fee_after;
+      va *= (1 + rm2);
+      etf = etf * (1 + etfRm2);
+    }
+    ages.push(curAge+initYrs+yr+1); vaLine.push(va); etfLine.push(etf); paidLine.push(paid);
+  }
+
+  // 연금개시 시점
+  const etfGain = Math.max(0, etf - paid);
+  const etfTax = calcETFTax(etfGain);
+  const etfAfterTax = etf - etfTax;
+  const vaFundAtPension = va;
+  const etfFundAtPension = etfAfterTax;
+
+  // 수령기간
+  const rm = 0.0235/12;
+  const afRec = (1 - Math.pow(1+rm, -(receiveYrs*12))) / rm;
+  const vaMonthly = (vaFundAtPension / afRec) * 0.995;
+  const etfMonthly = etfFundAtPension / (receiveYrs*12);
+  let vaR2 = vaFundAtPension, etfR2 = etfFundAtPension;
+  for(let yr=0; yr<receiveYrs; yr++){
+    for(let mm=0; mm<12; mm++){
+      vaR2 -= vaMonthly; etfR2 -= etfMonthly;
+      if(vaR2<0) vaR2=0; if(etfR2<0) etfR2=0;
+    }
+    ages.push(pa+yr+1); vaLine.push(vaR2); etfLine.push(etfR2); paidLine.push(null);
+  }
+  return {ages,vaLine,etfLine,paidLine, compAge: curAge+10, pa,
+          vaAtPension: vaFundAtPension, etfAfterTax: etfFundAtPension};
+}
+
+/* ── 포맷 ── */
+const fw=n=>Math.abs(n)>=1e8?(n/1e8).toFixed(2)+'억원':Math.round(n/10000).toLocaleString()+'만원';
+const fws=n=>Math.abs(n)>=1e8?(n/1e8).toFixed(1)+'억':Math.round(n/10000).toLocaleString()+'만';
+const fm=n=>Math.round(n/10000).toLocaleString()+'만원';
+const pct=v=>(v*100).toFixed(2)+'%';
+
+/* ── 실물 소구 데이터 ── */
+const PRIZES=[
+  {min:0,     max:5000000,   emoji:'✈️', amount:'500만원',  title:'동남아·일본 2인 여행',   desc:'항공+호텔+식사 4박5일'},
+  {min:5000000,max:10000000, emoji:'🗼', amount:'1,000만원', title:'유럽·미국 1인 여행',     desc:'1~2주 자유여행 풀패키지'},
+  {min:10000000,max:20000000,emoji:'🚗', amount:'2,000만원', title:'신차 계약금',            desc:'또는 준중형 풀옵션 중고차'},
+  {min:20000000,max:30000000,emoji:'💍', amount:'3,000만원', title:'결혼 자금',              desc:'예식장·예물·신혼여행'},
+  {min:30000000,max:50000000,emoji:'🏠', amount:'5,000만원', title:'서울/수도권 월세 보증금',desc:'핵심 구간 — 임대차 보증'},
+  {min:50000000,max:70000000,emoji:'☕', amount:'7,000만원', title:'자영업 창업',            desc:'카페·음식점 1인 기업'},
+  {min:70000000,max:100000000,emoji:'🏢',amount:'1억원',     title:'소형 부동산 투자',       desc:'지방·오피스텔 매입'},
+  {min:100000000,max:Infinity,emoji:'🏙️',amount:'1억 이상',  title:'아파트 투자',            desc:'대출 포함 레버리지 투자'},
+];
+
+/* ── 종합소득세율표 ── */
+const TAX_BRACKETS=[
+  {range:'1,200만원 이하',    rate:'6%', withLocal:'6.6%'},
+  {range:'1,200~4,600만원',  rate:'15%',withLocal:'16.5%'},
+  {range:'4,600~8,800만원',  rate:'24%',withLocal:'26.4%'},
+  {range:'8,800만~1.5억',    rate:'35%',withLocal:'38.5%'},
+  {range:'1.5억~3억',        rate:'38%',withLocal:'41.8%'},
+  {range:'3억~5억',          rate:'40%',withLocal:'44.0%'},
+  {range:'5억~10억',         rate:'42%',withLocal:'46.2%'},
+  {range:'10억 초과',        rate:'45%',withLocal:'49.5%'},
+];
+
+function getHighlightedBracket(gain){
+  if(gain<=0) return -1;
+  const over=Math.max(0,gain-20000000);
+  if(over<=0) return -1; // 분리과세 구간
+  if(over<=12000000)  return 0;
+  if(over<=46000000)  return 1;
+  if(over<=88000000)  return 2;
+  if(over<=150000000) return 3;
+  if(over<=300000000) return 4;
+  if(over<=500000000) return 5;
+  if(over<=1000000000)return 6;
+  return 7;
+}
+
+/* ── MAIN CALCULATE ── */
+function calculate(){
+  const gender=document.querySelector('input[name="gender"]:checked').value;
+  const by=parseInt(document.getElementById('birthYear').value)||1968;
+  const premWon=(parseInt(document.getElementById('premInput').value)||10000)*10000;
+  const pa=parseInt(document.getElementById('pensionAge').value)||85;
+  const r1=parseFloat(document.getElementById('r1Input').value)/100||0.08;
+  const r2=parseFloat(document.getElementById('r2Input').value)/100||0.08;
+  const certYears=parseInt(document.getElementById('certYearsSlider').value)||20;
+  const lifeYears=parseInt(document.getElementById('lifeYearsSlider').value)||20;
+  const receiveYrs=certYears;
+  const nowY=new Date().getFullYear();
+  const curAge=nowY-by;
+  const compAge=curAge+10;  // "적립 10년 시점" (일시납 최소거치)
+  // 일시납은 현재부터 연금개시까지 전체가 거치기간
+  const defer=Math.max(0,pa-curAge);
+  const lifeExp=LE[gender][Math.min(90,Math.max(55,pa))]||20;
+  const gl=gender==='M'?'남성':'여성';
+
+  const prems=[premWon*0.5,premWon,premWon*1.5];
+  const pLabels=[fm(premWon*0.5),fm(premWon),fm(premWon*1.5)];
+
+  const vaR=prems.map(pm=>{
+    const a=calcVA(pm,r1,r2,defer);
+    return{...a,pCert:calcPension(a.fund,'cert',lifeExp,certYears,lifeYears),
+      pLife:calcPension(a.fund,'life',lifeExp,certYears,lifeYears)};
+  });
+  const etfR=prems.map(pm=>calcETF(pm,r1,r2,defer,certYears));
+  const maxFund=vaR[2].fund;
+
+  // 시계열
+  const ts=buildTS(premWon,r1,r2,defer,curAge,pa,receiveYrs);
+
+  // 차이 금액 (기준 납입 기준)
+  const diffWon=vaR[1].fund-etfR[1].afterTax;
+  const activePrize=PRIZES.findIndex(p=>diffWon>=p.min&&diffWon<p.max);
+  const highlightedBracket=getHighlightedBracket(etfR[1].gain);
+
+  document.getElementById('emptyState').style.display='none';
+  const rc=document.getElementById('resultContent');
+  rc.style.display='block';
+
+  rc.innerHTML=`
+  <div class="action-row">
+    <button class="action-btn primary" onclick="savePDF()">📄 PDF 저장</button>
+    <button class="action-btn" onclick="window.print()">🖨️ 인쇄</button>
+    <div style="margin-left:auto;font-size:10px;color:var(--muted);align-self:center;">생성: ${new Date().toLocaleDateString('ko-KR')} | 대외비</div>
+  </div>
+
+  <div class="customer-bar">
+    <div>
+      <div class="customer-name">${by}년생 ${gl} · 만 ${curAge}세 ${gender==='M'?'👨':'👩'} · 일시납 ${fm(premWon)}</div>
+      <div class="customer-sub">일시납 시점 ${curAge}세 → 연금개시 ${pa}세 (${by+pa}년) · 총 거치 ${defer}년 · 기대여명 ${lifeExp}년</div>
+    </div>
+    <div class="customer-tags">
+      <span class="ctag">일시납</span>
+      <span class="ctag amber">거치 ${defer}년</span>
+      <span class="ctag">첫10년 ${pct(r1)}</span>
+      <span class="ctag amber">이후 ${pct(r2)}</span>
+      <span class="ctag green">기대여명 ${lifeExp}년</span>
+    </div>
+  </div>
+
+  <div class="section-heading">일시납 · 거치 단계 요약</div>
+  <div class="phase-grid">
+    ${vaR.map((r,i)=>`
+    <div class="phase-card ${i===1?'featured':''}">
+      <div class="phase-label">일시납 ${pLabels[i]}</div>
+      <div class="phase-row"><span class="phase-row-lbl">일시납 보험료</span><span class="phase-row-val">${fw(r.totalPaid)}</span></div>
+      <div class="phase-row"><span class="phase-row-lbl muted-sm">사업비 합계</span><span class="phase-row-val muted-sm" style="color:var(--red);">-${fw(r.costTotal)}</span></div>
+      <div class="phase-sep"></div>
+      <div class="phase-big-label">${curAge+10}세 적립액 (분할보너스 포함)</div>
+      <div class="phase-big">${fws(r.accComp)}</div>
+      <div class="phase-sep"></div>
+      <div class="phase-big-label">${pa}세 연금재원</div>
+      <div class="phase-big" style="font-size:26px;color:#1B3A6B;">${fws(r.fund)}</div>
+    </div>`).join('')}
+  </div>
+
+  <div class="section-heading">연금수령 시뮬레이션 (공시이율 2.35% · 관리비용 차감 후 · 세전)</div>
+  <div class="pension-grid">
+    <div class="pension-card">
+      <div class="pension-card-hd"><span class="ptbadge b10">확정 ${certYears}년형</span><span class="pension-period">${pa}~${pa+certYears}세 · ${certYears*12}개월</span></div>
+      <table class="ptable"><thead><tr><th>일시납</th><th>연금재원</th><th>월 수령액</th><th>총 수령</th></tr></thead><tbody>
+      ${vaR.map((r,i)=>`<tr><td>${pLabels[i]}</td><td><div class="bar-cell"><div class="mini-bar"><div class="mini-bar-fill" style="width:${maxFund>0?Math.round(r.fund/maxFund*100):0}%;background:var(--navy);"></div></div><span style="font-size:10px;font-weight:500;">${fws(r.fund)}</span></div></td><td><span class="monthly-big c-navy">${fm(r.pCert)}</span></td><td><span class="total-sm">${fw(r.pCert*certYears*12)}</span></td></tr>`).join('')}
+      </tbody></table>
+    </div>
+    <div class="pension-card">
+      <div class="pension-card-hd"><span class="ptbadge bl20">종신 (${lifeYears}년 보증)</span><span class="pension-period">${pa}~${pa+lifeYears}세 2배 · 이후 종신</span></div>
+      <table class="ptable"><thead><tr><th>일시납</th><th>집중기간 월액</th><th>이후 월액</th><th>기대여명 총수령</th></tr></thead><tbody>
+      ${vaR.map((r,i)=>`<tr><td>${pLabels[i]}</td><td><span class="monthly-big c-purple">${fm(r.pLife*2)}</span></td><td><span style="font-family:var(--mono);font-size:12px;color:var(--purple);">${fm(r.pLife)}</span></td><td><span class="total-sm">${fws(r.pLife*2*lifeYears*12+r.pLife*Math.max(0,(lifeExp-lifeYears)*12))}</span></td></tr>`).join('')}
+      </tbody></table>
+      <div style="font-size:9px;color:var(--muted);padding:5px 10px;background:var(--bg);border-top:1px solid var(--border);">기대여명 ${lifeExp}년 기준 (국가데이터처 2024)</div>
+    </div>
+  </div>
+
+  <div class="compare-box">
+    <div class="compare-hd">📌 연금유형 비교 — 일시납 ${pLabels[1]} / ${pa}세 연금개시</div>
+    <div class="compare-grid" style="grid-template-columns:repeat(3,1fr);">
+      <div class="compare-item"><div class="c-type" style="color:var(--navy);">확정 ${certYears}년형</div><div class="c-monthly" style="color:var(--navy);">${fm(vaR[1].pCert)}</div><div class="c-total">총 ${fw(vaR[1].pCert*certYears*12)}</div><div class="c-note">${pa}~${pa+certYears}세</div></div>
+      <div class="compare-item"><div class="c-type" style="color:var(--purple);">종신 (${lifeYears}년 보증)</div><div class="c-monthly" style="color:var(--purple);">${fm(vaR[1].pLife*2)}</div><div class="c-total">집중 후 ${fm(vaR[1].pLife)}</div><div class="c-note">기대여명 ${lifeExp}년</div></div>
+      <div class="compare-item"><div class="c-type" style="color:var(--muted);">ETF 균등인출 (${certYears}년)</div><div class="c-monthly" style="color:var(--text);">${fm(etfR[1].afterTax/(certYears*12))}</div><div class="c-total">세후재원 ${fw(etfR[1].afterTax)}</div><div class="c-note">기간 후 소진</div></div>
+    </div>
+  </div>
+
+  <div class="section-heading">어떤 연금이 나에게 맞을까?</div>
+  <div class="rec-grid" style="grid-template-columns:repeat(2,1fr);">
+    <div class="rec-card rn">
+      <div class="rec-icon">⚡</div>
+      <span class="rec-tag" style="background:var(--navy);color:#fff;">짧고 굵게</span>
+      <div class="rec-title">"정해진 기간 크게 쓰고 싶다면"<br>→ 확정연금형 ${certYears}년</div>
+      <div class="rec-desc">여행·자녀 결혼·건강할 때 여유 소비 등 큰 지출이 예상되는 시기에. ${pa}~${pa+certYears}세 동안 매월 정액 수령, 기간 내 사망 시 유족 수령.</div>
+      <div class="rec-result c-navy">${fm(vaR[1].pCert)} / 월</div>
+    </div>
+    <div class="rec-card rp">
+      <div class="rec-icon">🌿</div>
+      <span class="rec-tag" style="background:var(--purple);color:#fff;">평생 안정</span>
+      <div class="rec-title">"오래 살 것 같고 안정이 우선이라면"<br>→ 종신형 ${lifeYears}년 보증</div>
+      <div class="rec-desc">장수 리스크 대비. ${lifeYears}년 보증기간 동안 2배 집중 수령으로 퇴직·국민연금 공백을 메우고, ${pa+lifeYears}세 이후 생존 시에도 계속 지급됩니다.</div>
+      <div class="rec-result c-purple">${fm(vaR[1].pLife*2)} / 월 (집중기간)</div>
+    </div>
+  </div>
+
+  <div class="section-heading">변액연금 vs 국내상장형 vs 해외상장형 ETF — 세후 비교</div>
+  <div class="etf-section">
+    <div class="etf-hd">
+      <div class="etf-hd-title">📈 변액연금 · 국내상장 해외주식 ETF · 해외상장 ETF 세후 비교</div>
+      <div class="etf-hd-sub">국내상장형은 배당소득세·금융소득종합과세, 해외상장형은 양도세 22%(연 250만 공제) · 변액연금은 10년 이상 유지 시 보험차익 <strong>전액 비과세</strong></div>
+    </div>
+    <div class="etf-body">
+      <div class="tax-struct-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="tax-box va-box">
+          <div class="tax-box-title" style="color:var(--navy);">🏦 변액연금 (일시납)</div>
+          <div class="tax-box-body" style="color:var(--navy);font-size:10px;">수익 전액 → <strong style="font-size:14px;">세금 0원</strong><br><span style="opacity:.7;">일시납 1억 이하 + 10년 이상 유지</span></div>
+        </div>
+        <div class="tax-box etf-box">
+          <div class="tax-box-title" style="color:#0f2444;">📊 국내상장 ETF</div>
+          <div class="tax-box-body" style="font-size:9.5px;color:#0f2444;">≤2,000만 → 분리과세 15.4%<br>2,000만 초과 → 종합과세 누진<br>최고 49.5%(지방세 포함)</div>
+        </div>
+        <div class="tax-box" style="background:#f0ebf8;border-color:#9a6fd8;">
+          <div class="tax-box-title" style="color:#5a2d8a;">🌐 해외상장 ETF</div>
+          <div class="tax-box-body" style="font-size:9.5px;color:#5a2d8a;">양도소득 분리과세<br>연 250만 기본공제 후<br>22%(20%+지방세) 단일세율</div>
+        </div>
+      </div>
+      <div class="etf-assumption-bar">
+        <span class="etf-tag">기준 일시납 <strong>${fm(premWon)}</strong></span>
+        <span class="etf-tag">첫10년 <strong>${pct(r1)}</strong> · 이후 <strong>${pct(r2)}</strong></span>
+        <span class="etf-tag" style="background:var(--navy-pale);color:var(--navy);border-color:var(--navy);">변액연금 <strong>0원</strong></span>
+        <span class="etf-tag" style="background:#eef1f6;color:#0f2444;border-color:#0f2444;">국내상장 <strong>${(etfR[1].effRate*100).toFixed(1)}%</strong></span>
+        <span class="etf-tag" style="background:#f0ebf8;color:#5a2d8a;border-color:#9a6fd8;">해외상장 <strong>${(etfR[1].oEffRate*100).toFixed(1)}%</strong></span>
+      </div>
+      ${(()=>{
+        const v=vaR[1],e=etfR[1];
+        const diffDom=v.fund-e.afterTax;
+        const diffOvs=v.fund-e.oAfterTax;
+        const splitYrs=Math.min(5,Math.max(0,Math.round(v.bonusSplitTotal>0?5:0)));
+        return `
+      <div class="etf-3col">
+        <div class="etf-col">
+          <div class="etf-col-hd hd-va">변액연금 일시납<br>(${pLabels[1]})</div>
+          <div class="etf-row"><span class="etf-row-lbl">일시납 보험료</span><span class="etf-row-val c-navy">${fw(v.totalPaid)}</span></div>
+          <div class="etf-row"><span class="etf-row-lbl">사업비 공제</span><span class="etf-row-val" style="color:var(--red);">-${fw(v.costTotal)}</span></div>
+          <div class="etf-row" style="background:var(--green-pale);"><span class="etf-row-lbl" style="font-weight:700;color:var(--green);font-size:9.5px;">5~10년차 분할보너스 (월)</span><span class="etf-row-val c-green" style="font-weight:700;font-size:11px;">+${fm(v.bonusSplitMonthly)}</span></div>
+          <div class="etf-row"><span class="etf-row-lbl" style="font-size:9.5px;">분할보너스 합계 (60개월)</span><span class="etf-row-val c-green" style="font-size:10px;">+${fw(v.bonusSplitTotal)}</span></div>
+          <div class="etf-row"><span class="etf-row-lbl">${pa}세 연금재원</span><span class="etf-row-val c-navy">${fw(v.fund)}</span></div>
+          <div class="etf-row"><span class="etf-row-lbl">적용 세율</span><span class="etf-row-val c-green" style="font-weight:700;">0% 비과세</span></div>
+          <div class="etf-row" style="background:var(--navy-pale);border-top:2px solid var(--navy);">
+            <span class="etf-row-lbl" style="font-weight:700;">세후 재원</span>
+            <span class="etf-row-val c-navy" style="font-size:15px;font-weight:700;">${fw(v.fund)}</span>
+          </div>
+        </div>
+        <div class="etf-col">
+          <div class="etf-col-hd hd-etf">국내상장<br>해외주식 ETF</div>
+          <div class="etf-row"><span class="etf-row-lbl">총 납입</span><span class="etf-row-val" style="color:var(--text);">${fw(e.totalCost)}</span></div>
+          <div class="etf-row"><span class="etf-row-lbl">${pa}세 평가액</span><span class="etf-row-val" style="color:var(--text);">${fw(e.grossFund)}</span></div>
+          <div class="etf-row"><span class="etf-row-lbl">총 수익</span><span class="etf-row-val" style="color:var(--text);">${fw(e.gain)}</span></div>
+          <div class="etf-row"><span class="etf-row-lbl" style="font-size:9px;">과세방식</span><span class="etf-row-val" style="font-size:9px;color:var(--muted);">배당 15.4%<br>+종합과세</span></div>
+          <div class="etf-row"><span class="etf-row-lbl" style="color:#c0392b;">납부 세금</span><span class="etf-row-val" style="color:#c0392b;font-weight:700;">-${fw(e.tax)}</span></div>
+          <div class="etf-row"><span class="etf-row-lbl">실효세율</span><span class="etf-row-val" style="color:#c0392b;">${(e.effRate*100).toFixed(1)}%</span></div>
+          <div class="etf-row" style="background:#eef1f6;border-top:2px solid #0f2444;">
+            <span class="etf-row-lbl" style="font-weight:700;">세후 재원</span>
+            <span class="etf-row-val" style="color:#0f2444;font-size:15px;font-weight:700;">${fw(e.afterTax)}</span>
+          </div>
+        </div>
+        <div class="etf-col">
+          <div class="etf-col-hd hd-overseas">해외상장 ETF<br>(QQQ·SPY·SOXX)</div>
+          <div class="etf-row"><span class="etf-row-lbl">총 납입</span><span class="etf-row-val" style="color:var(--text);">${fw(e.totalCost)}</span></div>
+          <div class="etf-row"><span class="etf-row-lbl">${pa}세 평가액</span><span class="etf-row-val" style="color:var(--text);">${fw(e.grossFund)}</span></div>
+          <div class="etf-row"><span class="etf-row-lbl">총 수익</span><span class="etf-row-val" style="color:var(--text);">${fw(e.gain)}</span></div>
+          <div class="etf-row" style="background:#f7f3fc;"><span class="etf-row-lbl" style="font-size:9px;font-weight:700;color:#5a2d8a;">①분할양도 (${certYears}년)</span><span class="etf-row-val" style="font-size:9px;color:#5a2d8a;">연 250만공제</span></div>
+          <div class="etf-row"><span class="etf-row-lbl" style="color:#c0392b;font-size:10px;">세금</span><span class="etf-row-val" style="color:#c0392b;font-weight:700;font-size:11px;">-${fw(e.oTax)} (${(e.oEffRate*100).toFixed(1)}%)</span></div>
+          <div class="etf-row" style="background:#f0ebf8;"><span class="etf-row-lbl" style="font-weight:700;color:#5a2d8a;font-size:10px;">세후재원</span><span class="etf-row-val" style="color:#5a2d8a;font-size:13px;font-weight:700;">${fw(e.oAfterTax)}</span></div>
+          <div class="etf-row" style="background:#f7f3fc;border-top:1px dashed #9a6fd8;"><span class="etf-row-lbl" style="font-size:9px;font-weight:700;color:#7a4db0;">②일시매도</span><span class="etf-row-val" style="font-size:9px;color:#7a4db0;">250만 1회공제</span></div>
+          <div class="etf-row"><span class="etf-row-lbl" style="color:#c0392b;font-size:10px;">세금</span><span class="etf-row-val" style="color:#c0392b;font-weight:700;font-size:11px;">-${fw(e.oTaxLump)} (${(e.oEffRateLump*100).toFixed(1)}%)</span></div>
+          <div class="etf-row" style="background:#efe6f8;border-top:2px solid #7a4db0;">
+            <span class="etf-row-lbl" style="font-weight:700;color:#7a4db0;font-size:10px;">세후재원</span>
+            <span class="etf-row-val" style="color:#7a4db0;font-size:13px;font-weight:700;">${fw(e.oAfterTaxLump)}</span>
+          </div>
+        </div>
+        <div class="etf-col">
+          <div class="etf-col-hd hd-diff">변액연금 우위</div>
+          <div class="etf-row"><span class="etf-row-lbl">변액연금</span><span class="etf-row-val c-navy">${fws(v.fund)}</span></div>
+          <div class="etf-row"><span class="etf-row-lbl" style="font-size:9.5px;">vs 국내상장</span><span class="etf-row-val c-navy" style="font-weight:700;">+${fws(diffDom)}</span></div>
+          <div class="etf-row"><span class="etf-row-lbl" style="font-size:9.5px;">vs 해외(분할)</span><span class="etf-row-val" style="color:#5a2d8a;font-weight:700;">+${fws(diffOvs)}</span></div>
+          <div class="etf-row"><span class="etf-row-lbl" style="font-size:9.5px;">vs 해외(일시)</span><span class="etf-row-val" style="color:#7a4db0;font-weight:700;">+${fws(v.fund-e.oAfterTaxLump)}</span></div>
+          <div class="etf-row"><span class="etf-row-lbl" style="font-size:9.5px;">국내상장 세금</span><span class="etf-row-val" style="color:var(--red);">-${fws(e.tax)}</span></div>
+          <div style="padding:8px 12px;font-size:9.5px;color:var(--green);font-weight:600;background:var(--green-pale);line-height:1.5;">
+            변액연금은 전액 비과세<br>수익이 클수록 격차 ↑
+          </div>
+        </div>
+      </div>`;
+      })()}
+
+      <div style="margin:14px 0 8px;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.06em;">일시납 금액별 세후 재원 · 과세 상세 비교</div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:11px;">
+          <thead>
+            <tr style="background:var(--bg);">
+              <th style="padding:6px 8px;text-align:left;border:1px solid var(--border);font-size:9.5px;font-weight:500;color:var(--muted);">일시납</th>
+              <th style="padding:6px 8px;text-align:right;border:1px solid var(--border);font-size:9.5px;font-weight:500;color:var(--muted);">총 수익</th>
+              <th style="padding:6px 8px;text-align:right;border:1px solid var(--border);font-size:9.5px;font-weight:500;color:#0f2444;">국내상장 세금</th>
+              <th style="padding:6px 8px;text-align:right;border:1px solid var(--border);font-size:9.5px;font-weight:500;color:#0f2444;">국내상장 세후</th>
+              <th style="padding:6px 8px;text-align:right;border:1px solid var(--border);font-size:9.5px;font-weight:500;color:#5a2d8a;">해외 분할세금</th>
+              <th style="padding:6px 8px;text-align:right;border:1px solid var(--border);font-size:9.5px;font-weight:500;color:#5a2d8a;">해외 분할세후</th>
+              <th style="padding:6px 8px;text-align:right;border:1px solid var(--border);font-size:9.5px;font-weight:500;color:#7a4db0;">해외 일시세금</th>
+              <th style="padding:6px 8px;text-align:right;border:1px solid var(--border);font-size:9.5px;font-weight:500;color:#7a4db0;">해외 일시세후</th>
+              <th style="padding:6px 8px;text-align:right;border:1px solid var(--border);font-size:9.5px;font-weight:500;color:var(--navy);">변액연금 재원</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${prems.map((pm,i)=>{
+              const vf=vaR[i].fund, e=etfR[i];
+              return `<tr>
+                <td style="padding:8px 8px;border:1px solid #f0f3f8;font-weight:600;">${pLabels[i]}</td>
+                <td style="padding:8px 8px;border:1px solid #f0f3f8;text-align:right;">${fw(e.gain)}</td>
+                <td style="padding:8px 8px;border:1px solid #f0f3f8;text-align:right;color:var(--red);font-weight:600;">-${fw(e.tax)}</td>
+                <td style="padding:8px 8px;border:1px solid #f0f3f8;text-align:right;color:#0f2444;font-weight:600;">${fw(e.afterTax)}</td>
+                <td style="padding:8px 8px;border:1px solid #f0f3f8;text-align:right;color:var(--red);font-weight:600;">-${fw(e.oTax)}</td>
+                <td style="padding:8px 8px;border:1px solid #f0f3f8;text-align:right;color:#5a2d8a;font-weight:600;">${fw(e.oAfterTax)}</td>
+                <td style="padding:8px 8px;border:1px solid #f0f3f8;text-align:right;color:var(--red);font-weight:600;">-${fw(e.oTaxLump)}</td>
+                <td style="padding:8px 8px;border:1px solid #f0f3f8;text-align:right;color:#7a4db0;font-weight:600;">${fw(e.oAfterTaxLump)}</td>
+                <td style="padding:8px 8px;border:1px solid #f0f3f8;text-align:right;color:var(--navy);font-weight:700;font-size:13px;">${fw(vf)}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-heading tax-table-section">금융소득 종합과세 세율표</div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:20px;box-shadow:var(--sh);">
+    <div style="background:var(--red-vivid);color:#fff;padding:10px 16px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:8px;">
+      🔴 금융소득 종합소득세율 — ETF 수익 ${fw(etfR[1].gain)} 기준 해당 구간 표시
+    </div>
+    <div style="padding:14px 16px;">
+      <div style="font-size:10px;color:var(--muted);margin-bottom:10px;">
+        ※ 총수익 2,000만원 이하: 분리과세 15.4% 적용 (종합과세 비해당)<br>
+        ※ 2,000만원 초과분부터 아래 구간별 누진세율 적용 (지방소득세 10% 포함)
+      </div>
+      <div class="tax-table-wrap">
+        <table class="tax-table">
+          <thead>
+            <tr>
+              <th class="tax-row-label">과세 구간 (2,000만원 초과분 기준)</th>
+              <th>세율</th>
+              <th>지방세 포함</th>
+              <th>적용 여부</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${TAX_BRACKETS.map((b,i)=>`
+            <tr class="${i===highlightedBracket?'highlighted':''}">
+              <td class="tax-row-label">${b.range}</td>
+              <td>${b.rate}</td>
+              <td>${b.withLocal}</td>
+              <td>${i===highlightedBracket?'<strong style="color:var(--red-vivid);">▶ 해당 구간</strong>':i<highlightedBracket?'<span style="color:var(--muted);">포함</span>':'<span style="color:#d0d5de;">-</span>'}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:10px;padding:10px 14px;background:var(--red-pale);border:1.5px solid var(--red-vivid);border-radius:7px;font-size:11px;color:var(--red-vivid);line-height:1.8;">
+        <strong>일시납 ${pLabels[1]} 기준 ETF 세금 계산</strong><br>
+        총 수익 ${fw(etfR[1].gain)} → 2,000만원 이하 분리과세 ${fw(Math.min(etfR[1].gain,20000000)*0.154)} + 초과분 종합과세 ${fw(Math.max(0,etfR[1].tax-Math.min(etfR[1].gain,20000000)*0.154))}<br>
+        <strong>총 납부 세금: ${fw(etfR[1].tax)} · 실효세율: ${(etfR[1].effRate*100).toFixed(1)}%</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-heading">세후 재원 차이 ${fw(diffWon)} — 이런 것들이 가능합니다</div>
+  <div class="prize-box" style="margin-bottom:20px;">
+    <div class="prize-hd">💰 변액연금 vs ETF 세후 재원 차이 = <strong style="font-size:14px;">${fw(diffWon)}</strong> &nbsp;→&nbsp; 달성 가능한 목표들</div>
+    <div class="prize-grid">
+      ${PRIZES.map((p,i)=>`
+      <div class="prize-item ${i===activePrize?'active':i<activePrize?'active':''}" style="${i===activePrize?'background:linear-gradient(135deg,rgba(27,58,107,.1) 0%,rgba(27,58,107,.04) 100%);border-color:rgba(27,58,107,.3);':''}">
+        <div class="prize-emoji">${p.emoji}</div>
+        <div class="prize-amount" style="${i<=activePrize?'color:var(--navy);':'color:var(--muted);'}">${p.amount}</div>
+        <div class="prize-title" style="${i<=activePrize?'color:var(--text);':'color:var(--muted);'}">${p.title}</div>
+        <div class="prize-desc">${p.desc}</div>
+      </div>`).join('')}
+    </div>
+    <div style="padding:10px 16px;font-size:10px;color:var(--muted);border-top:1px solid var(--border);background:var(--bg);">
+      ✓ 표시 항목: 변액연금 비과세 혜택으로 ETF 대비 추가 확보 가능한 재원 범위 · 일시납 ${pLabels[1]} 기준
+    </div>
+  </div>
+
+  <div class="section-heading">왜 장기투자일수록 변액연금이 유리한가?</div>
+  <div class="adv-grid">
+    <div class="adv-card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span class="adv-num">1</span>
+        <div class="adv-keyword">수익이 클수록<br>세금도 더 커진다</div>
+      </div>
+      <div class="adv-sub">ETF 총수익이 2,000만원을 넘으면 초과분에 종합소득세 누진세율이 적용됩니다. 납입·거치 기간이 길고 수익률이 높을수록 ETF의 세금 부담은 기하급수적으로 증가합니다. 반면 변액연금은 수익이 1억이든 10억이든 <strong>세금 0원</strong>입니다.</div>
+    </div>
+    <div class="adv-card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span class="adv-num">2</span>
+        <div class="adv-keyword">비과세는<br>복리로 불어난다</div>
+      </div>
+      <div class="adv-sub">ETF는 매년 분배금·배당에 15.4% 과세 후 재투자됩니다. 변액연금은 과세 없이 전액 재투자되므로 기간이 길수록 복리 효과의 격차가 확대됩니다. 20년 이상 장기에서 이 차이는 수천만 원 이상으로 벌어집니다.</div>
+    </div>
+    <div class="adv-card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span class="adv-num">3</span>
+        <div class="adv-keyword">ETF는 원금이<br>고갈된다</div>
+      </div>
+      <div class="adv-sub">ETF 균등인출은 정해진 재원을 나눠 쓰는 방식입니다. 기대여명 이상 장수할 경우 원금이 소진되어 수령이 불가능해집니다. 변액연금 종신형은 <strong>사망 시까지 지급이 보장</strong>됩니다. 100세 시대의 장수 리스크를 본질적으로 해소합니다.</div>
+    </div>
+    <div class="adv-card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span class="adv-num">4</span>
+        <div class="adv-keyword">분할보너스·유연성<br>ETF에는 없다</div>
+      </div>
+      <div class="adv-sub">변액연금 일시납 연금액강화형은 계약 후 <strong>5~10년차 매월 원금의 0.25% 분할보너스</strong>가 60개월 지급됩니다(1억 기준 총 1,500만원). 펀드 변경(연 12회), 중도인출, 조기개시 옵션 등 생애 변화에 맞는 유연한 운용이 가능합니다.</div>
+    </div>
+  </div>
+
+  <div class="result-footer">
+    <strong>🔒 대외비 — 사내 전용 자료 · 고객 배포 금지</strong>&nbsp;|&nbsp;
+    ① 투자수익률 첫10년 ${pct(r1)} / 이후 ${pct(r2)} — 참고용 예시, 실제 운용결과와 다를 수 있음
+    ② 순수익률 = 수익률 − 보증비용 0.05% (특별계정 운용보수는 기준가에 반영되어 별도 미차감)
+    ③ 일시납 사업비 구조: 1차월 계약체결 2.83% + 계약관리 4.5% = 7.33% 일괄공제 / 2~15차월 매월 0.17% (계약체결 0.12% + 계약관리 0.05%) / 16차월~연금개시 매월 계약관리 0.05%
+    ④ 분할보너스: 계약 후 5년 경과부터 5년간 매월 일시납 원금 × 0.25% (총 60회) — 일시납은 납입완료 일시보너스 없음
+    ⑤ 최소거치기간 10년 필수 (일시납 연금액강화형) · 연금이율 공시이율 2.35% (매월 변동) · 기대여명 국가데이터처 2024년 생명표(연령 사이값 보간)
+    ⑥ 국내상장 해외주식 ETF: 배당소득세 15.4%, 총수익 2,000만원 초과분 종합소득세 누진(최고 49.5% 지방세 포함) · 해외상장 ETF(QQQ·SPY·SOXX 등): 양도소득 22% 분리과세(20%+지방세2%) · ①분할양도=수령기간 균등 매도하여 매년 250만원 기본공제 ②일시매도=연금개시 시점 전량 매도하여 250만원 1회 공제 · 환율 변동 미반영 · 변액연금 비과세: 일시납 1억 이하 + 10년 이상 유지
+    ⑦ 세전 기준 · 비과세 요건 미충족 시 이자소득세 부과 가능 · 본 자료는 투자 권유 자료가 아닌 내부 분석용 시뮬레이션&nbsp;|&nbsp;
+    <strong>JW Financial Consulting</strong> · ${new Date().getFullYear()}
+  </div>
+  `;
+
+}
+
+/* ── PDF 저장 ── */
+function savePDF(){
+  const el=document.getElementById('resultContent');
+  const btns=document.querySelectorAll('.action-btn');
+  btns.forEach(b=>b.style.display='none');
+  const by=document.getElementById('birthYear').value;
+  const pa=document.getElementById('pensionAge').value;
+  const pm=document.getElementById('premInput').value;
+  html2pdf().set({
+    margin:[8,6],
+    filename:`[대외비]변액연금_일시납_시뮬레이션_${by}년생_${pa}세개시_${pm}만원.pdf`,
+    image:{type:'jpeg',quality:0.95},
+    html2canvas:{scale:2,useCORS:true,scrollY:0},
+    jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+    pagebreak:{mode:['avoid-all','css','legacy']}
+  }).from(el).save().then(()=>btns.forEach(b=>b.style.display=''));
+}
+
+/* 초기 실행 */
+calculate();
+</script>
+</body>
+</html>
