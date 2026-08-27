@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>유기정기금 증여계약 시스템 (실시간 컨설팅 모드)</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .header-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header-title h1 {
+            font-size: 28px;
+            color: #1F2937;
+            margin-bottom: 10px;
+        }
+        .header-title p {
+            color: #6B7280;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 1300px;
+            margin: 0 auto;
+            align-items: flex-start;
+        }
+        
+        /* 좌측 입력 폼 */
+        .input-section {
+            flex: 0 0 450px;
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-top: 5px solid #FDE047;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #F3F4F6;
+            color: #111827;
+        }
+        
+        /* 강조된 매월 증여액 입력부 */
+        .highlight-input {
+            background-color: #F0FDF4;
+            border: 2px solid #86EFAC;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        .highlight-input label {
+            color: #065F46 !important;
+            font-size: 15px !important;
+            font-weight: 800 !important;
+        }
+        .highlight-input input {
+            font-size: 18px;
+            font-weight: 800;
+            color: #047857;
+            background-color: #fff;
+            border-color: #BBF7D0;
+        }
+        .highlight-input input:focus {
+            box-shadow: 0 0 0 3px rgba(134,239,172,0.3);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: #4B5563;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #86EFAC;
+            box-shadow: 0 0 0 3px rgba(134,239,172,0.2);
+        }
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+        .row > div {
+            flex: 1;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .realtime-notice {
+            background-color: #FEF9C3;
+            color: #854D0E;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            margin-top: 15px;
+            border: 1px dashed #FDE047;
+        }
+
+        /* 저장/불러오기 버튼 스타일 */
+        .save-load-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn-save, .btn-load {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .btn-save {
+            background-color: #3B82F6;
+            color: white;
+        }
+        .btn-save:hover { background-color: #2563EB; }
+        .btn-load {
+            background-color: #10B981;
+            color: white;
+        }
+        .btn-load:hover { background-color: #059669; }
+
+        /* 우측 결과 화면 */
+        .output-section {
+            flex: 1;
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            min-height: 800px;
+        }
+
+        /* 증여세 절세 요약판 */
+        .tax-summary {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            background-color: #F8FAFC;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #E2E8F0;
+        }
+        .tax-box {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #E5E7EB;
+        }
+        .tax-box h4 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #6B7280;
+        }
+        .tax-val {
+            font-size: 20px;
+            font-weight: 800;
+            color: #1F2937;
+        }
+        .tax-box.save {
+            background-color: #F0FDF4;
+            border-color: #86EFAC;
+        }
+        .tax-box.save h4 { color: #047857; }
+        .tax-box.save .tax-val { color: #059669; }
+        
+        /* 탭 메뉴 */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #E5E7EB;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6B7280;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+        .tab.active {
+            color: #10B981;
+            border-bottom-color: #10B981;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .action-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+        }
+        .btn-print {
+            background-color: #374151;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* 테이블 공통 스타일 */
+        .doc-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .doc-table th, .doc-table td {
+            border: 1px solid #D1D5DB;
+            padding: 10px;
+        }
+        .doc-table th { background-color: #F9FAFB; color: #374151; }
+        .text-right { text-align: right !important; }
+        
+        /* 계약서 전용 스타일 */
+        .contract-paper {
+            padding: 30px;
+            border: 1px solid #E5E7EB;
+            font-family: 'Malgun Gothic', serif;
+            line-height: 1.6;
+            color: #000;
+            font-size: 14px;
+        }
+        .contract-title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        .contract-parties {
+            margin-bottom: 20px;
+        }
+        .article-title {
+            font-weight: bold;
+            margin-top: 15px;
+            font-size: 15px;
+        }
+        .article-content {
+            margin-left: 10px;
+            margin-bottom: 5px;
+        }
+        .article-list {
+            margin-left: 20px;
+            list-style: none;
+            padding: 0;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        .contract-closing {
+            margin-top: 20px; 
+            margin-bottom: 20px;
+        }
+        .contract-date {
+            text-align: center; 
+            font-weight: bold; 
+            margin-bottom: 30px;
+        }
+        
+        .signatures {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .sign-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .sign-info { flex: 1; }
+
+        /* 인쇄 전용 스타일 */
+        @media print {
+            @page { size: A4; margin: 15mm; }
+            body { background: #fff; margin: 0; padding: 0; }
+            .header-title, .input-section, .tabs, .action-bar, .no-print { display: none !important; }
+            .container { display: block; max-width: 100%; margin: 0; }
+            .output-section { border: none; box-shadow: none; padding: 0; min-height: auto; }
+            
+            .contract-paper { 
+                border: none; 
+                padding: 0; 
+                line-height: 1.5; 
+                font-size: 11pt; 
+            }
+            .contract-title { margin-bottom: 15px; font-size: 16pt; }
+            .article-title { margin-top: 12px; font-size: 12pt; }
+            .contract-closing { margin-top: 15px; margin-bottom: 15px; }
+            .contract-date { margin-bottom: 25px; }
+            .signatures { margin-top: 15px; page-break-inside: avoid; }
+
+            .tab-content { display: none !important; }
+            .tab-content.active { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-title">
+    <h1>유기정기금 증여 플랜 및 계약 시스템</h1>
+    <p>정보를 입력하면 실시간으로 절세 금액을 계산하고 증여 계약서를 완성합니다.</p>
+</div>
+
+<div class="container">
+    <!-- 좌측: 정보 입력 폼 -->
+    <div class="input-section">
+        <div class="section-title">기본사항 입력</div>
+        
+        <!-- 0. 매월 증여액 (최상단 강조 배치) -->
+        <div class="highlight-input">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>💰 매월 증여액 설정 (원)</label>
+                <div class="input-group">
+                    <span style="font-weight: 800; font-size: 18px; color: #047857;">₩</span>
+                    <input type="text" id="gAmount" class="form-control" placeholder="예: 1,000,000" oninput="formatNum(this); generateDocs();">
+                </div>
+            </div>
+        </div>
+        
+        <!-- 3. 증여 기간 및 내용 (중요도 순 상향 배치) -->
+        <div style="font-weight: bold; margin-bottom: 10px; font-size: 14px;">1. 증여 기간 및 정보</div>
+        <div class="form-group">
+            <label>증여시작일</label>
+            <input type="text" id="gStart" class="form-control" placeholder="YYYY-MM-DD" oninput="formatDateInput(this); generateDocs();" maxlength="10">
+        </div>
+        <div class="form-group">
+            <label>증여종료일</label>
+            <input type="text" id="gEnd" class="form-control" placeholder="YYYY-MM-DD" oninput="formatDateInput(this); generateDocs();" maxlength="10">
+        </div>
+        
+        <div class="row">
+            <div class="form-group">
+                <label>증여방법</label>
+                <select id="gMethod" class="form-control" onchange="generateDocs();">
+                    <option value="자동이체">자동이체</option>
+                    <option value="직접이체">직접이체</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>증여시기 (매월)</label>
+                <div class="input-group">
+                    <input type="number" id="gDay" class="form-control" placeholder="30" min="1" max="31" oninput="generateDocs();"> 일
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>입금 계좌</label>
+            <div class="row">
+                <input type="text" id="gBank" class="form-control" placeholder="은행/증권사" oninput="generateDocs();">
+                <input type="text" id="gAccount" class="form-control" placeholder="계좌번호" oninput="generateDocs();">
+            </div>
+        </div>
+
+        <!-- 2. 수증자 -->
+        <div style="font-weight: bold; margin-bottom: 10px; margin-top: 25px; font-size: 14px;">2. 수증자(돈 받는 사람) 인적사항</div>
+        <div class="form-group">
+            <label>수증자 공제 조건 (세금 계산용)</label>
+            <select id="rDeduction" class="form-control" onchange="generateDocs();">
+                <option value="50000000">성년 자녀 / 손주 (5,000만원 공제)</option>
+                <option value="20000000">미성년 자녀 / 손주 (2,000만원 공제)</option>
+                <option value="600000000">배우자 (6억원 공제)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>증여자와의 관계 (세대생략 할증 적용 기준)</label>
+            <select id="relation" class="form-control" onchange="generateDocs();">
+                <option value="자">자(아들/딸)</option>
+                <option value="손">손(손자/손녀) - 세대생략 할증 부과</option>
+                <option value="배우자">배우자</option>
+            </select>
+        </div>
+        <div class="form-group"><label>성명</label><input type="text" id="rName" class="form-control" oninput="generateDocs();"></div>
+        <div class="form-group"><label>주민등록번호</label><input type="text" id="rId" class="form-control" placeholder="000000-0000000" oninput="generateDocs();"></div>
+        <div class="form-group"><label>주소</label><input type="text" id="rAddr" class="form-control" oninput="generateDocs();"></div>
+        <div class="form-group"><label>연락처</label><input type="text" id="rPhone" class="form-control" oninput="generateDocs();"></div>
+
+        <!-- 1. 증여자 -->
+        <div style="font-weight: bold; margin-bottom: 10px; margin-top: 25px; font-size: 14px;">3. 증여자(돈 주는 사람) 인적사항</div>
+        <div class="form-group"><label>성명</label><input type="text" id="dName" class="form-control" oninput="generateDocs();"></div>
+        <div class="form-group"><label>주민등록번호</label><input type="text" id="dId" class="form-control" placeholder="000000-0000000" oninput="generateDocs();"></div>
+        <div class="form-group"><label>주소</label><input type="text" id="dAddr" class="form-control" oninput="generateDocs();"></div>
+        <div class="form-group"><label>연락처</label><input type="text" id="dPhone" class="form-control" placeholder="010-0000-0000" oninput="generateDocs();"></div>
+
+        <div class="realtime-notice">
+            💡 항목을 입력하거나 수정하면 실시간으로 우측 화면에 자동 적용됩니다.
+        </div>
+        
+        <!-- (신규) 저장 / 불러오기 버튼 -->
+        <div class="save-load-actions">
+            <button type="button" class="btn-save" onclick="saveData()">💾 PC에 저장하기</button>
+            <button type="button" class="btn-load" onclick="document.getElementById('fileInput').click()">📂 PC에서 불러오기</button>
+            <input type="file" id="fileInput" style="display: none;" accept=".json" onchange="loadData(event)">
+        </div>
+    </div>
+
+    <!-- 우측: 결과 출력 -->
+    <div class="output-section">
+        
+        <!-- 증여세 절세 요약판 -->
+        <div id="taxSummary" class="tax-summary no-print" style="display: none;">
+            <div class="tax-box">
+                <h4>목돈(일시금) 증여 시</h4>
+                <div class="tax-val" id="tsLumpTax">0원</div>
+                <div style="font-size: 11px; color:#9CA3AF; margin-top: 5px;" id="tsSurchargeLump"></div>
+            </div>
+            <div class="tax-box">
+                <h4>유기정기금 증여 시</h4>
+                <div class="tax-val" id="tsYugiTax">0원</div>
+                <div style="font-size: 11px; color:#9CA3AF; margin-top: 5px;" id="tsSurchargeYugi"></div>
+            </div>
+            <div class="tax-box save">
+                <h4>최종 절세 금액</h4>
+                <div class="tax-val" id="tsSaveTax">0원</div>
+            </div>
+        </div>
+
+        <div class="tabs no-print">
+            <div class="tab active" onclick="switchTab('tab-eval', this)">유기정기금 평가명세서</div>
+            <div class="tab" onclick="switchTab('tab-contract', this)">증여계약서</div>
+        </div>
+        
+        <div class="action-bar no-print">
+            <button class="btn-print" onclick="window.print()">현재 화면 인쇄 / PDF 저장</button>
+        </div>
+
+        <!-- 탭 1: 평가명세서 -->
+        <div id="tab-eval" class="tab-content active">
+            <h3 style="text-align: center; margin-bottom: 20px;">유기정기금 평가명세서</h3>
+            <table class="doc-table">
+                <tr>
+                    <th width="20%">증여자</th><td width="30%" id="outDName"></td>
+                    <th width="20%">수증자</th><td width="30%" id="outRName"></td>
+                </tr>
+                <tr>
+                    <th>증여자와의 관계</th><td id="outRelation"></td>
+                    <th>할인율</th><td>3%</td>
+                </tr>
+                <tr>
+                    <th>정기금 시작일</th><td id="outStart"></td>
+                    <th>지급 시기</th><td id="outPeriod"></td>
+                </tr>
+                <tr>
+                    <th>정기금 마지막일</th><td id="outEnd"></td>
+                    <th>지급 시기별 금액</th><td id="outAmount" style="font-weight: bold;"></td>
+                </tr>
+            </table>
+
+            <table class="doc-table" style="margin-top: 30px;">
+                <thead>
+                    <tr>
+                        <th>년도</th>
+                        <th>불입년도 (n)</th>
+                        <th>불입횟수(월)</th>
+                        <th>불입원금</th>
+                        <th>할인평가액</th>
+                    </tr>
+                </thead>
+                <tbody id="evalTableBody">
+                    <tr><td colspan="5" style="color: #9CA3AF; padding: 40px; border-bottom: none;">좌측 폼에 매월 증여액과 증여 시작/종료일을 입력하면 자동으로 계산됩니다.</td></tr>
+                </tbody>
+                <tfoot id="evalTableFoot" style="display: none; font-weight: bold; background-color: #F9FAFB;">
+                    <tr>
+                        <td colspan="3">합계</td>
+                        <td class="text-right" id="totalOrigin"></td>
+                        <td class="text-right" id="totalDiscount"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- 탭 2: 증여계약서 -->
+        <div id="tab-contract" class="tab-content">
+            <div class="contract-paper">
+                <div class="contract-title">현금 증여계약서</div>
+                
+                <div class="contract-parties">
+                    증여자 <span id="c_dName" style="font-weight: bold;">OOO</span> (이하 "갑"이라 한다)와<br>
+                    수증자 <span id="c_rName" style="font-weight: bold;">OOO</span> (이하 "을"이라 한다) 사이에 아래와 같이 증여계약을 체결한다.
+                </div>
+
+                <div class="article-title">제1조 [목적]</div>
+                <div class="article-content">본 계약은 "갑"이 소유한 현금(예금)을 무상으로 "을"에게 증여하고 이에 관련된 사항을 정함을 목적으로 한다.</div>
+
+                <div class="article-title">제2조 [증여시기]</div>
+                <div class="article-content">
+                    "갑"은 "을"에 대해 <span id="c_start">0000-00-00</span>부터 <span id="c_end">0000-00-00</span>까지 아래 표시의 현금(예금)의 증여를 완료한다.<br>
+                    <ul class="article-list">
+                        <li>① 현금(예금)의 표시</li>
+                        <li>② 종류: 유기정기금</li>
+                        <li>③ <b>₩ <span id="c_totalNpv">0</span></b> (할인평가액 기준)</li>
+                    </ul>
+                </div>
+
+                <div class="article-title">제3조 [증여방법]</div>
+                <div class="article-content">
+                    제2조의 증여는 아래와 같이 "갑"의 실명계좌에서 "을"의 실명계좌로 입금하는 방법으로 한다.<br>
+                    <ul class="article-list">
+                        <li>① 증여기간: <span id="c_start2">0000-00-00</span> 부터 <span id="c_end2">0000-00-00</span> 까지</li>
+                        <li>② 매월 <span id="c_day">00</span>일 <span id="c_method">자동이체</span></li>
+                        <li>③ 매월 증여금액: <b>₩ <span id="c_amount">0</span></b></li>
+                        <li>④ "을"의 실명계좌: <span id="c_bank">은행</span> <span id="c_account">계좌번호</span></li>
+                    </ul>
+                </div>
+
+                <div class="article-title">제4조 [비용부담]</div>
+                <div class="article-content">
+                    "갑"이 "을"에게 현금(예금)을 증여하기 위한 모든 비용은 "을"의 부담으로 한다.<br>
+                    단, "갑"은 본 현금의 증여와 관련하여 "을"에게 어떠한 유상의 대가를 청구하지 아니하며 무상으로 증여를 하도록 한다.
+                </div>
+                
+                <div class="article-title">제5조 [계약의 변경]</div>
+                <div class="article-content">본 계약의 일부 또는 전부를 변경할 필요가 있을 때에는 "갑"과 "을"의 서면동의에 의거하여 변경할 수 있다.</div>
+
+                <div class="article-title">제6조 [계약의 해제]</div>
+                <div class="article-content">"을"이 증여에 필요한 비용을 부담하지 않거나 기타 계약의 해제가 필요하다고 판단되는 경우에는 "갑"은 본 계약을 해제할 수 있다.</div>
+
+                <div class="contract-closing">
+                    위와 같이 본 계약이 유효하게 성립하였음을 각 당사자는 증명하면서 본 계약서 2통을 작성하여, 각각 서명 날인 후 "갑"과 "을"이 각각 1통씩을 보관한다.
+                </div>
+
+                <div class="contract-date">
+                    계약일자: <span id="c_today">202X년 X월 X일</span>
+                </div>
+
+                <!-- 서명 공란 영역 -->
+                <div class="signatures">
+                    <div><b>증여자 (갑)</b></div>
+                    <div class="sign-row">
+                        <div class="sign-info">
+                            주 소: <span id="c_dAddr"></span><br>
+                            주민등록번호: <span id="c_dId"></span><br>
+                            연 락 처: <span id="c_dPhone"></span>
+                        </div>
+                        <div style="font-size: 18px; margin-right: 80px;">
+                            성 명: <span id="c_dNameSign" style="margin-right: 15px;">OOO</span> (인)
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 15px;"><b>수증자 (을)</b></div>
+                    <div class="sign-row">
+                        <div class="sign-info">
+                            주 소: <span id="c_rAddr"></span><br>
+                            주민등록번호: <span id="c_rId"></span><br>
+                            연 락 처: <span id="c_rPhone"></span>
+                        </div>
+                        <div style="font-size: 18px; margin-right: 80px;">
+                            성 명: <span id="c_rNameSign" style="margin-right: 15px;">OOO</span> (인)
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function formatNum(input) {
+        let val = input.value.replace(/,/g, '');
+        if (!isNaN(val) && val !== '') {
+            input.value = Number(val).toLocaleString('ko-KR');
+        } else {
+            input.value = '';
+        }
+    }
+    
+    // 날짜 자동 하이픈(-) 입력 함수
+    function formatDateInput(input) {
+        let val = input.value.replace(/[^0-9]/g, ''); // 숫자 이외의 문자 제거
+        let res = '';
+        if(val.length < 5) {
+            res = val;
+        } else if(val.length < 7) {
+            res = val.substring(0,4) + '-' + val.substring(4);
+        } else {
+            res = val.substring(0,4) + '-' + val.substring(4,6) + '-' + val.substring(6,8);
+        }
+        input.value = res;
+    }
+
+    function switchTab(tabId, el) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    // 증여세 계산 로직 (산출세액 + 세대생략 할증 + 3% 신고세액공제 적용)
+    function getGiftTax(taxableValue, deduction, isGrandchild, isMinor) {
+        let taxBase = taxableValue - deduction;
+        if (taxBase <= 0) return { finalTax: 0, surcharged: false, surchargeType: "" };
+        
+        taxBase = Math.floor(taxBase / 1000) * 1000; // 과세표준 1천원 미만 절사
+        
+        let calcTax = 0;
+        if (taxBase <= 100000000) calcTax = taxBase * 0.1;
+        else if (taxBase <= 500000000) calcTax = (taxBase * 0.2) - 10000000;
+        else if (taxBase <= 1000000000) calcTax = (taxBase * 0.3) - 60000000;
+        else if (taxBase <= 3000000000) calcTax = (taxBase * 0.4) - 160000000;
+        else calcTax = (taxBase * 0.5) - 460000000;
+        
+        let surcharged = false;
+        let surchargeType = "";
+
+        // 세대생략 할증
+        if (isGrandchild) {
+            surcharged = true;
+            if (isMinor && taxBase > 2000000000) {
+                calcTax = calcTax * 1.4; // 미성년자 20억 초과 40% 할증
+                surchargeType = "(세대생략 할증 40% 적용)";
+            } else {
+                calcTax = calcTax * 1.3; // 기본 30% 할증
+                surchargeType = "(세대생략 할증 30% 적용)";
+            }
+        }
+        
+        const finalTax = Math.floor(calcTax * 0.97 / 10) * 10; // 3% 자진신고 공제 후 10원 단위 절사
+        return { finalTax, surcharged, surchargeType };
+    }
+
+    // 실시간 문서 생성/업데이트 메인 로직
+    function generateDocs() {
+        const data = {
+            dName: document.getElementById('dName').value,
+            dId: document.getElementById('dId').value,
+            dAddr: document.getElementById('dAddr').value,
+            dPhone: document.getElementById('dPhone').value,
+            rName: document.getElementById('rName').value,
+            rId: document.getElementById('rId').value,
+            rAddr: document.getElementById('rAddr').value,
+            rPhone: document.getElementById('rPhone').value,
+            relation: document.getElementById('relation').value,
+            deduction: parseInt(document.getElementById('rDeduction').value),
+            start: document.getElementById('gStart').value,
+            end: document.getElementById('gEnd').value,
+            method: document.getElementById('gMethod').value,
+            day: document.getElementById('gDay').value,
+            amount: parseInt(document.getElementById('gAmount').value.replace(/,/g, '') || 0),
+            bank: document.getElementById('gBank').value,
+            account: document.getElementById('gAccount').value
+        };
+
+        // 필수 항목(금액, 시작/종료일)이 온전히 입력되지 않으면 결과창 초기화 (실시간 입력 방해 방지)
+        if(!data.start || data.start.length !== 10 || !data.end || data.end.length !== 10 || data.amount === 0 || isNaN(data.amount)) {
+            document.getElementById('taxSummary').style.display = 'none';
+            document.getElementById('evalTableBody').innerHTML = `<tr><td colspan="5" style="color: #9CA3AF; padding: 40px; border-bottom: none;">좌측 폼에 매월 증여액과 증여 시작/종료일을 입력하면 자동으로 계산됩니다.</td></tr>`;
+            document.getElementById('evalTableFoot').style.display = 'none';
+            return;
+        }
+
+        const sDate = new Date(data.start);
+        const eDate = new Date(data.end);
+        
+        // 날짜가 유효하지 않으면 조용히 리턴
+        if (isNaN(sDate) || isNaN(eDate)) return;
+        
+        // 데이터 매핑
+        document.getElementById('outDName').innerText = data.dName || '-';
+        document.getElementById('outRName').innerText = data.rName || '-';
+        document.getElementById('outRelation').innerText = data.relation;
+        document.getElementById('outStart').innerText = data.start;
+        document.getElementById('outEnd').innerText = data.end;
+        document.getElementById('outPeriod').innerText = data.day ? `매월 ${data.day}일` : '-';
+        document.getElementById('outAmount').innerText = `₩ ${data.amount.toLocaleString()}`;
+
+        let sYear = sDate.getFullYear();
+        let eYear = eDate.getFullYear();
+        let sMonth = sDate.getMonth() + 1;
+        let eMonth = eDate.getMonth() + 1;
+
+        let tbodyHtml = '';
+        let totalOrigin = 0;
+        let totalDiscount = 0;
+        let n = 1;
+
+        // 명세서 연도별 계산
+        for(let y = sYear; y <= eYear; y++) {
+            let monthsInYear = 12;
+            
+            if (y === sYear) {
+                monthsInYear = 12 - sMonth + 1; 
+            }
+            if (y === eYear) {
+                if (sYear === eYear) {
+                    monthsInYear = eMonth - sMonth + 1;
+                } else {
+                    monthsInYear = eMonth;
+                }
+            }
+            
+            let yearlyOrigin = data.amount * monthsInYear;
+            let discountFactor = Math.pow(1.03, n - 1);
+            let yearlyDiscount = Math.round(yearlyOrigin / discountFactor);
+
+            totalOrigin += yearlyOrigin;
+            totalDiscount += yearlyDiscount;
+
+            tbodyHtml += `
+                <tr>
+                    <td>${y}</td>
+                    <td>${n}</td>
+                    <td>${monthsInYear}</td>
+                    <td class="text-right">₩ ${yearlyOrigin.toLocaleString()}</td>
+                    <td class="text-right">₩ ${yearlyDiscount.toLocaleString()}</td>
+                </tr>
+            `;
+            n++;
+        }
+
+        document.getElementById('evalTableBody').innerHTML = tbodyHtml;
+        document.getElementById('totalOrigin').innerText = `₩ ${totalOrigin.toLocaleString()}`;
+        document.getElementById('totalDiscount').innerText = `₩ ${totalDiscount.toLocaleString()}`;
+        document.getElementById('evalTableFoot').style.display = 'table-row-group';
+
+        // 세금 요약 계산 및 렌더링
+        const isGrandchild = data.relation === '손';
+        const isMinor = data.deduction === 20000000;
+
+        const lumpResult = getGiftTax(totalOrigin, data.deduction, isGrandchild, isMinor);
+        const yugiResult = getGiftTax(totalDiscount, data.deduction, isGrandchild, isMinor);
+        const savedTax = Math.max(0, lumpResult.finalTax - yugiResult.finalTax);
+
+        document.getElementById('tsLumpTax').innerText = lumpResult.finalTax.toLocaleString() + '원';
+        document.getElementById('tsYugiTax').innerText = yugiResult.finalTax.toLocaleString() + '원';
+        document.getElementById('tsSaveTax').innerText = savedTax.toLocaleString() + '원 절세';
+        
+        document.getElementById('tsSurchargeLump').innerText = lumpResult.surcharged ? lumpResult.surchargeType : "";
+        document.getElementById('tsSurchargeYugi').innerText = yugiResult.surcharged ? yugiResult.surchargeType : "";
+        
+        document.getElementById('taxSummary').style.display = 'flex';
+
+        // 증여계약서 매핑
+        document.getElementById('c_dName').innerText = data.dName || 'OOO';
+        document.getElementById('c_rName').innerText = data.rName || 'OOO';
+        
+        document.getElementById('c_start').innerText = data.start;
+        document.getElementById('c_end').innerText = data.end;
+        document.getElementById('c_start2').innerText = data.start;
+        document.getElementById('c_end2').innerText = data.end;
+        
+        document.getElementById('c_totalNpv').innerText = totalDiscount.toLocaleString();
+        document.getElementById('c_amount').innerText = data.amount.toLocaleString();
+        document.getElementById('c_day').innerText = data.day || '00';
+        document.getElementById('c_method').innerText = data.method;
+        document.getElementById('c_bank').innerText = data.bank || '은행/증권사';
+        document.getElementById('c_account').innerText = data.account || '계좌번호';
+
+        document.getElementById('c_dAddr').innerText = data.dAddr;
+        document.getElementById('c_dId').innerText = data.dId;
+        document.getElementById('c_dPhone').innerText = data.dPhone;
+        document.getElementById('c_dNameSign').innerText = data.dName || 'OOO';
+
+        document.getElementById('c_rAddr').innerText = data.rAddr;
+        document.getElementById('c_rId').innerText = data.rId;
+        document.getElementById('c_rPhone').innerText = data.rPhone;
+        document.getElementById('c_rNameSign').innerText = data.rName || 'OOO';
+
+        const today = new Date();
+        document.getElementById('c_today').innerText = `${today.getFullYear()}년 ${today.getMonth()+1}월 ${today.getDate()}일`;
+    }
+
+    // [추가] 현재 입력된 폼 데이터를 객체로 묶어주는 함수
+    function getFormData() {
+        return {
+            gAmount: document.getElementById('gAmount').value,
+            gStart: document.getElementById('gStart').value,
+            gEnd: document.getElementById('gEnd').value,
+            gMethod: document.getElementById('gMethod').value,
+            gDay: document.getElementById('gDay').value,
+            gBank: document.getElementById('gBank').value,
+            gAccount: document.getElementById('gAccount').value,
+            rDeduction: document.getElementById('rDeduction').value,
+            relation: document.getElementById('relation').value,
+            rName: document.getElementById('rName').value,
+            rId: document.getElementById('rId').value,
+            rAddr: document.getElementById('rAddr').value,
+            rPhone: document.getElementById('rPhone').value,
+            dName: document.getElementById('dName').value,
+            dId: document.getElementById('dId').value,
+            dAddr: document.getElementById('dAddr').value,
+            dPhone: document.getElementById('dPhone').value
+        };
+    }
+
+    // [추가] 데이터를 JSON 파일로 PC에 다운로드(저장)하는 함수
+    function saveData() {
+        const data = getFormData();
+        const jsonStr = JSON.stringify(data, null, 2);
+        const blob = new Blob([jsonStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "증여계약_데이터.json"; // 저장될 파일명
+        document.body.appendChild(a);
+        a.click();
+        
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert("데이터가 PC에 저장되었습니다.\n(파일명: 증여계약_데이터.json)");
+    }
+
+    // [추가] PC에 저장된 JSON 파일을 읽어와서 폼에 채우는 함수
+    function loadData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                
+                // 읽어온 데이터를 폼에 각각 매핑
+                document.getElementById('gAmount').value = data.gAmount || '';
+                document.getElementById('gStart').value = data.gStart || '';
+                document.getElementById('gEnd').value = data.gEnd || '';
+                document.getElementById('gMethod').value = data.gMethod || '자동이체';
+                document.getElementById('gDay').value = data.gDay || '';
+                document.getElementById('gBank').value = data.gBank || '';
+                document.getElementById('gAccount').value = data.gAccount || '';
+                document.getElementById('rDeduction').value = data.rDeduction || '50000000';
+                document.getElementById('relation').value = data.relation || '자';
+                document.getElementById('rName').value = data.rName || '';
+                document.getElementById('rId').value = data.rId || '';
+                document.getElementById('rAddr').value = data.rAddr || '';
+                document.getElementById('rPhone').value = data.rPhone || '';
+                document.getElementById('dName').value = data.dName || '';
+                document.getElementById('dId').value = data.dId || '';
+                document.getElementById('dAddr').value = data.dAddr || '';
+                document.getElementById('dPhone').value = data.dPhone || '';
+
+                // 데이터 로드 후 실시간 화면 갱신 실행
+                generateDocs(); 
+                alert("성공적으로 데이터를 불러왔습니다.");
+            } catch (error) {
+                alert("파일을 읽는 중 오류가 발생했습니다. 올바른 저장 파일인지 확인해주세요.");
+            }
+            // 같은 파일을 다시 선택해도 인식할 수 있도록 input 초기화
+            event.target.value = '';
+        };
+        reader.readAsText(file);
+    }
+</script>
+
+</body>
+</html>
