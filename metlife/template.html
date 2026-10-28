@@ -9,12 +9,13 @@
   <style>__STYLES__</style>
 </head>
 <body>
-<a class="skip" href="#results">결과로 바로가기</a>
+<a class="skip" href="#customer-workbench">결과로 바로가기</a>
 <header class="topbar">
   <a class="brand" href="#"><span class="brand-mark">JW<span>·</span></span><span>JW FINANCIAL<small>FINANCIAL PLANNING TOOLS</small></span></a>
-  <div class="header-right"><span class="version"><i></i>공식 설계 예시 · v0.2</span><button class="button print-button" id="print">인쇄 / PDF <span aria-hidden="true">↗</span></button></div>
+  <div class="header-right"><span class="version"><i></i>검토용 초안 · v0.3</span><button class="button print-button" id="print">인쇄 / PDF <span aria-hidden="true">↗</span></button></div>
 </header>
-<div class="workspace">
+<div id="customer-workbench"></div>
+<details class="legacy-details"><summary>기존 공식 예시 및 내부 검토 도구 열기</summary><div class="workspace">
 <aside class="sidebar" aria-label="비교 조건">
   <div class="side-heading"><span class="eyebrow">YOUR SCENARIO</span><h2>비교 조건</h2><p>확인된 공식 설계값으로 살펴봅니다.</p></div>
   <fieldset><legend>피보험자 성별</legend><div class="segments two"><label><input type="radio" name="gender" value="male" checked><span>남성</span></label><label><input type="radio" name="gender" value="female"><span>여성</span></label></div></fieldset>
@@ -58,9 +59,10 @@
   <section class="panel conversion" aria-labelledby="conversion-heading"><div class="section-top"><div><span class="eyebrow">AFTER YEAR 7</span><h2 id="conversion-heading">적립형 전환, 조건부터 확인하세요.</h2></div><span class="subtle-tag">7년은 완납 시점이 아닙니다</span></div><p class="section-description">선택한 예시 시점의 납입내역을 기준으로 주요 전환 요건을 확인합니다.</p><div class="conversion-layout"><div><label class="input-label" for="reserve">주계약 계약자적립액 <span>만원</span></label><input id="reserve" type="number" inputmode="decimal" min="0" step="0.0001" placeholder="보험사에서 확인한 적립액 입력" aria-describedby="reserve-help"><p class="field-help" id="reserve-help">해약환급금과 다를 수 있어 자동으로 넣지 않습니다.<br>인출·감액·기존 전환이 없는 본 예시 계약 기준입니다.</p><label class="checkbox"><input type="checkbox" id="no-waiver">보험료 납입면제를 받지 않은 계약입니다.</label><button class="button primary" id="check-conversion">주요 전환 요건 확인 <span aria-hidden="true">→</span></button></div><div class="conversion-output" id="conversion-output" role="status" aria-live="polite"></div></div><p class="tiny conversion-limit">입력조건 확인이며 보험사의 전환 승낙을 의미하지 않습니다. 전환 후 보험료·가입금액 선택, 심사 및 실제 효력발생일은 별도 확인해야 합니다.</p></section>
   <section class="panel table-panel" aria-labelledby="table-heading"><div class="section-top"><div><span class="eyebrow">DETAILS MATTER</span><h2 id="table-heading">수익률별 해약환급금</h2></div><button class="button" id="export">선택 수익률 CSV 저장 <span aria-hidden="true">↓</span></button></div><p class="section-description" id="table-description">—</p><div class="table-scroll" tabindex="0" role="region" aria-label="수익률별 해약환급금 표. 가로 스크롤 가능"><table><caption class="sr-only">경과기간별 실제 납입누계와 세 가지 수익률의 해약환급금·환급률</caption><thead><tr><th scope="col">경과기간</th><th scope="col">보험나이</th><th scope="col">실제 납입누계</th><th scope="col" data-rate="-1">연 -1.0%</th><th scope="col" data-rate="2.5">연 2.5%</th><th scope="col" data-rate="3.75">연 3.75%</th></tr></thead><tbody id="table-body"></tbody></table></div><p class="tiny table-note">금액 단위: 만원. 환급금은 만 원 미만 절사된 원자료 값이며, 환급률은 원자료의 소수 둘째 자리 표시값을 유지합니다. 납입누계는 실제 월보험료 × 납입횟수입니다.</p></section>
   <details class="panel sources"><summary><span>계산 기준과 자료 출처</span><span class="details-icon" aria-hidden="true">＋</span></summary><div class="sources-body"><div><h3>현재 제공하는 기능</h3><p>2026.10.28 설계서의 공식 예시 조회입니다. 공식 보험사 산식을 재현하는 범용 계리 엔진은 포함하지 않습니다. 별도 전환 가정 계산에서는 적립액·공제비용을 직접 입력합니다. 40세 남녀의 기본납입 및 남성의 추가납입 100% 예시를 제공합니다.</p><p>특약·중도인출·감액·납입면제·전환을 반영하지 않은 계약입니다. 여성 추가납입 예시는 자료 확보 후 제공합니다.</p><h3>수익률·비용</h3><p>펀드 기준가 수익률에 반영된 운용보수는 다시 차감하지 않습니다. 보장형 보증비용은 보험가입금액 기준 연 0.011%, 적립형은 특별계정적립액 기준 연 0.15%로 서로 다릅니다. 표시된 환급금에서 비용을 추가로 빼지 않습니다.</p></div><div><h3>출처</h3><ul><li>40세 남자.pdf: 계약정보 9쪽, 사망보험금 12쪽, 기본납입 13쪽, 추가납입 15쪽</li><li>40세 여.pdf: 계약정보 9쪽, 사망보험금 12쪽, 기본납입 13쪽</li><li>운용설명서: 최저사망보험금 보증비용 및 펀드비용</li><li>공식 약관: 제2조의2, 제13조, 제38~40조, 제47조, 제50~51조, 별표1</li></ul><div class="source-links"><a href="https://brand.metlife.co.kr/pn/mcvrgProd/retrieveMcvrgProdMain.do" target="_blank" rel="noopener noreferrer">메트라이프 공시실 ↗</a><a href="https://brand.metlife.co.kr/pn/mcvrgProd/mcvrgProdDownloadFile.do?insProdSeq=1128&amp;seq=4206&amp;fnum=03" target="_blank" rel="noopener noreferrer">2026.10.20 약관 ↗</a></div><p class="tiny">페이지는 PDF 기준입니다. 상품 버전 2026.10.20 · 자료 확인 2026.10.28</p></div></div></details>
-  <footer class="footer"><p>투자수익률은 가정이며, 해약환급금에는 최저보증이 없어 원금손실이 발생할 수 있습니다. 표시 금액은 세전입니다.</p><span>JW FINANCIAL · INTERNAL REVIEW · v0.2</span></footer>
+  <footer class="footer"><p>투자수익률은 가정이며, 해약환급금에는 최저보증이 없어 원금손실이 발생할 수 있습니다. 표시 금액은 세전입니다.</p><span>JW FINANCIAL · INTERNAL REVIEW · v0.3</span></footer>
 </main>
 </div>
+</details>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <noscript><p class="no-script">예시 조회에는 JavaScript가 필요합니다. 브라우저에서 JavaScript를 허용해 주세요.</p></noscript>
 <script id="metlife-fixtures" type="application/json">__FIXTURES__</script>
