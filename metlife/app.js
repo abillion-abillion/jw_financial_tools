@@ -165,6 +165,16 @@
   $('check-conversion').addEventListener('click', renderConversion);
   $('reserve').addEventListener('input', renderConversion);
   $('no-waiver').addEventListener('change', renderConversion);
+  let sourceWasOpen = null;
+  window.addEventListener('beforeprint', () => {
+    const source = document.querySelector('details.sources');
+    if (sourceWasOpen === null) sourceWasOpen = source.open;
+    source.open = true;
+  });
+  window.addEventListener('afterprint', () => {
+    if (sourceWasOpen !== null) document.querySelector('details.sources').open = sourceWasOpen;
+    sourceWasOpen = null;
+  });
   $('print').addEventListener('click', () => window.print());
   $('export').addEventListener('click', () => {
     const blob = new Blob([model.csv(data, state)], {type: 'text/csv;charset=utf-8;'});
