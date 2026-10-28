@@ -103,9 +103,9 @@
     let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" aria-labelledby="chart-svg-title chart-svg-desc"><title id="chart-svg-title">납입누계와 해약환급금, ' + (state.gender === 'male' ? '남성' : '여성') + ' 연 ' + rateLabel(state.rate) + '% 가정</title><desc id="chart-svg-desc">해약환급금은 공식 표의 수록 시점을 점으로 표시합니다. 점은 마우스 또는 키보드 Enter로 선택할 수 있습니다. 같은 데이터는 아래 표에서도 확인할 수 있습니다.</desc>';
     for (let i = 0; i <= 4; i++) {
       const value = maxY * i / 4;
-      svg += '<line x1="' + left + '" y1="' + y(value) + '" x2="' + (W - right) + '" y2="' + y(value) + '" stroke="#e9efee"/><text x="' + (left - 12) + '" y="' + (y(value) + 4) + '" text-anchor="end" fill="#738590" font-size="10">' + (value / 1e8).toFixed(1) + '</text>';
+      svg += '<line x1="' + left + '" y1="' + y(value) + '" x2="' + (W - right) + '" y2="' + y(value) + '" stroke="#e9efee"/><text x="' + (left - 12) + '" y="' + (y(value) + 4) + '" text-anchor="end" fill="#738590" font-size="14">' + (value / 1e8).toFixed(1) + '</text>';
     }
-    for (const year of [0, 10, 20, 30, 40, 49]) svg += '<text x="' + x(year * 12) + '" y="' + (H - 10) + '" fill="#738590" font-size="10" text-anchor="middle">' + year + '년</text>';
+    for (const year of [0, 10, 20, 30, 40, 49]) svg += '<text x="' + x(year * 12) + '" y="' + (H - 10) + '" fill="#738590" font-size="14" text-anchor="middle">' + year + '년</text>';
     // Actual premiums follow an exact payment schedule at the supported observations.
     const paidPath = 'M' + x(0) + ',' + y(0) + points.map(p => 'L' + x(p.month) + ',' + y(p.paid)).join('');
     svg += '<path d="' + paidPath + '" fill="none" stroke="#a3afb9" stroke-width="1.7" stroke-dasharray="5 5"/>';
@@ -143,8 +143,48 @@
     synchronizeInputs();
     const points = model.series(data, state);
     renderMetrics(points.find(p => p.month === state.month));
-    renderComparison(); renderChart(points); renderTable(); renderConversion();
+    renderComparison(); renderChart(points); renderTable(); renderConversion(); renderProjection();
   }
+  let projectionProfile = '';
+  const projectionNumber = id => {
+    const raw = $(id).value.trim();
+    return raw === '' ? null : Number(raw);
+  };
+  function renderProjection() {
+    const signature = state.gender + '/' + state.plan;
+    if (projectionProfile !== signature) {
+      projectionProfile = signature;
+      $('scenario-reserves').innerHTML = [7,8,9,10].map(year => {
+        const point = model.snapshot(data, {...state, month: year * 12});
+        const minimumPremium = Math.ceil(Math.max(100000, point.paid / 200) / 10000) * 10000;
+        return '<div class="reserve-case"><h3>' + year + '년 후 전환 · ' + (40 + year) + '세</h3><p id="reference-' + year + '" class="field-help"></p><label for="opening-' + year + '">전환 전 계약자적립액 (만원)</label><input id="opening-' + year + '" type="number" min="0" step="0.0001" placeholder="계약자적립액 직접 입력"><label for="entry-' + year + '">전환 당일 초회 기본보험료 (만원)</label><input id="entry-' + year + '" type="number" min="' + minimumPremium / 10000 + '" step="1" value="' + minimumPremium / 10000 + '"><label for="deduction-' + year + '">전환 후 해약공제 가정 (만원)</label><input id="deduction-' + year + '" type="number" min="0" step="0.0001" placeholder="없다고 가정하면 0 입력"></div>';
+      }).join('');
+    }
+    const cards = [7,8,9,10].map(year => {
+      const p = model.snapshot(data, {...state, month:year * 12});
+      $('reference-' + year).textContent = '참고: 전환 전 공식 환급금 ' + exactMoney(p.surrender) + ' (연 ' + rateLabel(state.rate) + '%). 계약자적립액과 다르므로 자동 대입하지 않습니다.';
+      const reserve = projectionNumber('opening-' + year);
+      const deduction = projectionNumber('deduction-' + year);
+      const risk = projectionNumber('projection-risk');
+      const admin = projectionNumber('projection-admin');
+      const fee = projectionNumber('projection-entry-fee');
+      if ([reserve,deduction,risk,admin,fee].some(value => value === null)) return '<article class="projection-card"><h3>' + year + '년 후 전환</h3><p>계약자적립액·해약공제·공제비용 가정을 입력하면 결과가 표시됩니다.</p></article>';
+      try {
+        const years = projectionNumber('projection-horizon');
+        const result = model.projectConvertedContract({reserve:reserve * 10000, paidBefore:p.paid, sumAssured:projectionNumber('projection-sum') * 10000, entryPremium:projectionNumber('entry-' + year) * 10000, returnPercent:projectionNumber('projection-return'), years, riskPer100m:risk, monthlyAdmin:admin, entryFeePercent:fee, surrenderDeduction:deduction * 10000, confirmed:$('projection-confirm').checked});
+        if (result.status !== 'projected') return '<article class="projection-card"><h3>' + year + '년 후 전환</h3><p class="projection-warn">전환 후 ' + result.insufficientMonth + '개월차 비용 충당 부족</p><p>추가 납입·보험사 유지요건 확인이 필요합니다. 이후 시점의 보장금액과 환급률은 표시하지 않습니다.</p></article>';
+        return '<article class="projection-card"><h3>' + year + '년 후 전환 → ' + years + '년 경과</h3><p>최초 가입 후 ' + (year + years) + '년 · ' + (40 + year + years) + '세 · 가정 계산</p><dl><dt>예상 사망보험금</dt><dd>' + exactMoney(Math.round(result.death)) + '</dd><dt>예상 해약환급금</dt><dd>' + exactMoney(Math.round(result.surrender)) + '</dd><dt>예상 해약환급률</dt><dd>' + percent(result.refundRate) + '</dd></dl><p>실제 총 납입액 ' + exactMoney(result.paid) + ' (전환 당일 초회보험료 포함). 이후 추가 납입 0원.</p><p>공제비용 가정 합계 ' + exactMoney(Math.round(result.costTotal)) + '</p></article>';
+      } catch(error) { const safe = document.createElement('p'); safe.textContent = error.message; return '<article class="projection-card"><h3>' + year + '년 후 전환</h3><div class="projection-error">' + safe.innerHTML + '</div></article>'; }
+    });
+    $('projection-output').innerHTML = '<div class="projection-cards">' + cards.join('') + '</div>';
+  }
+  $('conversion-scenario').addEventListener('input', event => {
+    if (event.target.id === 'projection-return' || event.target.id === 'projection-return-slider') {
+      const other = event.target.id === 'projection-return' ? 'projection-return-slider' : 'projection-return';
+      $(other).value = event.target.value;
+    }
+    renderProjection();
+  });
   readHash();
   $('period').innerHTML = data.profiles.male.base.map(p => '<option value="' + p.month + '">' + p.label + ' 경과</option>').join('');
   $('milestones').innerHTML = [3, 60, 84, 120, 240, 360, 480, 588].map(month => '<button type="button" data-month="' + month + '">' + (month === 3 ? '3개월' : month / 12 + '년') + '</button>').join('');

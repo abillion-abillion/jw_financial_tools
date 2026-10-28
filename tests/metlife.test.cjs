@@ -121,3 +121,38 @@ test('generated HTML embeds exact model/data/app sources without remote assets',
   assert.deepEqual(JSON.parse(html.match(/<script id="metlife-fixtures" type="application\/json">([^]*?)<\/script>/)[1]), data);
   assert.doesNotMatch(html, /<script[^>]*src=|<link[^>]*href=|@import|__FIXTURES__|__MODEL__|__APP__|__STYLES__/);
 });
+
+const projection = {reserve:200000000, paidBefore:100000000, sumAssured:1000000000, entryPremium:500000, returnPercent:0, years:10, riskPer100m:1000, monthlyAdmin:2000, entryFeePercent:0, surrenderDeduction:0, confirmed:true};
+test('conversion projection stops cash payments after required entry premium', () => {
+  const p=model.projectConvertedContract(projection);
+  assert.equal(p.paid,100500000);assert.equal(p.status,'projected');
+  assert.ok(p.reserve < 200500000);assert.equal(p.death,projection.sumAssured+p.reserve);
+  assert.equal(p.refundRate,p.surrender/p.paid*100);
+});
+test('custom return -1 to 20 supports zero and responds monotonically to return',()=>{
+  const low=model.projectConvertedContract({...projection,returnPercent:-1});
+  const high=model.projectConvertedContract({...projection,returnPercent:20});
+  assert.ok(high.surrender>low.surrender);
+  assert.ok(model.projectConvertedContract(projection).surrender>low.surrender);
+  for(const r of [-1.01,20.01]) assert.throws(()=>model.projectConvertedContract({...projection,returnPercent:r}),RangeError);
+});
+test('conversion amount and premium limits follow product constraints',()=>{
+  for(const overrides of [{sumAssured:24000000},{sumAssured:1000000001},{entryPremium:490000},{entryPremium:500001},{reserve:69999999}]) assert.throws(()=>model.projectConvertedContract({...projection,...overrides}),RangeError);
+  assert.equal(model.projectConvertedContract({...projection,sumAssured:25000000}).status,'projected');
+});
+test('projection must not silently assume missing expenses are zero',()=>{
+  assert.throws(()=>model.projectConvertedContract({...projection,riskPer100m:null}),RangeError);
+  assert.throws(()=>model.projectConvertedContract({...projection,confirmed:false}),RangeError);
+});
+test('higher benefit incurs higher assumed risk cost and depleted funds do not promise death benefit',()=>{
+  const low=model.projectConvertedContract({...projection,sumAssured:100000000});
+  const high=model.projectConvertedContract(projection); assert.ok(low.surrender>high.surrender);
+  const depleted=model.projectConvertedContract({...projection,riskPer100m:100000000});
+  assert.equal(depleted.status,'funding-needed');assert.equal(depleted.insufficientMonth,1);
+  assert.equal(depleted.death,undefined);assert.equal(depleted.refundRate,undefined);
+});
+test('entry charge and explicit surrender deduction are accounted separately',()=>{
+  const a=model.projectConvertedContract(projection);
+  const b=model.projectConvertedContract({...projection,entryFeePercent:10,surrenderDeduction:1000000});
+  assert.ok(a.surrender>b.surrender);assert.equal(Math.round(b.reserve-b.surrender),1000000);
+});

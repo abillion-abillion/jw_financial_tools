@@ -88,5 +88,36 @@
       p.surrender, p.refundRate.toFixed(2), p.death, p.minimumDeath, p.sourceTitle, p.sourcePage]);
     return '\uFEFF' + rows.map(row => row.map(quote).join(',')).join('\r\n');
   }
-  return Object.freeze({validate, series, snapshot, firstObservedRecovery, parseMoneyInManwon, conversionCheck, csv});
+  function projectConvertedContract(input) {
+    const required = ['reserve', 'paidBefore', 'sumAssured', 'entryPremium', 'returnPercent', 'years', 'riskPer100m', 'monthlyAdmin', 'entryFeePercent', 'surrenderDeduction'];
+    for (const key of required) if (typeof input[key] !== 'number' || !Number.isFinite(input[key])) throw new RangeError('적립액과 모든 비용 가정을 입력해 주세요.');
+    if (!input.confirmed) throw new RangeError('가정 계산의 비용 조건을 확인해 주세요.');
+    if (input.returnPercent < -1 || input.returnPercent > 20) throw new RangeError('투자수익률은 -1%부터 20%까지 입력해 주세요.');
+    if (!Number.isInteger(input.years) || input.years < 1 || input.years > 50) throw new RangeError('전환 후 기간은 1~50년의 정수입니다.');
+    for (const key of ['reserve','paidBefore','riskPer100m','monthlyAdmin','entryPremium','surrenderDeduction']) if (input[key] < 0) throw new RangeError('금액은 0 이상이어야 합니다.');
+    if (input.entryFeePercent < 0 || input.entryFeePercent > 100) throw new RangeError('초회 공제율은 0~100%입니다.');
+    const minimumPremium = Math.ceil(Math.max(100000, input.paidBefore / 200) / 10000) * 10000;
+    const minimumSum = Math.ceil(input.entryPremium * 50 / 1000000) * 1000000;
+    if (input.entryPremium < minimumPremium || input.entryPremium % 10000 !== 0 || input.entryPremium > 20000000) throw new RangeError('초회 기본보험료는 최소 ' + minimumPremium.toLocaleString('ko-KR') + '원 이상, 1만원 단위·전환 전 가입금액의 2% 이하여야 합니다.');
+    if (input.sumAssured < minimumSum || input.sumAssured > 1000000000 || input.sumAssured % 1000000 !== 0) throw new RangeError('가입금액은 최소 ' + minimumSum.toLocaleString('ko-KR') + '원 이상·10억원 이하, 100만원 단위여야 합니다.');
+    if (input.reserve < Math.max(input.paidBefore * 7 / 10, 1000000)) throw new RangeError('전환 전 적립액이 기납입보험료의 70% 또는 100만원 기준에 미달합니다.');
+    let reserve = input.reserve + input.entryPremium * (1 - input.entryFeePercent / 100);
+    const paid = input.paidBefore + input.entryPremium;
+    const monthlyReturn = Math.pow(1 + input.returnPercent / 100, 1 / 12) - 1;
+    const fixedMonthlyCost = input.riskPer100m * input.sumAssured / 100000000 + input.monthlyAdmin;
+    let costTotal = input.entryPremium * input.entryFeePercent / 100;
+    let insufficientMonth = null;
+    const rows = [];
+    for (let month = 1; month <= input.years * 12; month++) {
+      const cost = fixedMonthlyCost + reserve * 0.0015 / 12;
+      if (reserve - input.surrenderDeduction < cost || reserve <= 0) { insufficientMonth = month; break; }
+      reserve = (reserve - cost) * (1 + monthlyReturn);
+      costTotal += cost;
+      if (month % 12 === 0) rows.push({year: month / 12, reserve, surrender: Math.max(0, reserve - input.surrenderDeduction), death: Math.max(input.sumAssured + reserve, paid)});
+    }
+    if (insufficientMonth !== null) return {status: 'funding-needed', insufficientMonth, rows, paid, costTotal};
+    const surrender = Math.max(0, reserve - input.surrenderDeduction);
+    return {status: 'projected', reserve, surrender, paid, death: Math.max(input.sumAssured + reserve, paid), refundRate: surrender / paid * 100, rows, costTotal};
+  }
+  return Object.freeze({validate, series, snapshot, firstObservedRecovery, parseMoneyInManwon, conversionCheck, csv, projectConvertedContract});
 });
