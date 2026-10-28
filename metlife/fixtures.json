@@ -1,0 +1,1963 @@
+{
+  "version": "0.1.0",
+  "product": "무배당 메트라이프 변액리치정기보험",
+  "productVersionDate": "2026-10-20",
+  "illustrationDate": "2026-10-28",
+  "issueAge": 40,
+  "maturityAge": 90,
+  "sumAssuredWon": 1000000000,
+  "underwriting": "일반가입형",
+  "paymentTerm": "전기납",
+  "funds": "골드투자형 20% · 미국주식형3호 80%",
+  "rates": [
+    "-1",
+    "2.5",
+    "3.75"
+  ],
+  "amountPrecisionWon": 10000,
+  "profiles": {
+    "male": {
+      "gender": "male",
+      "sourceTitle": "40세 남자.pdf",
+      "sourceSha256": "b21e85c99ec4725e45c980cc1985399a9543fda953f30a81cbf8921d0c5e4e2c",
+      "sourcePages": {
+        "contract": 9,
+        "death": 12,
+        "base": 13,
+        "extra100": 15
+      },
+      "monthlyBasePremiumWon": 1136000,
+      "base": [
+        {
+          "month": 3,
+          "label": "3개월",
+          "age": 40,
+          "paidDisplayWon": 3400000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 6,
+          "label": "6개월",
+          "age": 40,
+          "paidDisplayWon": 6810000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 9,
+          "label": "9개월",
+          "age": 40,
+          "paidDisplayWon": 10220000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 12,
+          "label": "1년",
+          "age": 41,
+          "paidDisplayWon": 13630000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 24,
+          "label": "2년",
+          "age": 42,
+          "paidDisplayWon": 27260000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 36,
+          "label": "3년",
+          "age": 43,
+          "paidDisplayWon": 40890000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 11300000,
+              "refundRatePercent": 27.64,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 12860000,
+              "refundRatePercent": 31.45,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 13430000,
+              "refundRatePercent": 32.84,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 48,
+          "label": "4년",
+          "age": 44,
+          "paidDisplayWon": 54520000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 24640000,
+              "refundRatePercent": 45.19,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 27400000,
+              "refundRatePercent": 50.26,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 28430000,
+              "refundRatePercent": 52.15,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 60,
+          "label": "5년",
+          "age": 45,
+          "paidDisplayWon": 68160000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 37820000,
+              "refundRatePercent": 55.49,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 42140000,
+              "refundRatePercent": 61.83,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 43770000,
+              "refundRatePercent": 64.22,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 72,
+          "label": "6년",
+          "age": 46,
+          "paidDisplayWon": 81790000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 50850000,
+              "refundRatePercent": 62.17,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 57080000,
+              "refundRatePercent": 69.79,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 59470000,
+              "refundRatePercent": 72.71,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 84,
+          "label": "7년",
+          "age": 47,
+          "paidDisplayWon": 95420000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 63720000,
+              "refundRatePercent": 66.78,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 72220000,
+              "refundRatePercent": 75.69,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 75530000,
+              "refundRatePercent": 79.16,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 96,
+          "label": "8년",
+          "age": 48,
+          "paidDisplayWon": 109050000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 72230000,
+              "refundRatePercent": 66.24,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 83350000,
+              "refundRatePercent": 76.43,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 87750000,
+              "refundRatePercent": 80.47,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 108,
+          "label": "9년",
+          "age": 49,
+          "paidDisplayWon": 122680000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 80560000,
+              "refundRatePercent": 65.67,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 94670000,
+              "refundRatePercent": 77.17,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 100340000,
+              "refundRatePercent": 81.79,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 120,
+          "label": "10년",
+          "age": 50,
+          "paidDisplayWon": 136320000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 88720000,
+              "refundRatePercent": 65.08,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 106190000,
+              "refundRatePercent": 77.9,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 113330000,
+              "refundRatePercent": 83.14,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 132,
+          "label": "11년",
+          "age": 51,
+          "paidDisplayWon": 149950000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 96710000,
+              "refundRatePercent": 64.49,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 117920000,
+              "refundRatePercent": 78.64,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 126730000,
+              "refundRatePercent": 84.51,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 144,
+          "label": "12년",
+          "age": 52,
+          "paidDisplayWon": 163580000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 104520000,
+              "refundRatePercent": 63.9,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 129850000,
+              "refundRatePercent": 79.38,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 140530000,
+              "refundRatePercent": 85.91,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 156,
+          "label": "13년",
+          "age": 53,
+          "paidDisplayWon": 177210000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 112140000,
+              "refundRatePercent": 63.28,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 141970000,
+              "refundRatePercent": 80.11,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 154750000,
+              "refundRatePercent": 87.33,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 168,
+          "label": "14년",
+          "age": 54,
+          "paidDisplayWon": 190840000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 119560000,
+              "refundRatePercent": 62.65,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 154280000,
+              "refundRatePercent": 80.84,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 169400000,
+              "refundRatePercent": 88.77,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 180,
+          "label": "15년",
+          "age": 55,
+          "paidDisplayWon": 204480000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 126770000,
+              "refundRatePercent": 62.0,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 166770000,
+              "refundRatePercent": 81.56,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 184480000,
+              "refundRatePercent": 90.22,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 192,
+          "label": "16년",
+          "age": 56,
+          "paidDisplayWon": 218110000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 133770000,
+              "refundRatePercent": 61.33,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 179450000,
+              "refundRatePercent": 82.27,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 200000000,
+              "refundRatePercent": 91.7,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 204,
+          "label": "17년",
+          "age": 57,
+          "paidDisplayWon": 231740000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 140550000,
+              "refundRatePercent": 60.65,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 192320000,
+              "refundRatePercent": 82.99,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 215990000,
+              "refundRatePercent": 93.2,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 216,
+          "label": "18년",
+          "age": 58,
+          "paidDisplayWon": 245370000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 147110000,
+              "refundRatePercent": 59.95,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 205380000,
+              "refundRatePercent": 83.7,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 232460000,
+              "refundRatePercent": 94.74,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 228,
+          "label": "19년",
+          "age": 59,
+          "paidDisplayWon": 259000000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 153410000,
+              "refundRatePercent": 59.23,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 218600000,
+              "refundRatePercent": 84.4,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 249390000,
+              "refundRatePercent": 96.29,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 240,
+          "label": "20년",
+          "age": 60,
+          "paidDisplayWon": 272640000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 159450000,
+              "refundRatePercent": 58.48,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 231990000,
+              "refundRatePercent": 85.09,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 266820000,
+              "refundRatePercent": 97.87,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 300,
+          "label": "25년",
+          "age": 65,
+          "paidDisplayWon": 340800000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 185160000,
+              "refundRatePercent": 54.33,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 301130000,
+              "refundRatePercent": 88.36,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 361660000,
+              "refundRatePercent": 106.12,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 360,
+          "label": "30년",
+          "age": 70,
+          "paidDisplayWon": 408960000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 199650000,
+              "refundRatePercent": 48.82,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 371510000,
+              "refundRatePercent": 90.84,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 469320000,
+              "refundRatePercent": 114.76,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 420,
+          "label": "35년",
+          "age": 75,
+          "paidDisplayWon": 477120000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 194560000,
+              "refundRatePercent": 40.78,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 438000000,
+              "refundRatePercent": 91.8,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 589960000,
+              "refundRatePercent": 123.65,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 480,
+          "label": "40년",
+          "age": 80,
+          "paidDisplayWon": 545280000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 146920000,
+              "refundRatePercent": 26.94,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 486920000,
+              "refundRatePercent": 89.3,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 722240000,
+              "refundRatePercent": 132.45,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 540,
+          "label": "45년",
+          "age": 85,
+          "paidDisplayWon": 613440000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 21240000,
+              "refundRatePercent": 3.46,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 501020000,
+              "refundRatePercent": 81.67,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 876120000,
+              "refundRatePercent": 142.82,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 588,
+          "label": "49년",
+          "age": 89,
+          "paidDisplayWon": 667960000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 461890000,
+              "refundRatePercent": 69.15,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 1029770000,
+              "refundRatePercent": 154.17,
+              "deathDisplayWon": 1081260000
+            }
+          }
+        }
+      ],
+      "extra100": [
+        {
+          "month": 3,
+          "label": "3개월",
+          "age": 40,
+          "paidDisplayWon": 6810000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 3330000,
+              "refundRatePercent": 48.9
+            },
+            "2.5": {
+              "surrenderDisplayWon": 3350000,
+              "refundRatePercent": 49.19
+            },
+            "3.75": {
+              "surrenderDisplayWon": 3350000,
+              "refundRatePercent": 49.19
+            }
+          }
+        },
+        {
+          "month": 6,
+          "label": "6개월",
+          "age": 40,
+          "paidDisplayWon": 13630000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 6630000,
+              "refundRatePercent": 48.64
+            },
+            "2.5": {
+              "surrenderDisplayWon": 6690000,
+              "refundRatePercent": 49.08
+            },
+            "3.75": {
+              "surrenderDisplayWon": 6720000,
+              "refundRatePercent": 49.3
+            }
+          }
+        },
+        {
+          "month": 9,
+          "label": "9개월",
+          "age": 40,
+          "paidDisplayWon": 20440000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 9920000,
+              "refundRatePercent": 48.53
+            },
+            "2.5": {
+              "surrenderDisplayWon": 10060000,
+              "refundRatePercent": 49.22
+            },
+            "3.75": {
+              "surrenderDisplayWon": 10110000,
+              "refundRatePercent": 49.46
+            }
+          }
+        },
+        {
+          "month": 12,
+          "label": "1년",
+          "age": 41,
+          "paidDisplayWon": 27260000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 13200000,
+              "refundRatePercent": 48.42
+            },
+            "2.5": {
+              "surrenderDisplayWon": 13450000,
+              "refundRatePercent": 49.34
+            },
+            "3.75": {
+              "surrenderDisplayWon": 13540000,
+              "refundRatePercent": 49.67
+            }
+          }
+        },
+        {
+          "month": 24,
+          "label": "2년",
+          "age": 42,
+          "paidDisplayWon": 54520000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 26220000,
+              "refundRatePercent": 48.09
+            },
+            "2.5": {
+              "surrenderDisplayWon": 27190000,
+              "refundRatePercent": 49.87
+            },
+            "3.75": {
+              "surrenderDisplayWon": 27540000,
+              "refundRatePercent": 50.51
+            }
+          }
+        },
+        {
+          "month": 36,
+          "label": "3년",
+          "age": 43,
+          "paidDisplayWon": 81790000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 51570000,
+              "refundRatePercent": 63.05
+            },
+            "2.5": {
+              "surrenderDisplayWon": 55350000,
+              "refundRatePercent": 67.67
+            },
+            "3.75": {
+              "surrenderDisplayWon": 56740000,
+              "refundRatePercent": 69.37
+            }
+          }
+        },
+        {
+          "month": 48,
+          "label": "4년",
+          "age": 44,
+          "paidDisplayWon": 109050000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 78060000,
+              "refundRatePercent": 71.58
+            },
+            "2.5": {
+              "surrenderDisplayWon": 84770000,
+              "refundRatePercent": 77.73
+            },
+            "3.75": {
+              "surrenderDisplayWon": 87270000,
+              "refundRatePercent": 80.03
+            }
+          }
+        },
+        {
+          "month": 60,
+          "label": "5년",
+          "age": 45,
+          "paidDisplayWon": 136320000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 104260000,
+              "refundRatePercent": 76.48
+            },
+            "2.5": {
+              "surrenderDisplayWon": 114760000,
+              "refundRatePercent": 84.18
+            },
+            "3.75": {
+              "surrenderDisplayWon": 118720000,
+              "refundRatePercent": 87.09
+            }
+          }
+        },
+        {
+          "month": 72,
+          "label": "6년",
+          "age": 46,
+          "paidDisplayWon": 163580000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 130180000,
+              "refundRatePercent": 79.58
+            },
+            "2.5": {
+              "surrenderDisplayWon": 145330000,
+              "refundRatePercent": 88.84
+            },
+            "3.75": {
+              "surrenderDisplayWon": 151140000,
+              "refundRatePercent": 92.4
+            }
+          }
+        },
+        {
+          "month": 84,
+          "label": "7년",
+          "age": 47,
+          "paidDisplayWon": 190840000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 155820000,
+              "refundRatePercent": 81.65
+            },
+            "2.5": {
+              "surrenderDisplayWon": 176500000,
+              "refundRatePercent": 92.49
+            },
+            "3.75": {
+              "surrenderDisplayWon": 184560000,
+              "refundRatePercent": 96.71
+            }
+          }
+        },
+        {
+          "month": 96,
+          "label": "8년",
+          "age": 48,
+          "paidDisplayWon": 218110000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 176950000,
+              "refundRatePercent": 81.13
+            },
+            "2.5": {
+              "surrenderDisplayWon": 204060000,
+              "refundRatePercent": 93.56
+            },
+            "3.75": {
+              "surrenderDisplayWon": 214790000,
+              "refundRatePercent": 98.48
+            }
+          }
+        },
+        {
+          "month": 108,
+          "label": "9년",
+          "age": 49,
+          "paidDisplayWon": 245370000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 197790000,
+              "refundRatePercent": 80.61
+            },
+            "2.5": {
+              "surrenderDisplayWon": 232230000,
+              "refundRatePercent": 94.64
+            },
+            "3.75": {
+              "surrenderDisplayWon": 246080000,
+              "refundRatePercent": 100.29
+            }
+          }
+        },
+        {
+          "month": 120,
+          "label": "10년",
+          "age": 50,
+          "paidDisplayWon": 272640000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 218330000,
+              "refundRatePercent": 80.08
+            },
+            "2.5": {
+              "surrenderDisplayWon": 261030000,
+              "refundRatePercent": 95.74
+            },
+            "3.75": {
+              "surrenderDisplayWon": 278470000,
+              "refundRatePercent": 102.14
+            }
+          }
+        },
+        {
+          "month": 132,
+          "label": "11년",
+          "age": 51,
+          "paidDisplayWon": 299900000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 238570000,
+              "refundRatePercent": 79.55
+            },
+            "2.5": {
+              "surrenderDisplayWon": 290470000,
+              "refundRatePercent": 96.86
+            },
+            "3.75": {
+              "surrenderDisplayWon": 312000000,
+              "refundRatePercent": 104.03
+            }
+          }
+        },
+        {
+          "month": 144,
+          "label": "12년",
+          "age": 52,
+          "paidDisplayWon": 327160000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 258500000,
+              "refundRatePercent": 79.01
+            },
+            "2.5": {
+              "surrenderDisplayWon": 320560000,
+              "refundRatePercent": 97.98
+            },
+            "3.75": {
+              "surrenderDisplayWon": 346720000,
+              "refundRatePercent": 105.98
+            }
+          }
+        },
+        {
+          "month": 156,
+          "label": "13년",
+          "age": 53,
+          "paidDisplayWon": 354430000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 278130000,
+              "refundRatePercent": 78.47
+            },
+            "2.5": {
+              "surrenderDisplayWon": 351310000,
+              "refundRatePercent": 99.12
+            },
+            "3.75": {
+              "surrenderDisplayWon": 382650000,
+              "refundRatePercent": 107.96
+            }
+          }
+        },
+        {
+          "month": 168,
+          "label": "14년",
+          "age": 54,
+          "paidDisplayWon": 381690000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 297430000,
+              "refundRatePercent": 77.92
+            },
+            "2.5": {
+              "surrenderDisplayWon": 382730000,
+              "refundRatePercent": 100.27
+            },
+            "3.75": {
+              "surrenderDisplayWon": 419850000,
+              "refundRatePercent": 110.0
+            }
+          }
+        },
+        {
+          "month": 180,
+          "label": "15년",
+          "age": 55,
+          "paidDisplayWon": 408960000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 316390000,
+              "refundRatePercent": 77.36
+            },
+            "2.5": {
+              "surrenderDisplayWon": 414820000,
+              "refundRatePercent": 101.43
+            },
+            "3.75": {
+              "surrenderDisplayWon": 458350000,
+              "refundRatePercent": 112.08
+            }
+          }
+        },
+        {
+          "month": 192,
+          "label": "16년",
+          "age": 56,
+          "paidDisplayWon": 436220000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 335010000,
+              "refundRatePercent": 76.8
+            },
+            "2.5": {
+              "surrenderDisplayWon": 447620000,
+              "refundRatePercent": 102.61
+            },
+            "3.75": {
+              "surrenderDisplayWon": 498200000,
+              "refundRatePercent": 114.21
+            }
+          }
+        },
+        {
+          "month": 204,
+          "label": "17년",
+          "age": 57,
+          "paidDisplayWon": 463480000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 353300000,
+              "refundRatePercent": 76.23
+            },
+            "2.5": {
+              "surrenderDisplayWon": 481130000,
+              "refundRatePercent": 103.81
+            },
+            "3.75": {
+              "surrenderDisplayWon": 539480000,
+              "refundRatePercent": 116.4
+            }
+          }
+        },
+        {
+          "month": 216,
+          "label": "18년",
+          "age": 58,
+          "paidDisplayWon": 490750000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 371230000,
+              "refundRatePercent": 75.65
+            },
+            "2.5": {
+              "surrenderDisplayWon": 515360000,
+              "refundRatePercent": 105.01
+            },
+            "3.75": {
+              "surrenderDisplayWon": 582220000,
+              "refundRatePercent": 118.64
+            }
+          }
+        },
+        {
+          "month": 228,
+          "label": "19년",
+          "age": 59,
+          "paidDisplayWon": 518010000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 388790000,
+              "refundRatePercent": 75.05
+            },
+            "2.5": {
+              "surrenderDisplayWon": 550330000,
+              "refundRatePercent": 106.24
+            },
+            "3.75": {
+              "surrenderDisplayWon": 626470000,
+              "refundRatePercent": 120.94
+            }
+          }
+        },
+        {
+          "month": 240,
+          "label": "20년",
+          "age": 60,
+          "paidDisplayWon": 545280000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 405960000,
+              "refundRatePercent": 74.45
+            },
+            "2.5": {
+              "surrenderDisplayWon": 586060000,
+              "refundRatePercent": 107.48
+            },
+            "3.75": {
+              "surrenderDisplayWon": 672320000,
+              "refundRatePercent": 123.3
+            }
+          }
+        },
+        {
+          "month": 300,
+          "label": "25년",
+          "age": 65,
+          "paidDisplayWon": 681600000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 485380000,
+              "refundRatePercent": 71.21
+            },
+            "2.5": {
+              "surrenderDisplayWon": 776510000,
+              "refundRatePercent": 113.92
+            },
+            "3.75": {
+              "surrenderDisplayWon": 927750000,
+              "refundRatePercent": 136.11
+            }
+          }
+        },
+        {
+          "month": 360,
+          "label": "30년",
+          "age": 70,
+          "paidDisplayWon": 817920000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 550030000,
+              "refundRatePercent": 67.25
+            },
+            "2.5": {
+              "surrenderDisplayWon": 987690000,
+              "refundRatePercent": 120.76
+            },
+            "3.75": {
+              "surrenderDisplayWon": 1234760000,
+              "refundRatePercent": 150.96
+            }
+          }
+        },
+        {
+          "month": 420,
+          "label": "35년",
+          "age": 75,
+          "paidDisplayWon": 954240000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 590380000,
+              "refundRatePercent": 61.87
+            },
+            "2.5": {
+              "surrenderDisplayWon": 1222700000,
+              "refundRatePercent": 128.13
+            },
+            "3.75": {
+              "surrenderDisplayWon": 1607620000,
+              "refundRatePercent": 168.47
+            }
+          }
+        },
+        {
+          "month": 480,
+          "label": "40년",
+          "age": 80,
+          "paidDisplayWon": 1090560000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 579820000,
+              "refundRatePercent": 53.17
+            },
+            "2.5": {
+              "surrenderDisplayWon": 1489150000,
+              "refundRatePercent": 136.55
+            },
+            "3.75": {
+              "surrenderDisplayWon": 2048910000,
+              "refundRatePercent": 187.88
+            }
+          }
+        },
+        {
+          "month": 540,
+          "label": "45년",
+          "age": 85,
+          "paidDisplayWon": 1226880000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 475340000,
+              "refundRatePercent": 38.74
+            },
+            "2.5": {
+              "surrenderDisplayWon": 1787670000,
+              "refundRatePercent": 145.71
+            },
+            "3.75": {
+              "surrenderDisplayWon": 2562730000,
+              "refundRatePercent": 208.88
+            }
+          }
+        },
+        {
+          "month": 588,
+          "label": "49년",
+          "age": 89,
+          "paidDisplayWon": 1335930000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 257980000,
+              "refundRatePercent": 19.31
+            },
+            "2.5": {
+              "surrenderDisplayWon": 2038420000,
+              "refundRatePercent": 152.58
+            },
+            "3.75": {
+              "surrenderDisplayWon": 3025660000,
+              "refundRatePercent": 226.48
+            }
+          }
+        }
+      ]
+    },
+    "female": {
+      "gender": "female",
+      "sourceTitle": "40세 여.pdf",
+      "sourceSha256": "b386c1667694b7f54374a488823c4b3ef476e61155645b5082d7f399246b098b",
+      "sourcePages": {
+        "contract": 9,
+        "death": 12,
+        "base": 13
+      },
+      "monthlyBasePremiumWon": 775000,
+      "base": [
+        {
+          "month": 3,
+          "label": "3개월",
+          "age": 40,
+          "paidDisplayWon": 2320000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 6,
+          "label": "6개월",
+          "age": 40,
+          "paidDisplayWon": 4650000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 9,
+          "label": "9개월",
+          "age": 40,
+          "paidDisplayWon": 6970000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 12,
+          "label": "1년",
+          "age": 41,
+          "paidDisplayWon": 9300000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 24,
+          "label": "2년",
+          "age": 42,
+          "paidDisplayWon": 18600000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 36,
+          "label": "3년",
+          "age": 43,
+          "paidDisplayWon": 27900000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 5260000,
+              "refundRatePercent": 18.85,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 6300000,
+              "refundRatePercent": 22.58,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 6680000,
+              "refundRatePercent": 23.94,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 48,
+          "label": "4년",
+          "age": 44,
+          "paidDisplayWon": 37200000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 14760000,
+              "refundRatePercent": 39.68,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 16610000,
+              "refundRatePercent": 44.65,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 17300000,
+              "refundRatePercent": 46.51,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 60,
+          "label": "5년",
+          "age": 45,
+          "paidDisplayWon": 46500000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 24170000,
+              "refundRatePercent": 51.98,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 27060000,
+              "refundRatePercent": 58.19,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 28160000,
+              "refundRatePercent": 60.56,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 72,
+          "label": "6년",
+          "age": 46,
+          "paidDisplayWon": 55800000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 33490000,
+              "refundRatePercent": 60.02,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 37650000,
+              "refundRatePercent": 67.47,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 39250000,
+              "refundRatePercent": 70.34,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 84,
+          "label": "7년",
+          "age": 47,
+          "paidDisplayWon": 65100000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 42690000,
+              "refundRatePercent": 65.58,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 48380000,
+              "refundRatePercent": 74.32,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 50590000,
+              "refundRatePercent": 77.71,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 96,
+          "label": "8년",
+          "age": 48,
+          "paidDisplayWon": 74400000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 48410000,
+              "refundRatePercent": 65.07,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 55850000,
+              "refundRatePercent": 75.07,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 58800000,
+              "refundRatePercent": 79.03,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 108,
+          "label": "9년",
+          "age": 49,
+          "paidDisplayWon": 83700000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 54020000,
+              "refundRatePercent": 64.54,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 63460000,
+              "refundRatePercent": 75.82,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 67260000,
+              "refundRatePercent": 80.36,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 120,
+          "label": "10년",
+          "age": 50,
+          "paidDisplayWon": 93000000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 59510000,
+              "refundRatePercent": 63.99,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 71200000,
+              "refundRatePercent": 76.56,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 75980000,
+              "refundRatePercent": 81.7,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 132,
+          "label": "11년",
+          "age": 51,
+          "paidDisplayWon": 102300000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 64890000,
+              "refundRatePercent": 63.43,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 79080000,
+              "refundRatePercent": 77.3,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 84980000,
+              "refundRatePercent": 83.07,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 144,
+          "label": "12년",
+          "age": 52,
+          "paidDisplayWon": 111600000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 70160000,
+              "refundRatePercent": 62.87,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 87100000,
+              "refundRatePercent": 78.05,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 94250000,
+              "refundRatePercent": 84.45,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 156,
+          "label": "13년",
+          "age": 53,
+          "paidDisplayWon": 120900000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 75320000,
+              "refundRatePercent": 62.3,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 95270000,
+              "refundRatePercent": 78.8,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 103830000,
+              "refundRatePercent": 85.88,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 168,
+          "label": "14년",
+          "age": 54,
+          "paidDisplayWon": 130200000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 80390000,
+              "refundRatePercent": 61.74,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 103610000,
+              "refundRatePercent": 79.58,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 113720000,
+              "refundRatePercent": 87.34,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 180,
+          "label": "15년",
+          "age": 55,
+          "paidDisplayWon": 139500000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 85360000,
+              "refundRatePercent": 61.19,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 112120000,
+              "refundRatePercent": 80.37,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 123960000,
+              "refundRatePercent": 88.86,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 192,
+          "label": "16년",
+          "age": 56,
+          "paidDisplayWon": 148800000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 90260000,
+              "refundRatePercent": 60.66,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 120810000,
+              "refundRatePercent": 81.19,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 134550000,
+              "refundRatePercent": 90.42,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 204,
+          "label": "17년",
+          "age": 57,
+          "paidDisplayWon": 158100000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 95060000,
+              "refundRatePercent": 60.13,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 129690000,
+              "refundRatePercent": 82.03,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 145510000,
+              "refundRatePercent": 92.04,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 216,
+          "label": "18년",
+          "age": 58,
+          "paidDisplayWon": 167400000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 99750000,
+              "refundRatePercent": 59.59,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 138720000,
+              "refundRatePercent": 82.87,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 156810000,
+              "refundRatePercent": 93.67,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 228,
+          "label": "19년",
+          "age": 59,
+          "paidDisplayWon": 176700000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 104300000,
+              "refundRatePercent": 59.03,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 147900000,
+              "refundRatePercent": 83.7,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 168470000,
+              "refundRatePercent": 95.34,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 240,
+          "label": "20년",
+          "age": 60,
+          "paidDisplayWon": 186000000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 108690000,
+              "refundRatePercent": 58.44,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 157200000,
+              "refundRatePercent": 84.52,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 180460000,
+              "refundRatePercent": 97.02,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 300,
+          "label": "25년",
+          "age": 65,
+          "paidDisplayWon": 232500000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 128300000,
+              "refundRatePercent": 55.18,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 205780000,
+              "refundRatePercent": 88.51,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 246090000,
+              "refundRatePercent": 105.85,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 360,
+          "label": "30년",
+          "age": 70,
+          "paidDisplayWon": 279000000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 143770000,
+              "refundRatePercent": 51.53,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 258020000,
+              "refundRatePercent": 92.48,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 322600000,
+              "refundRatePercent": 115.63,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 420,
+          "label": "35년",
+          "age": 75,
+          "paidDisplayWon": 325500000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 149220000,
+              "refundRatePercent": 45.84,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 309320000,
+              "refundRatePercent": 95.03,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 407940000,
+              "refundRatePercent": 125.33,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 480,
+          "label": "40년",
+          "age": 80,
+          "paidDisplayWon": 372000000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 128230000,
+              "refundRatePercent": 34.47,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 346270000,
+              "refundRatePercent": 93.08,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 493840000,
+              "refundRatePercent": 132.75,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 540,
+          "label": "45년",
+          "age": 85,
+          "paidDisplayWon": 418500000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 49870000,
+              "refundRatePercent": 11.92,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 345290000,
+              "refundRatePercent": 82.51,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 568850000,
+              "refundRatePercent": 135.93,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        },
+        {
+          "month": 588,
+          "label": "49년",
+          "age": 89,
+          "paidDisplayWon": 455700000,
+          "scenarios": {
+            "-1": {
+              "surrenderDisplayWon": 0,
+              "refundRatePercent": 0.0,
+              "deathDisplayWon": 1000000000
+            },
+            "2.5": {
+              "surrenderDisplayWon": 281820000,
+              "refundRatePercent": 61.84,
+              "deathDisplayWon": 1000000000
+            },
+            "3.75": {
+              "surrenderDisplayWon": 607620000,
+              "refundRatePercent": 133.34,
+              "deathDisplayWon": 1000000000
+            }
+          }
+        }
+      ]
+    }
+  }
+}
