@@ -18,3 +18,4 @@ body{font-size:16px}.eyebrow,.tiny,.field-help,.section-description,.metric smal
 @media print{.scenario input{font-size:12px!important}.scenario-controls,.scenario-reserves,.projection-cards{grid-template-columns:1fr 1fr}.scenario{break-inside:auto}.projection-card{break-inside:avoid}.metrics{grid-template-columns:repeat(3,1fr)}}
 
 .brand small{font-size:11px}.brand{font-size:14px}.milestones button,.timeline .tiny{font-size:14px}.premium-note>span,.tiny-label{font-size:14px}@media(max-width:650px){.chart text{font-size:28px}.brand small{font-size:9px}.milestones button{font-size:14px}}
+.protection>p:not(.tiny),.formula p,.formula>span,.compare-row>small,.compare-row>span,.legend .chart-scenario,.time-select>span,.chart-unit,.version{font-size:14px}.metric.featured small,.metric small{font-size:14px;max-width:none}
