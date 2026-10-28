@@ -1,0 +1,143 @@
+{
+  "version": "0.4",
+  "scope": "Example-only; not actuarial certification or an accuracy guarantee outside these source cases.",
+  "baseTrainingReturns": [
+    -1,
+    3.75
+  ],
+  "withheldBaseReturn": 2.5,
+  "heldoutBaseAnnual": {
+    "count": 74,
+    "maxAbsoluteWon": 20286947,
+    "meanAbsoluteRelativePercent": 0.3818186039020803,
+    "maxAbsoluteRelativePercent": 2.8861766173962966,
+    "maxRefundRateDifferencePercentagePoints": 1.8602320847572855
+  },
+  "heldoutBaseYears7to10": {
+    "count": 12,
+    "maxAbsoluteWon": 806444,
+    "meanAbsoluteRelativePercent": 0.3045689504526587,
+    "maxAbsoluteRelativePercent": 0.7594345347294862,
+    "maxRefundRateDifferencePercentagePoints": 0.5915812297749766
+  },
+  "savingsInSampleOnly": {
+    "count": 34,
+    "maxAbsoluteWon": 53584,
+    "meanAbsoluteRelativePercent": 0.036462128645156466,
+    "maxAbsoluteRelativePercent": 0.09713600240139897,
+    "maxRefundRateDifferencePercentagePoints": 0.06950193790964405
+  },
+  "premiumIndependentAge41": {
+    "observedWon": 116800,
+    "predictedWon": 117033.35127352805,
+    "relativeErrorPercent": 0.1997870492534748
+  },
+  "unvalidated": [
+    "Other issue ages and amounts",
+    "Simple underwriting surrender values",
+    "50% additional payments",
+    "Conversions other than 7 years",
+    "Post-conversion sums other than 1 billion KRW",
+    "20% returns",
+    "Mandatory entry-payment charges and timing",
+    "True actuarial account values before 7 years"
+  ],
+  "nearConversionChecks": [
+    {
+      "gender": "male",
+      "extra": 0,
+      "year": 7,
+      "observed": 72220000,
+      "predicted": 72753257.72972566,
+      "paid": 95424000
+    },
+    {
+      "gender": "male",
+      "extra": 0,
+      "year": 8,
+      "observed": 83350000,
+      "predicted": 83927728.89445236,
+      "paid": 109056000
+    },
+    {
+      "gender": "male",
+      "extra": 0,
+      "year": 9,
+      "observed": 94670000,
+      "predicted": 95341173.40041687,
+      "paid": 122688000
+    },
+    {
+      "gender": "male",
+      "extra": 0,
+      "year": 10,
+      "observed": 106190000,
+      "predicted": 106996443.53242925,
+      "paid": 136320000
+    },
+    {
+      "gender": "male",
+      "extra": 1,
+      "year": 7,
+      "observed": 176500000,
+      "predicted": 176807993.25403136,
+      "paid": 190848000
+    },
+    {
+      "gender": "male",
+      "extra": 1,
+      "year": 8,
+      "observed": 204060000,
+      "predicted": 204336385.04877037,
+      "paid": 218112000
+    },
+    {
+      "gender": "male",
+      "extra": 1,
+      "year": 9,
+      "observed": 232230000,
+      "predicted": 232504398.2204368,
+      "paid": 245376000
+    },
+    {
+      "gender": "male",
+      "extra": 1,
+      "year": 10,
+      "observed": 261030000,
+      "predicted": 261325166.49389648,
+      "paid": 272640000
+    },
+    {
+      "gender": "female",
+      "extra": 0,
+      "year": 7,
+      "observed": 48380000,
+      "predicted": 48434454.60122187,
+      "paid": 65100000
+    },
+    {
+      "gender": "female",
+      "extra": 0,
+      "year": 8,
+      "observed": 55850000,
+      "predicted": 55875208.0743038,
+      "paid": 74400000
+    },
+    {
+      "gender": "female",
+      "extra": 0,
+      "year": 9,
+      "observed": 63460000,
+      "predicted": 63472006.105610915,
+      "paid": 83700000
+    },
+    {
+      "gender": "female",
+      "extra": 0,
+      "year": 10,
+      "observed": 71200000,
+      "predicted": 71226434.20628653,
+      "paid": 93000000
+    }
+  ]
+}

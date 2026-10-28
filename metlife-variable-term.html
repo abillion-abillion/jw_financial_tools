@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="메트라이프 변액리치정기보험의 공식 설계 예시를 보정한 추정 모델로 납입액, 사망보험금, 해약환급금을 비교합니다.">
+  <meta name="color-scheme" content="light">
+  <title>변액리치정기보험 시뮬레이터 · JW Financial</title>
+  <style>:root{--ink:#142b40;--navy:#152e43;--muted:#647582;--teal:#087f78;--teal-dark:#08635e;--teal-pale:#eaf5f1;--line:#dce5e8;--bg:#f5f7f7;--white:#fff;--red:#a84242;--amber:#926012;--radius:14px;font-family:Inter,"Pretendard","Noto Sans KR",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);font-synthesis:none}
+*{box-sizing:border-box}body{margin:0;font-size:14px;line-height:1.65}button,input,select{font:inherit}button,a,input,select,summary{-webkit-tap-highlight-color:transparent}button,a,select,summary{touch-action:manipulation}button{cursor:pointer}a{color:var(--teal-dark)}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #a57119;outline-offset:4px}button:disabled,input:disabled{cursor:not-allowed}h1,h2,h3,p{margin:0}h2{font-size:19px;letter-spacing:-.8px;line-height:1.5}h3{font-size:14px}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}.skip{position:fixed;top:-90px;left:16px;padding:10px;background:white;z-index:20}.skip:focus{top:10px}.topbar{height:80px;background:var(--navy);color:white;display:flex;align-items:center;justify-content:space-between;padding:0 36px;gap:20px}.brand{color:white;text-decoration:none;display:flex;align-items:center;gap:13px;font-size:13px;letter-spacing:2px;font-weight:650;line-height:1.3}.brand small{display:block;color:#a7becb;font-size:8px;letter-spacing:1.6px;margin-top:5px}.brand-mark{font-size:25px;font-weight:800;letter-spacing:-1px;border-right:1px solid #57717f;padding-right:15px}.brand-mark span{color:#64c9ae}.header-right{display:flex;gap:20px;align-items:center}.version{font-size:11px;color:#deebe9;display:flex;gap:7px;align-items:center}.version i{width:6px;height:6px;border-radius:50%;background:#69c3ac}.button{display:inline-flex;align-items:center;justify-content:center;gap:12px;border:1px solid #d4dfe3;background:white;color:var(--ink);border-radius:7px;padding:9px 14px;font-size:12px;font-weight:600;min-height:40px;white-space:nowrap}.button:hover{background:#f2f7f6;border-color:#80ada7}.print-button{background:#294456;border-color:#486373;color:#fff}.print-button:hover{background:#365366}.workspace{display:grid;grid-template-columns:280px minmax(0,1fr);max-width:1600px;margin:auto}.sidebar{background:#edf2f2;border-right:1px solid var(--line);padding:35px 26px;align-self:stretch}.eyebrow{font-size:10px;font-weight:700;letter-spacing:1.8px;color:var(--teal);display:block;margin-bottom:8px}.side-heading h2{font-size:21px;margin-bottom:4px}.side-heading p,.field-help{font-size:11px;color:var(--muted);line-height:1.8}.sidebar fieldset{padding:0;margin:27px 0 0;border:0;min-width:0}.sidebar legend{font-size:12px;font-weight:650;margin-bottom:9px;display:block}.muted{color:var(--muted);font-size:10px}.segments{display:grid;background:#e0e8e8;padding:3px;border-radius:8px;gap:2px}.segments.two{grid-template-columns:repeat(2,1fr)}.segments.three{grid-template-columns:repeat(3,1fr)}.segments label{position:relative;cursor:pointer}.segments input{position:absolute;inset:0;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}.segments span{display:block;text-align:center;font-size:12px;padding:8px 3px;border-radius:5px;font-weight:550}.segments input:checked+span{background:white;box-shadow:0 1px 5px #163f4d10;color:var(--teal-dark);font-weight:750}.segments input:focus-visible+span{outline:3px solid #a57119}.fixed-conditions{margin-top:24px;padding-bottom:23px;border-bottom:1px solid #d5dfe1;display:grid;gap:11px;font-size:12px}.fixed-conditions>div{display:flex;justify-content:space-between;gap:8px}.fixed-conditions span{color:var(--muted)}.fixed-conditions strong{font-weight:600}.plan-options{display:grid;gap:8px}.plan-options>label{display:flex;gap:9px;align-items:center;border:1px solid #d6e0e2;border-radius:8px;background:#f9fbfb;padding:12px 10px;cursor:pointer}.plan-options label:has(:checked){border-color:var(--teal);background:#f1faf6}.plan-options input{margin:0;accent-color:var(--teal)}.plan-options strong{font-size:12px;display:block}.plan-options small{font-size:10px;display:block;color:var(--muted)}.plan-options label:has(:disabled){opacity:.5;cursor:not-allowed}.field-help{margin-top:8px}.premium-note{background:var(--navy);color:white;border-radius:10px;margin-top:27px;padding:19px}.premium-note>span{font-size:11px;color:#b8ccd3}.premium-note>strong{display:block;font-size:23px;letter-spacing:-.7px;margin:4px 0}.premium-note p{font-size:10px;color:#b8ccd3;line-height:1.7}.side-foot{margin-top:28px;border-top:1px solid #d5dfe1;padding-top:22px}.tiny-label{font-size:10px;letter-spacing:.4px;font-weight:650}.side-foot p{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.85}.side-foot .fund-note{font-size:10px;margin-top:17px;color:#768a96}main{padding:37px 42px 20px;min-width:0}.intro{display:flex;align-items:center;justify-content:space-between;padding:0 0 29px}.intro .eyebrow{letter-spacing:2px;font-size:10px}.intro h1{font-size:37px;line-height:1.35;font-weight:720;letter-spacing:-1.8px;margin:11px 0 12px}.intro p{color:var(--muted);font-size:13px}.intro-index{font-size:70px;line-height:1;letter-spacing:-5px;font-weight:300;color:#d6e4e0;padding-right:10px}.intro-index span{display:block;font-size:8px;letter-spacing:2px;margin-top:10px;color:#6a8d86}.context-line{font-size:10px;color:var(--muted);display:flex;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap}.context-line>span:first-child{font-weight:600;color:var(--ink)}.panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:25px;margin-bottom:20px}.section-top{display:flex;align-items:center;justify-content:space-between;gap:16px}.timeline{padding:20px 25px}.timeline h2{font-size:15px}.time-select{display:flex;align-items:center;gap:10px}.time-select select{border:1px solid #cfdfdc;border-radius:6px;padding:5px 27px 5px 10px;color:var(--teal-dark);font-size:15px;font-weight:700;background:#f6faf8;min-height:38px}.time-select>span{font-size:11px;color:var(--muted);min-width:28px}input[type=range]{width:100%;margin:19px 0 4px;accent-color:var(--teal);cursor:pointer}.milestones{display:flex;justify-content:space-between;gap:4px}.milestones button{background:none;border:0;padding:5px 0;color:var(--muted);font-size:10px;min-width:29px}.milestones button.active{font-weight:700;color:var(--teal-dark)}.tiny{font-size:10px;color:var(--muted);line-height:1.85}.timeline .tiny{margin-top:7px}.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin:18px 0 20px}.metric{background:white;border:1px solid var(--line);border-radius:11px;padding:22px 20px}.metric.featured{background:var(--teal-pale);border-color:#c6e3d8}.metric-label{font-size:11px;color:#536e77;display:flex;gap:8px;align-items:center;min-height:21px}.pill{font-size:8px;color:var(--teal-dark);border:1px solid #b6d8c9;border-radius:20px;padding:1px 6px;white-space:nowrap}.metric strong{display:block;font-size:27px;line-height:1.3;letter-spacing:-1px;margin:12px 0 8px;font-variant-numeric:tabular-nums}.metric.featured strong{color:var(--teal-dark)}.metric small{display:block;color:var(--muted);font-size:10px}.chart-panel{padding-bottom:16px}.chart-unit{font-size:10px;color:var(--muted)}.legend{display:flex;align-items:center;gap:20px;margin-top:19px;font-size:10px;color:var(--muted);flex-wrap:wrap}.legend>span{display:flex;align-items:center;gap:6px}.dot{display:inline-block;width:7px;height:7px;border-radius:50%}.teal{background:var(--teal)}.dash{display:inline-block;width:16px;height:0;border-top:2px dashed #9eabb8}.legend .chart-scenario{margin-left:auto;color:var(--ink);font-size:10px}.chart{margin-top:8px;min-height:230px}.chart svg{display:block;width:100%;height:auto;overflow:visible}.chart .point{cursor:pointer;stroke:white;stroke-width:1.5px;transition:r .12s}.chart .point:hover,.chart .point:focus{r:7;stroke:#233b45;outline:none}.chart-caption{border-top:1px solid #e9efef;display:flex;justify-content:space-between;gap:16px;padding-top:10px;font-size:10px;color:var(--muted)}.chart-caption>p:last-child{color:var(--teal-dark);text-align:right}.two-panels{display:grid;grid-template-columns:1fr 1fr;gap:20px}.two-panels .panel{margin-bottom:20px}.two-panels h2{font-size:16px}.result-label{display:block;color:var(--muted);font-size:11px;margin-top:22px}.protection>strong{font-size:30px;letter-spacing:-1px;display:block;margin:3px 0 8px}.protection>p:not(.tiny){font-size:11px;color:var(--muted);line-height:1.8}.formula{border-top:1px solid #e6ecee;margin-top:18px;padding-top:15px;margin-bottom:12px}.formula>span{font-size:10px;color:var(--teal);font-weight:650}.formula p{font-size:11px;margin-top:6px;line-height:1.9}.compare-row{display:grid;grid-template-columns:1fr auto;gap:5px;margin-top:18px;padding-bottom:13px;border-bottom:1px solid #e6ecee}.compare-row>span{font-size:12px;font-weight:600}.compare-row>strong{text-align:right;font-size:17px}.compare-row>small{font-size:10px;color:var(--muted)}.compare-row>small:last-child{text-align:right}.compare-row.is-selected>span,.compare-row.is-selected>strong{color:var(--teal-dark)}.compare>.tiny{margin-top:15px}.unavailable{padding:22px 0;font-size:12px;color:var(--muted);line-height:1.9}.subtle-tag{color:var(--teal-dark);background:var(--teal-pale);padding:4px 9px;border-radius:4px;font-size:10px;white-space:nowrap}.section-description{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.9}.conversion-layout{display:grid;grid-template-columns:1fr 1fr;gap:35px;margin-top:21px}.input-label{display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:600;margin-bottom:7px}.input-label>span{color:var(--muted);font-weight:400}#reserve{width:100%;border:1px solid #c9d8dc;border-radius:6px;padding:10px 12px;background:#fcfdfd;font-size:12px;min-height:44px}.checkbox{display:flex;align-items:flex-start;gap:8px;margin:16px 0;font-size:11px;cursor:pointer}.checkbox input{margin:4px 0 0;accent-color:var(--teal)}.primary{color:white;background:var(--teal-dark);border-color:var(--teal-dark);width:100%;justify-content:space-between}.primary:hover{background:#064f4c;color:white}.conversion-output{border-left:1px solid var(--line);padding-left:26px}.conversion-status{font-size:14px;font-weight:650;margin-bottom:11px}.status-incomplete{color:var(--muted)}.status-conditional{color:var(--teal-dark)}.status-unmet{color:var(--red)}.check-row{display:flex;gap:9px;justify-content:space-between;font-size:11px;padding:6px 0}.check-row .check-pass{color:var(--teal-dark)}.check-row .check-fail{color:var(--red)}.check-row .check-unknown{color:var(--muted)}.conversion-output .tiny{margin-top:10px}.conversion-limit{border-top:1px solid #e6ecee;margin-top:20px;padding-top:12px}.table-panel{padding-bottom:18px}.table-scroll{overflow:auto;max-height:460px;margin-top:19px;border:1px solid #e0e8ea;border-radius:8px;scrollbar-width:thin}table{border-collapse:collapse;width:100%;font-size:11px;white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}th{position:sticky;top:0;background:#f2f6f6;padding:12px 13px;font-size:10px;font-weight:600;z-index:1}th:first-child,td:first-child{text-align:left}td{padding:11px 13px;border-top:1px solid #e7edee}td small{display:block;font-size:9px;color:var(--muted);margin-top:3px}.selected-rate{background:#f3f9f6}tr.is-active td{background:#e6f3ee}tr.is-active td.selected-rate{background:#d5ece2}.table-body-button{border:0;background:none;color:inherit;padding:0;text-decoration:underline;text-decoration-color:#c7d6d2;text-underline-offset:4px;font-size:11px;min-height:24px}.table-note{margin-top:12px}.sources{padding:0;overflow:hidden}.sources summary{list-style:none;display:flex;justify-content:space-between;cursor:pointer;padding:18px 24px;font-size:12px;font-weight:600}.sources summary::-webkit-details-marker{display:none}.details-icon{color:var(--teal);font-size:16px;font-weight:400}.sources[open] .details-icon{transform:rotate(45deg)}.sources-body{display:grid;grid-template-columns:1fr 1fr;gap:30px;padding:0 24px 24px}.sources h3{margin-top:14px;font-size:11px}.sources p,.sources li{font-size:10px;line-height:1.9;color:var(--muted)}.sources p{margin-top:6px}.sources ul{padding-left:17px;margin:8px 0}.source-links{display:flex;gap:15px;margin:14px 0;font-size:10px;flex-wrap:wrap}.footer{padding:1px 0 16px;display:flex;flex-direction:column;gap:14px}.footer>p{font-size:10px;color:var(--muted)}.footer>span{font-size:8px;font-weight:600;letter-spacing:1.2px;color:#88969e}.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--navy);color:white;font-size:12px;border-radius:8px;padding:11px 18px;box-shadow:0 5px 25px #13293c30;display:none;z-index:20;max-width:90vw}.toast.visible{display:block}.no-script{padding:20px;background:#fff0cf;position:fixed;top:90px;left:10%;right:10%;z-index:30}
+@media(min-width:1450px){main{padding-left:55px;padding-right:55px}.intro h1{font-size:43px}.chart{min-height:250px}}
+@media(max-width:1100px){.workspace{grid-template-columns:245px minmax(0,1fr)}.sidebar{padding:28px 21px}main{padding:29px 25px}.metric{padding:18px 14px}.metric strong{font-size:23px}.metric-label{font-size:10px}.pill{display:none}.two-panels{gap:14px}.panel{padding:21px}.conversion-layout{gap:22px}.subtle-tag{white-space:normal;max-width:130px;text-align:center}.sources{padding:0}.sources-body{gap:20px}.chart-caption{display:block}.chart-caption>p:last-child{text-align:left;margin-top:5px}}
+@media(max-width:800px){.topbar{padding:0 20px;height:72px}.brand{font-size:11px}.brand small{font-size:7px}.header-right{gap:10px}.version{display:none}.workspace{display:block}.sidebar{border-right:0;border-bottom:1px solid var(--line);padding:24px;display:grid;grid-template-columns:1fr 1fr;column-gap:25px}.side-heading{grid-column:1/-1}.side-heading p{display:none}.side-heading h2{font-size:18px}.sidebar fieldset{margin-top:18px}.fixed-conditions{grid-column:2;grid-row:2/4;margin:20px 0 0;padding:0;border:0;align-content:start;gap:12px}.sidebar fieldset:nth-of-type(2){grid-column:1}.sidebar fieldset:nth-of-type(3){grid-column:1/-1}.premium-note{grid-column:1/-1;display:grid;grid-template-columns:1fr auto;align-items:center;margin:20px 0 0;padding:14px 18px}.premium-note>strong{grid-column:2;grid-row:1/3;font-size:25px}.premium-note p{margin-top:3px}.side-foot{grid-column:1/-1;margin-top:14px;padding-top:12px;display:flex;justify-content:space-between;gap:15px}.tiny-label{display:none}.side-foot p{margin:0;font-size:10px}.side-foot .fund-note{margin:0;text-align:right}.field-help{font-size:10px}main{padding:26px 24px}.intro h1{font-size:32px}.intro-index{font-size:60px}.context-line{font-size:9px}.metrics{gap:8px}.metric{padding:17px 13px}.metric strong{font-size:24px}.metric small{font-size:9px}.conversion-layout{gap:25px}.chart{min-height:180px}}
+@media(max-width:520px){.topbar{padding:0 17px}.brand{gap:10px;font-size:10px;letter-spacing:1.6px}.brand-mark{padding-right:12px;font-size:22px}.print-button{font-size:10px;padding:7px 11px;min-height:36px}.sidebar{padding:22px 18px;gap:0 20px}.fixed-conditions{font-size:10px;gap:13px}.plan-options strong{font-size:10px}.plan-options small{font-size:9px}.plan-options>label{padding:10px 8px;gap:6px}.premium-note>strong{font-size:23px}.premium-note p{font-size:9px}.side-foot .fund-note{font-size:9px}main{padding:25px 17px 15px}.intro h1{font-size:32px;letter-spacing:-1.5px}.intro .eyebrow{font-size:8px}.intro-index{display:none}.intro p{font-size:11px}.intro{padding-bottom:22px}.context-line{display:block}.context-line>span{display:block;margin-top:3px}.panel{padding:19px 16px;margin-bottom:16px}.timeline{padding:17px 15px}.timeline h2{font-size:13px}.time-select{gap:7px}.time-select select{font-size:13px;padding-left:8px;padding-right:18px}.time-select>span{font-size:10px}.milestones button{font-size:9px;min-width:24px}.timeline .tiny{font-size:9px}.metrics{grid-template-columns:1fr 1fr;margin:15px 0;gap:9px}.metric{padding:17px 15px}.metric.featured{grid-column:1/-1;grid-row:1;padding:19px 20px;display:grid;grid-template-columns:1fr auto;align-items:center}.metric.featured .metric-label{grid-column:1}.metric.featured strong{grid-column:2;grid-row:1/3;font-size:33px;margin:0}.metric.featured small{grid-column:1;margin-top:5px;font-size:9px;max-width:110px}.metric strong{font-size:25px;line-height:1.2;margin:10px 0 8px}.metric-label{font-size:10px}.metric small{font-size:9px;line-height:1.6}.metric.featured .pill{display:none}h2{font-size:16px}.eyebrow{font-size:8px;margin-bottom:7px}.chart-unit{font-size:9px}.legend{gap:13px;font-size:9px}.legend .chart-scenario{margin-left:0;font-size:9px}.chart{min-height:135px}.chart-caption{font-size:9px}.two-panels{grid-template-columns:1fr;gap:0}.two-panels .panel{margin-bottom:16px}.protection>strong{font-size:29px}.result-label{margin-top:18px}.section-top{gap:9px}.subtle-tag{font-size:8px;max-width:98px;padding:5px 7px}.conversion-layout{grid-template-columns:1fr;gap:22px}.conversion-output{border-left:0;border-top:1px solid var(--line);padding:18px 0 0}.section-description{font-size:10px}.table-panel .section-top{align-items:flex-start;flex-direction:column}.table-panel .button{font-size:10px;min-height:35px}.table-scroll{max-height:380px}.sources{padding:0}.sources summary{padding:16px;font-size:11px}.sources-body{grid-template-columns:1fr;gap:3px;padding:0 16px 19px}.footer>p{font-size:9px}.footer>span{font-size:7px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+.print-only{display:none}
+@media print{.print-only{display:block!important;width:100%}.context-line{flex-wrap:wrap}}
+.milestones{justify-content:flex-start;gap:7px;flex-wrap:wrap;margin-top:7px}.milestones button{border:1px solid #dce6e2;border-radius:4px;padding:3px 9px;background:#f8fbf9;min-width:0}.milestones button.active{background:#e4f3ea;border-color:#9bcab4}
+@page{size:A4;margin:12mm}
+@media print{html,body{background:white;color:#111;font-size:10px}.topbar{height:auto;padding:0 0 12px;background:white;color:#111;border-bottom:2px solid #173448}.brand{color:#111}.brand-mark{color:#173448}.brand small{color:#666}.header-right,.sidebar,.print-button,.button,.milestones,#period-range,.toast,.skip,.intro-index{display:none!important}.workspace{display:block}main{padding:16px 0 0}.intro{padding-bottom:12px}.intro h1{font-size:25px;line-height:1.25}.intro h1 br{display:none}.intro p{font-size:10px}.context-line{display:flex;font-size:9px}.panel{padding:12px;margin-bottom:12px;border-radius:4px;break-inside:avoid}.timeline .tiny{display:none}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.metric,.metric.featured{display:block;grid-row:auto;grid-column:auto;padding:12px;background:white}.metric strong,.metric.featured strong{font-size:24px;margin:7px 0}.metric.featured small{max-width:none}.chart{min-height:0}.chart svg{max-height:220px}.two-panels{display:grid;grid-template-columns:1fr 1fr;gap:12px}.two-panels .panel{margin-bottom:12px}.table-panel{break-inside:auto}.table-scroll{max-height:none;overflow:visible;border:0;margin-top:8px}table{font-size:8px;width:100%;white-space:normal}th{position:static;padding:7px 5px;font-size:8px}td{padding:5px;font-size:8px}td small{font-size:7px}.table-body-button{font-size:8px;text-decoration:none}thead{display:table-header-group}tr{break-inside:avoid}.table-note{font-size:8px}.sources{padding:12px;break-inside:auto}.sources summary{padding:0 0 7px}.sources-body{display:grid!important;grid-template-columns:1fr 1fr;padding:0;gap:20px}.sources:not([open])>.sources-body{display:grid!important}.sources h3{font-size:9px}.sources p,.sources li{font-size:8px}.details-icon{display:none}.source-links{font-size:8px}.source-links a[href]:after{content:none}.conversion-layout{grid-template-columns:1fr 1fr;gap:20px}.conversion-output{border-top:0;border-left:1px solid #ccc;padding:0 0 0 15px}.conversion .checkbox{margin:8px 0}#reserve{padding:5px;min-height:30px}.footer{border-top:1px solid #ddd;padding-top:10px}.footer>p{font-size:8px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+
+/* Customer readability and conversion planning */
+body{font-size:16px}.eyebrow,.tiny,.field-help,.section-description,.metric small,.metric-label,.sidebar legend,.fixed-conditions,.side-foot p,.footer>p,.context-line,.legend,.chart-caption,.result-label,.check-row,.sources p,.sources li,.sources h3,.source-links,.subtle-tag,.table-note{font-size:14px;color:#3f5664}.sidebar{padding-left:20px;padding-right:20px}.sidebar .plan-options strong,.segments span,.button,.input-label,.checkbox{font-size:15px}.plan-options small,.premium-note p{font-size:13px}.metric strong{font-size:32px}.metric.featured strong{color:#00594f}.protection>strong{color:#124d78}.panel h2{font-size:22px}.sources h3{font-weight:700}.table-scroll table,td,th,.table-body-button{font-size:14px}td small{font-size:13px}.scenario{border:2px solid #168a7b;background:#fafffd}.scenario-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin:20px 0}.scenario label:not(.checkbox){display:block;font-weight:650;font-size:15px;margin-bottom:8px}.scenario input[type=number]{width:100%;padding:11px;border:1px solid #92b4af;border-radius:6px;font-size:18px;background:white;color:#153e55}.range-ends{display:flex;justify-content:space-between;font-weight:700;color:#08746b}.scenario-reserves{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.reserve-case{background:#edf6f3;padding:17px;border-radius:8px}.reserve-case h3{font-size:20px;margin-bottom:14px}.reserve-case label{margin-top:12px}.cost-assumptions{padding:18px 0;margin-top:18px;border-top:1px solid #9bbdb6}.cost-assumptions summary{font-weight:700;cursor:pointer;color:#164f6a}.projection-card{background:white;border:1px solid #a5c3ba;border-radius:8px;padding:18px}.projection-card h3{font-size:20px;color:#13566f;margin-bottom:12px}.projection-card dl{margin:0}.projection-card dt{color:#405863;margin-top:12px}.projection-card dd{margin:0;font-size:22px;font-weight:750;color:#006354}.projection-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.projection-error{padding:16px;background:#fff2de;border-left:4px solid #a66a05;font-size:16px;color:#633e00}.projection-warn{color:#a33330;font-weight:700}.scenario .sr-only{position:absolute}.projection-card p{font-size:14px;margin-top:10px;color:#38505e}.chart-caption{line-height:1.8}.sidebar .side-foot .fund-note{font-size:13px}
+@media(max-width:1100px){.metrics{grid-template-columns:1fr}.metric strong{font-size:32px}.scenario-controls{grid-template-columns:1fr 1fr}.metric.featured{display:block}}
+@media(max-width:650px){.scenario-controls,.scenario-reserves,.projection-cards{grid-template-columns:1fr}.metrics{grid-template-columns:1fr}.metric.featured,.metric{grid-column:auto;grid-row:auto;display:block}.metric.featured strong{font-size:32px;margin:8px 0}.metric.featured small{max-width:none}.sidebar legend,.fixed-conditions,.plan-options strong,.plan-options small,.segments span,.sidebar .field-help{font-size:14px}.sidebar{grid-template-columns:1fr}.fixed-conditions{grid-column:auto;grid-row:auto}.sidebar fieldset,.sidebar fieldset:nth-of-type(2),.sidebar fieldset:nth-of-type(3){grid-column:auto}.premium-note,.side-foot,.side-heading{grid-column:auto}.intro h1{font-size:34px}.panel h2{font-size:22px}.table-scroll{max-height:500px}}
+@media print{.scenario input{font-size:12px!important}.scenario-controls,.scenario-reserves,.projection-cards{grid-template-columns:1fr 1fr}.scenario{break-inside:auto}.projection-card{break-inside:avoid}.metrics{grid-template-columns:repeat(3,1fr)}}
+
+.brand small{font-size:11px}.brand{font-size:14px}.milestones button,.timeline .tiny{font-size:14px}.premium-note>span,.tiny-label{font-size:14px}@media(max-width:650px){.chart text{font-size:28px}.brand small{font-size:9px}.milestones button{font-size:14px}}
+.protection>p:not(.tiny),.formula p,.formula>span,.compare-row>small,.compare-row>span,.legend .chart-scenario,.time-select>span,.chart-unit,.version{font-size:14px}.metric.featured small,.metric small{font-size:14px;max-width:none}
+.customer-layout{display:grid;grid-template-columns:340px minmax(0,1fr);max-width:1600px;margin:auto}.customer-inputs{padding:26px 25px;background:white;border-right:1px solid #d5deec;align-self:start;position:sticky;top:0;max-height:100vh;overflow:auto}.customer-inputs h2{font-size:21px;color:#1b3d75}.customer-kicker{font-size:14px;color:#566e95;margin:8px 0 24px}.customer-inputs label{display:flex;justify-content:space-between;gap:8px;color:#183968;font-weight:700;font-size:16px;margin:24px 0 9px}.customer-inputs output{font-size:14px;font-weight:400;color:#3e608c}.customer-inputs input:not([type=range]),.customer-inputs select{width:100%;min-width:0;padding:12px;font-size:18px;color:#183b68;background:#f5f8fd;border:1px solid #ced9ed;border-radius:8px;min-height:48px}.unit-input{display:flex;align-items:center;gap:9px}.unit-input>span{white-space:nowrap;color:#547097}.customer-inputs input[type=range]{accent-color:#1e467d;margin:10px 0 14px}.customer-note{font-size:14px;color:#415b7b;line-height:1.8;margin-top:10px}.locked-period{background:#eaf0f9;padding:14px;border-radius:8px;color:#194177;font-weight:750}.auto-summary{background:#183e71;color:white;padding:20px;border-radius:10px;margin-top:25px}.auto-summary>span{display:block;font-size:14px;color:#deebff}.auto-summary>strong{font-size:25px;display:block;margin:5px 0 16px;overflow-wrap:anywhere}.auto-summary p{font-size:14px;color:#deebff}.customer-results{padding:36px;min-width:0}.customer-results h1{font-size:38px;line-height:1.35;letter-spacing:-1px;margin-bottom:14px}.customer-results>p{font-size:16px;color:#405b77}.customer-status{padding:18px 20px;background:#fff3de;border-left:4px solid #b37a1b;font-size:16px;color:#5c4315;margin:22px 0;line-height:1.8}.customer-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:20px 0}.customer-cards article{background:white;border:1px solid #cddbe5;border-radius:10px;padding:19px}.customer-cards span{display:block;font-size:15px;color:#3e5b72}.customer-cards strong{display:block;font-size:24px;color:#184d80;margin-top:12px;overflow-wrap:anywhere}.customer-legend{display:flex;gap:20px;flex-wrap:wrap;font-size:15px;margin:20px 0;font-weight:700}.blue{color:#245baf}.gold{color:#a96000}.green{color:#00705a}#c-chart svg{display:block;width:100%;height:auto}.customer-results .panel h2{font-size:23px}.customer-results td,.customer-results th{font-size:15px;white-space:nowrap}.customer-results td small{font-size:13px}.legacy-details{max-width:1500px;margin:30px auto;padding:20px;border-top:1px solid #c7d5e2}.legacy-details>summary{font-size:16px;cursor:pointer;color:#294d70}.legacy-details:not([open])>.workspace{display:none}.customer-chart-panel .section-top{flex-wrap:wrap}.customer-results .table-scroll{max-height:500px}
+@media(max-width:1150px){.customer-layout{grid-template-columns:300px minmax(0,1fr)}.customer-results{padding:25px}.customer-cards{grid-template-columns:1fr}.customer-cards article{display:flex;justify-content:space-between;gap:20px;align-items:center}.customer-cards strong{margin:0;font-size:23px}}
+@media(max-width:750px){.customer-layout{display:block}.customer-inputs{position:static;max-height:none;border-right:0;border-bottom:2px solid #cddbee;padding:22px}.customer-results{padding:24px 17px}.customer-results h1{font-size:31px}.customer-legend{display:block}.customer-legend span{display:block;margin:8px 0}#c-chart svg text{font-size:22px}.customer-inputs h2{font-size:24px}.customer-cards article{display:block}.customer-cards strong{margin-top:9px}.customer-results .panel{padding:18px}.customer-results .panel h2{font-size:22px}}
+@media print{.customer-layout{display:block}.customer-inputs{position:static;max-height:none;overflow:visible;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0}.customer-inputs input[type=range]{display:none}.customer-inputs label{margin:4px 0}.customer-inputs input,.customer-inputs select{min-height:0!important;padding:4px!important;font-size:12px!important}.customer-inputs .customer-kicker,.customer-inputs .customer-note{font-size:10px}.customer-results{padding:12px 0}.customer-status{font-size:11px;margin:8px 0;padding:8px}.customer-cards{display:grid;grid-template-columns:repeat(3,1fr)}.customer-cards article{display:block;padding:10px}.customer-cards strong{font-size:17px}.legacy-details{display:none}.customer-results h1{font-size:25px}.customer-results .table-scroll{max-height:none}#c-chart svg{max-height:230px}}
+
+@media(max-width:750px){#c-chart svg text{font-size:16px}}
+/* Customer estimate mode: readable values and comparisons. */
+.customer-kicker,.customer-inputs output,.customer-note,.auto-summary>span,.auto-summary p,.customer-cards span,.customer-legend{font-size:16px}.customer-results td,.customer-results th{font-size:16px}.customer-results .panel>p{font-size:16px;line-height:1.85}.conversion-comparisons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:22px}.conversion-compare{background:#f4f8fc;border:1px solid #cddbea;border-radius:12px;padding:20px;min-width:0}.conversion-compare.selected{border:2px solid #1b4c89;background:#eaf2fe}.conversion-compare h3{font-size:22px;color:#173e71;margin:0 0 20px}.conversion-compare>span{display:block;font-size:16px;color:#435f79;margin-top:15px}.conversion-compare strong{display:block;font-size:23px;margin-top:8px;overflow-wrap:anywhere;line-height:1.45}.conversion-compare b{display:block;font-size:18px;margin-top:7px;overflow-wrap:anywhere}.conversion-compare p{font-size:16px;color:#485b6c;margin-top:20px}.estimate-method p{font-size:16px;line-height:1.85;margin-top:16px}.post-cards article:nth-child(2){background:#eaf8f3;border-color:#9ecfbc}.post-cards article:nth-child(2) strong{color:#006c54}.customer-results .customer-cards strong{font-size:26px}.customer-status{background:#edf4ff;border-color:#295c99;color:#1e4269}.customer-results h1{color:#102f54}.customer-results .eyebrow{font-size:15px}.customer-inputs .customer-note{line-height:1.65}.customer-inputs label{font-size:17px}.customer-results .section-top .button{font-size:16px}
+@media(max-width:1300px){.conversion-comparisons{grid-template-columns:repeat(2,minmax(0,1fr))}.post-cards{grid-template-columns:1fr}.post-cards article{display:block}.customer-results .customer-cards strong{font-size:24px}}
+@media(max-width:750px){.conversion-comparisons{grid-template-columns:1fr}.conversion-compare{padding:20px}.customer-results .customer-cards strong{font-size:25px}.customer-results .panel h2{line-height:1.5}.customer-results .eyebrow{font-size:15px}.customer-inputs output{font-size:16px}}
+@media print{.conversion-comparisons{grid-template-columns:repeat(2,1fr)}.conversion-compare{break-inside:avoid}.customer-results td,.customer-results th{font-size:10px}.customer-results .customer-cards strong{font-size:17px}.estimate-method p,.customer-results .panel>p{font-size:11px}.customer-results .eyebrow{font-size:11px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#customer-workbench">결과로 바로가기</a>
+<header class="topbar">
+  <a class="brand" href="#"><span class="brand-mark">JW<span>·</span></span><span>JW FINANCIAL<small>FINANCIAL PLANNING TOOLS</small></span></a>
+  <div class="header-right"><span class="version"><i></i>상담 예시용 추정 · v0.4</span><button class="button print-button" id="print">인쇄 / PDF <span aria-hidden="true">↗</span></button></div>
+</header>
+<div id="customer-workbench"></div>
+<details class="legacy-details"><summary>기존 공식 예시 및 내부 검토 도구 열기</summary><div class="workspace">
+<aside class="sidebar" aria-label="비교 조건">
+  <div class="side-heading"><span class="eyebrow">YOUR SCENARIO</span><h2>비교 조건</h2><p>확인된 공식 설계값으로 살펴봅니다.</p></div>
+  <fieldset><legend>피보험자 성별</legend><div class="segments two"><label><input type="radio" name="gender" value="male" checked><span>남성</span></label><label><input type="radio" name="gender" value="female"><span>여성</span></label></div></fieldset>
+  <div class="fixed-conditions"><div><span>가입나이</span><strong>40세</strong></div><div><span>보험가입금액</span><strong>10억 원</strong></div><div><span>보험기간</span><strong>90세 만기</strong></div><div><span>가입형 / 납입기간</span><strong>일반 / 전기납</strong></div><div><span>선택특약</span><strong>없음</strong></div></div>
+  <fieldset><legend>납입 방식</legend><div class="plan-options"><label><input type="radio" name="plan" value="base" checked><span><strong>기본납입</strong><small>사망보장을 위한 기본보험료</small></span></label><label id="extra-option"><input type="radio" name="plan" value="extra100"><span><strong>기본 + 추가납입 100%</strong><small>기본보험료와 같은 금액 추가</small></span></label></div><p class="field-help" id="plan-help">추가납입 시 월 총지출도 2배가 됩니다.</p></fieldset>
+  <fieldset><legend>공식 예시 수익률 <span class="muted">연</span></legend><div class="segments three"><label><input type="radio" name="rate" value="-1"><span>-1.0%</span></label><label><input type="radio" name="rate" value="2.5"><span>2.5%</span></label><label><input type="radio" name="rate" value="3.75" checked><span>3.75%</span></label></div><p class="field-help">펀드 기준가 수익률 가정입니다.<br>해약환급금의 수익률과는 다릅니다.</p></fieldset>
+  <a class="button primary" href="#conversion-scenario" style="margin-top:22px;white-space:normal">적립형 전환 · 자유수익률 계산 →</a><div class="premium-note"><span>월 총 납입액</span><strong id="monthly-total">—</strong><p id="monthly-detail">—</p></div>
+  <div class="side-foot"><span class="tiny-label">현재 조회 범위</span><p>40세 · 10억 원 · 90세 만기<br>다른 조건은 요율 검증 후 추가합니다.</p><p class="fund-note">골드투자형 20%<br>미국주식형3호 80%</p></div>
+</aside>
+<main id="results" tabindex="-1">
+  <section class="intro"><div><span class="eyebrow">METLIFE · VARIABLE TERM LIFE</span><h1>보장과 적립,<br>같은 시간 위에서.</h1><p>무배당 메트라이프 변액리치정기보험</p></div><span class="intro-index" aria-hidden="true">01<span>ILLUSTRATION</span></span></section>
+  <div class="context-line"><span id="selected-context">—</span><span>설계 기준 2026.10.28</span><span class="print-only">일반가입형 · 전기납 · 특약 없음 · 골드투자형 20% / 미국주식형3호 80%</span></div>
+  <section class="timeline panel" aria-labelledby="timeline-title"><div class="section-top"><h2 id="timeline-title">언제의 모습을 볼까요?</h2><div class="time-select"><label for="period" class="sr-only">경과기간</label><select id="period"></select><span id="selected-age">50세</span></div></div><label class="sr-only" for="period-range">경과기간 선택</label><input id="period-range" type="range" min="0" max="28" value="12"><div class="milestones" id="milestones"></div><p class="tiny">표에 수록된 시점만 선택할 수 있습니다. 만기 전 마지막 수록 시점은 49년입니다.</p></section>
+  <section class="metrics" aria-label="선택 시점 결과" aria-live="polite" aria-atomic="true">
+    <article class="metric"><span class="metric-label">실제 납입누계</span><strong id="paid">—</strong><small id="paid-detail">—</small></article>
+    <article class="metric featured"><span class="metric-label">해약환급금 <span class="pill">공식 예시</span></span><strong id="surrender">—</strong><small id="surrender-detail">원자료 표시값 · 만 원 미만 절사</small></article>
+    <article class="metric"><span class="metric-label">해약환급률</span><strong id="refund-rate">—</strong><small>원자료의 납입보험료 대비 환급률</small></article>
+  </section>
+  <section class="panel chart-panel" aria-labelledby="chart-title"><div class="section-top"><div><span class="eyebrow">THE LONG VIEW</span><h2 id="chart-title">시간에 따른 납입액과 환급금</h2></div><span class="chart-unit">단위: 억 원</span></div><div class="legend"><span><i class="dot teal"></i>해약환급금</span><span><i class="dash"></i>실제 납입누계</span><span id="chart-scenario" class="chart-scenario">—</span></div><div id="chart" class="chart"></div><div class="chart-caption"><p>환급금은 수록 시점의 점으로 표시합니다. 점 사이의 금액을 추정하지 않습니다.</p><p id="recovery">—</p></div></section>
+  <section class="two-panels">
+    <article class="panel protection" aria-labelledby="protection-heading"><span class="eyebrow">PROTECTION</span><h2 id="protection-heading">사망보장도 함께 확인하세요.</h2><span class="result-label" id="death-label">사망보험금 · 공식 예시</span><strong id="death">—</strong><p id="death-help">—</p><div class="formula"><span>보장형 사망보험금 산식</span><p>기본보험금액 · 적립액 × 105% · 기납입보험료<br>세 금액 중 가장 큰 금액</p></div><p class="tiny">사망보험금과 해약환급금은 각각의 지급사유에 따른 금액이며 합산 수령액이 아닙니다.</p></article>
+    <article class="panel compare" aria-labelledby="compare-heading"><span class="eyebrow">ONE MORE OPTION</span><h2 id="compare-heading">추가납입을 한다면?</h2><div id="comparison"></div><p class="tiny" id="comparison-help">—</p></article>
+  </section>
+  <section class="panel scenario" id="conversion-scenario" aria-labelledby="scenario-title">
+    <span class="eyebrow">CONVERSION PLANNING · 가정 계산</span><h2 id="scenario-title">7·8·9·10년 후 적립형으로 전환한다면?</h2>
+    <p class="section-description">전환 후 추가 보험료 납입은 0원으로 가정합니다. 전환 당일 초회보험료는 별도로 반영합니다. 아래 금액은 입력한 비용 가정에 따른 추정이며 보험사 설계값이 아닙니다.</p>
+    <div class="scenario-controls">
+      <div><label for="projection-return">전환 후 연 투자수익률 (%)</label><input id="projection-return" type="number" min="-1" max="20" step="0.05" value="3.75"><label class="sr-only" for="projection-return-slider">전환 후 투자수익률 슬라이더</label><input id="projection-return-slider" type="range" min="-1" max="20" step="0.05" value="3.75"><div class="range-ends"><span>-1%</span><span>20%</span></div></div>
+      <div><label for="projection-sum">전환 후 보험가입금액 (만원)</label><input id="projection-sum" type="number" min="100" max="100000" step="100" value="100000"><p class="field-help">사망보험금 총액이 아니라 적립액에 더해지는 가입금액입니다. 100만원 단위이며 전환 전 가입금액 이하로 선택합니다.</p></div>
+      <div><label for="projection-horizon">전환 후 경과연수</label><input id="projection-horizon" type="number" min="1" max="50" step="1" value="10"><p class="field-help">모든 전환시점을 동일한 전환 후 기간으로 비교합니다.</p></div>
+    </div>
+    <div class="scenario-reserves" id="scenario-reserves"></div>
+    <details class="cost-assumptions" open><summary>공제비용 가정 입력 · 미입력 시 계산하지 않습니다</summary><div class="scenario-controls">
+      <div><label for="projection-risk">가입금액 1억원당 월 위험보험료 (원)</label><input id="projection-risk" type="number" min="0" step="1" placeholder="확인한 요율 또는 검토용 가정"><p class="field-help">선택한 가입금액에 비례하며 일정하다고 가정합니다. 실제 연령별 위험보험료를 재현하지 않습니다.</p></div>
+      <div><label for="projection-admin">월 계약관리비용 (원)</label><input id="projection-admin" type="number" min="0" step="1" placeholder="확인한 비용 또는 검토용 가정"></div>
+      <div><label for="projection-entry-fee">전환 초회보험료의 공제비율 (%)</label><input id="projection-entry-fee" type="number" min="0" max="100" step="0.01" placeholder="비용 확인 필요"><p class="field-help">초회 납입액에서 공제 후 적립액에 더합니다. 이후 정기납입은 없습니다.</p></div>
+    </div><label class="checkbox"><input id="projection-confirm" type="checkbox">납입면제 이력이 없는 계약이며, 고정 위험보험료 가정은 실제 유지 여부·환급금과 다를 수 있음을 확인했습니다.</label></details>
+    <div id="projection-output" role="status" aria-live="polite"></div>
+    <p class="section-description">보증비용은 적립액 기준 연 0.15%를 월별 차감합니다. 입력 수익률은 운용보수 반영 후 펀드 기준가 수익률입니다. 해약공제는 별도 입력한 금액을 차감합니다. 비용 충당이 안 되는 시점 이후는 ‘추가 납입 필요’로 표시하며 사망보장 유지를 가정하지 않습니다.</p>
+  </section>
+  <section class="panel conversion" aria-labelledby="conversion-heading"><div class="section-top"><div><span class="eyebrow">AFTER YEAR 7</span><h2 id="conversion-heading">적립형 전환, 조건부터 확인하세요.</h2></div><span class="subtle-tag">7년은 완납 시점이 아닙니다</span></div><p class="section-description">선택한 예시 시점의 납입내역을 기준으로 주요 전환 요건을 확인합니다.</p><div class="conversion-layout"><div><label class="input-label" for="reserve">주계약 계약자적립액 <span>만원</span></label><input id="reserve" type="number" inputmode="decimal" min="0" step="0.0001" placeholder="보험사에서 확인한 적립액 입력" aria-describedby="reserve-help"><p class="field-help" id="reserve-help">해약환급금과 다를 수 있어 자동으로 넣지 않습니다.<br>인출·감액·기존 전환이 없는 본 예시 계약 기준입니다.</p><label class="checkbox"><input type="checkbox" id="no-waiver">보험료 납입면제를 받지 않은 계약입니다.</label><button class="button primary" id="check-conversion">주요 전환 요건 확인 <span aria-hidden="true">→</span></button></div><div class="conversion-output" id="conversion-output" role="status" aria-live="polite"></div></div><p class="tiny conversion-limit">입력조건 확인이며 보험사의 전환 승낙을 의미하지 않습니다. 전환 후 보험료·가입금액 선택, 심사 및 실제 효력발생일은 별도 확인해야 합니다.</p></section>
+  <section class="panel table-panel" aria-labelledby="table-heading"><div class="section-top"><div><span class="eyebrow">DETAILS MATTER</span><h2 id="table-heading">수익률별 해약환급금</h2></div><button class="button" id="export">선택 수익률 CSV 저장 <span aria-hidden="true">↓</span></button></div><p class="section-description" id="table-description">—</p><div class="table-scroll" tabindex="0" role="region" aria-label="수익률별 해약환급금 표. 가로 스크롤 가능"><table><caption class="sr-only">경과기간별 실제 납입누계와 세 가지 수익률의 해약환급금·환급률</caption><thead><tr><th scope="col">경과기간</th><th scope="col">보험나이</th><th scope="col">실제 납입누계</th><th scope="col" data-rate="-1">연 -1.0%</th><th scope="col" data-rate="2.5">연 2.5%</th><th scope="col" data-rate="3.75">연 3.75%</th></tr></thead><tbody id="table-body"></tbody></table></div><p class="tiny table-note">금액 단위: 만원. 환급금은 만 원 미만 절사된 원자료 값이며, 환급률은 원자료의 소수 둘째 자리 표시값을 유지합니다. 납입누계는 실제 월보험료 × 납입횟수입니다.</p></section>
+  <details class="panel sources"><summary><span>계산 기준과 자료 출처</span><span class="details-icon" aria-hidden="true">＋</span></summary><div class="sources-body"><div><h3>현재 제공하는 기능</h3><p>2026.10.28 설계서의 공식 예시 조회입니다. 공식 보험사 산식을 재현하는 범용 계리 엔진은 포함하지 않습니다. 별도 전환 가정 계산에서는 적립액·공제비용을 직접 입력합니다. 40세 남녀의 기본납입 및 남성의 추가납입 100% 예시를 제공합니다.</p><p>특약·중도인출·감액·납입면제·전환을 반영하지 않은 계약입니다. 여성 추가납입 예시는 자료 확보 후 제공합니다.</p><h3>수익률·비용</h3><p>펀드 기준가 수익률에 반영된 운용보수는 다시 차감하지 않습니다. 보장형 보증비용은 보험가입금액 기준 연 0.011%, 적립형은 특별계정적립액 기준 연 0.15%로 서로 다릅니다. 표시된 환급금에서 비용을 추가로 빼지 않습니다.</p></div><div><h3>출처</h3><ul><li>40세 남자.pdf: 계약정보 9쪽, 사망보험금 12쪽, 기본납입 13쪽, 추가납입 15쪽</li><li>40세 여.pdf: 계약정보 9쪽, 사망보험금 12쪽, 기본납입 13쪽</li><li>운용설명서: 최저사망보험금 보증비용 및 펀드비용</li><li>공식 약관: 제2조의2, 제13조, 제38~40조, 제47조, 제50~51조, 별표1</li></ul><div class="source-links"><a href="https://brand.metlife.co.kr/pn/mcvrgProd/retrieveMcvrgProdMain.do" target="_blank" rel="noopener noreferrer">메트라이프 공시실 ↗</a><a href="https://brand.metlife.co.kr/pn/mcvrgProd/mcvrgProdDownloadFile.do?insProdSeq=1128&amp;seq=4206&amp;fnum=03" target="_blank" rel="noopener noreferrer">2026.10.20 약관 ↗</a></div><p class="tiny">페이지는 PDF 기준입니다. 상품 버전 2026.10.20 · 자료 확인 2026.10.28</p></div></div></details>
+  <footer class="footer"><p>투자수익률은 가정이며, 해약환급금에는 최저보증이 없어 원금손실이 발생할 수 있습니다. 표시 금액은 세전입니다.</p><span>JW FINANCIAL · INTERNAL REVIEW · v0.3</span></footer>
+</main>
+</div>
+</details>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<noscript><p class="no-script">예시 조회에는 JavaScript가 필요합니다. 브라우저에서 JavaScript를 허용해 주세요.</p></noscript>
+<script id="metlife-fixtures" type="application/json">{"version":"0.1.0","product":"무배당 메트라이프 변액리치정기보험","productVersionDate":"2026-10-20","illustrationDate":"2026-10-28","issueAge":40,"maturityAge":90,"sumAssuredWon":1000000000,"underwriting":"일반가입형","paymentTerm":"전기납","funds":"골드투자형 20% · 미국주식형3호 80%","rates":["-1","2.5","3.75"],"amountPrecisionWon":10000,"profiles":{"male":{"gender":"male","sourceTitle":"40세 남자.pdf","sourceSha256":"b21e85c99ec4725e45c980cc1985399a9543fda953f30a81cbf8921d0c5e4e2c","sourcePages":{"contract":9,"death":12,"base":13,"extra100":15},"monthlyBasePremiumWon":1136000,"base":[{"month":3,"label":"3개월","age":40,"paidDisplayWon":3400000,"scenarios":{"-1":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000}}},{"month":6,"label":"6개월","age":40,"paidDisplayWon":6810000,"scenarios":{"-1":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000}}},{"month":9,"label":"9개월","age":40,"paidDisplayWon":10220000,"scenarios":{"-1":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000}}},{"month":12,"label":"1년","age":41,"paidDisplayWon":13630000,"scenarios":{"-1":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000}}},{"month":24,"label":"2년","age":42,"paidDisplayWon":27260000,"scenarios":{"-1":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000}}},{"month":36,"label":"3년","age":43,"paidDisplayWon":40890000,"scenarios":{"-1":{"surrenderDisplayWon":11300000,"refundRatePercent":27.64,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":12860000,"refundRatePercent":31.45,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":13430000,"refundRatePercent":32.84,"deathDisplayWon":1000000000}}},{"month":48,"label":"4년","age":44,"paidDisplayWon":54520000,"scenarios":{"-1":{"surrenderDisplayWon":24640000,"refundRatePercent":45.19,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":27400000,"refundRatePercent":50.26,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":28430000,"refundRatePercent":52.15,"deathDisplayWon":1000000000}}},{"month":60,"label":"5년","age":45,"paidDisplayWon":68160000,"scenarios":{"-1":{"surrenderDisplayWon":37820000,"refundRatePercent":55.49,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":42140000,"refundRatePercent":61.83,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":43770000,"refundRatePercent":64.22,"deathDisplayWon":1000000000}}},{"month":72,"label":"6년","age":46,"paidDisplayWon":81790000,"scenarios":{"-1":{"surrenderDisplayWon":50850000,"refundRatePercent":62.17,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":57080000,"refundRatePercent":69.79,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":59470000,"refundRatePercent":72.71,"deathDisplayWon":1000000000}}},{"month":84,"label":"7년","age":47,"paidDisplayWon":95420000,"scenarios":{"-1":{"surrenderDisplayWon":63720000,"refundRatePercent":66.78,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":72220000,"refundRatePercent":75.69,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":75530000,"refundRatePercent":79.16,"deathDisplayWon":1000000000}}},{"month":96,"label":"8년","age":48,"paidDisplayWon":109050000,"scenarios":{"-1":{"surrenderDisplayWon":72230000,"refundRatePercent":66.24,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":83350000,"refundRatePercent":76.43,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":87750000,"refundRatePercent":80.47,"deathDisplayWon":1000000000}}},{"month":108,"label":"9년","age":49,"paidDisplayWon":122680000,"scenarios":{"-1":{"surrenderDisplayWon":80560000,"refundRatePercent":65.67,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":94670000,"refundRatePercent":77.17,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":100340000,"refundRatePercent":81.79,"deathDisplayWon":1000000000}}},{"month":120,"label":"10년","age":50,"paidDisplayWon":136320000,"scenarios":{"-1":{"surrenderDisplayWon":88720000,"refundRatePercent":65.08,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":106190000,"refundRatePercent":77.9,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":113330000,"refundRatePercent":83.14,"deathDisplayWon":1000000000}}},{"month":132,"label":"11년","age":51,"paidDisplayWon":149950000,"scenarios":{"-1":{"surrenderDisplayWon":96710000,"refundRatePercent":64.49,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":117920000,"refundRatePercent":78.64,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":126730000,"refundRatePercent":84.51,"deathDisplayWon":1000000000}}},{"month":144,"label":"12년","age":52,"paidDisplayWon":163580000,"scenarios":{"-1":{"surrenderDisplayWon":104520000,"refundRatePercent":63.9,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":129850000,"refundRatePercent":79.38,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":140530000,"refundRatePercent":85.91,"deathDisplayWon":1000000000}}},{"month":156,"label":"13년","age":53,"paidDisplayWon":177210000,"scenarios":{"-1":{"surrenderDisplayWon":112140000,"refundRatePercent":63.28,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":141970000,"refundRatePercent":80.11,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":154750000,"refundRatePercent":87.33,"deathDisplayWon":1000000000}}},{"month":168,"label":"14년","age":54,"paidDisplayWon":190840000,"scenarios":{"-1":{"surrenderDisplayWon":119560000,"refundRatePercent":62.65,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":154280000,"refundRatePercent":80.84,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":169400000,"refundRatePercent":88.77,"deathDisplayWon":1000000000}}},{"month":180,"label":"15년","age":55,"paidDisplayWon":204480000,"scenarios":{"-1":{"surrenderDisplayWon":126770000,"refundRatePercent":62,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":166770000,"refundRatePercent":81.56,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":184480000,"refundRatePercent":90.22,"deathDisplayWon":1000000000}}},{"month":192,"label":"16년","age":56,"paidDisplayWon":218110000,"scenarios":{"-1":{"surrenderDisplayWon":133770000,"refundRatePercent":61.33,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":179450000,"refundRatePercent":82.27,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":200000000,"refundRatePercent":91.7,"deathDisplayWon":1000000000}}},{"month":204,"label":"17년","age":57,"paidDisplayWon":231740000,"scenarios":{"-1":{"surrenderDisplayWon":140550000,"refundRatePercent":60.65,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":192320000,"refundRatePercent":82.99,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":215990000,"refundRatePercent":93.2,"deathDisplayWon":1000000000}}},{"month":216,"label":"18년","age":58,"paidDisplayWon":245370000,"scenarios":{"-1":{"surrenderDisplayWon":147110000,"refundRatePercent":59.95,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":205380000,"refundRatePercent":83.7,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":232460000,"refundRatePercent":94.74,"deathDisplayWon":1000000000}}},{"month":228,"label":"19년","age":59,"paidDisplayWon":259000000,"scenarios":{"-1":{"surrenderDisplayWon":153410000,"refundRatePercent":59.23,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":218600000,"refundRatePercent":84.4,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":249390000,"refundRatePercent":96.29,"deathDisplayWon":1000000000}}},{"month":240,"label":"20년","age":60,"paidDisplayWon":272640000,"scenarios":{"-1":{"surrenderDisplayWon":159450000,"refundRatePercent":58.48,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":231990000,"refundRatePercent":85.09,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":266820000,"refundRatePercent":97.87,"deathDisplayWon":1000000000}}},{"month":300,"label":"25년","age":65,"paidDisplayWon":340800000,"scenarios":{"-1":{"surrenderDisplayWon":185160000,"refundRatePercent":54.33,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":301130000,"refundRatePercent":88.36,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":361660000,"refundRatePercent":106.12,"deathDisplayWon":1000000000}}},{"month":360,"label":"30년","age":70,"paidDisplayWon":408960000,"scenarios":{"-1":{"surrenderDisplayWon":199650000,"refundRatePercent":48.82,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":371510000,"refundRatePercent":90.84,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":469320000,"refundRatePercent":114.76,"deathDisplayWon":1000000000}}},{"month":420,"label":"35년","age":75,"paidDisplayWon":477120000,"scenarios":{"-1":{"surrenderDisplayWon":194560000,"refundRatePercent":40.78,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":438000000,"refundRatePercent":91.8,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":589960000,"refundRatePercent":123.65,"deathDisplayWon":1000000000}}},{"month":480,"label":"40년","age":80,"paidDisplayWon":545280000,"scenarios":{"-1":{"surrenderDisplayWon":146920000,"refundRatePercent":26.94,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":486920000,"refundRatePercent":89.3,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":722240000,"refundRatePercent":132.45,"deathDisplayWon":1000000000}}},{"month":540,"label":"45년","age":85,"paidDisplayWon":613440000,"scenarios":{"-1":{"surrenderDisplayWon":21240000,"refundRatePercent":3.46,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":501020000,"refundRatePercent":81.67,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":876120000,"refundRatePercent":142.82,"deathDisplayWon":1000000000}}},{"month":588,"label":"49년","age":89,"paidDisplayWon":667960000,"scenarios":{"-1":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":461890000,"refundRatePercent":69.15,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":1029770000,"refundRatePercent":154.17,"deathDisplayWon":1081260000}}}],"extra100":[{"month":3,"label":"3개월","age":40,"paidDisplayWon":6810000,"scenarios":{"-1":{"surrenderDisplayWon":3330000,"refundRatePercent":48.9},"2.5":{"surrenderDisplayWon":3350000,"refundRatePercent":49.19},"3.75":{"surrenderDisplayWon":3350000,"refundRatePercent":49.19}}},{"month":6,"label":"6개월","age":40,"paidDisplayWon":13630000,"scenarios":{"-1":{"surrenderDisplayWon":6630000,"refundRatePercent":48.64},"2.5":{"surrenderDisplayWon":6690000,"refundRatePercent":49.08},"3.75":{"surrenderDisplayWon":6720000,"refundRatePercent":49.3}}},{"month":9,"label":"9개월","age":40,"paidDisplayWon":20440000,"scenarios":{"-1":{"surrenderDisplayWon":9920000,"refundRatePercent":48.53},"2.5":{"surrenderDisplayWon":10060000,"refundRatePercent":49.22},"3.75":{"surrenderDisplayWon":10110000,"refundRatePercent":49.46}}},{"month":12,"label":"1년","age":41,"paidDisplayWon":27260000,"scenarios":{"-1":{"surrenderDisplayWon":13200000,"refundRatePercent":48.42},"2.5":{"surrenderDisplayWon":13450000,"refundRatePercent":49.34},"3.75":{"surrenderDisplayWon":13540000,"refundRatePercent":49.67}}},{"month":24,"label":"2년","age":42,"paidDisplayWon":54520000,"scenarios":{"-1":{"surrenderDisplayWon":26220000,"refundRatePercent":48.09},"2.5":{"surrenderDisplayWon":27190000,"refundRatePercent":49.87},"3.75":{"surrenderDisplayWon":27540000,"refundRatePercent":50.51}}},{"month":36,"label":"3년","age":43,"paidDisplayWon":81790000,"scenarios":{"-1":{"surrenderDisplayWon":51570000,"refundRatePercent":63.05},"2.5":{"surrenderDisplayWon":55350000,"refundRatePercent":67.67},"3.75":{"surrenderDisplayWon":56740000,"refundRatePercent":69.37}}},{"month":48,"label":"4년","age":44,"paidDisplayWon":109050000,"scenarios":{"-1":{"surrenderDisplayWon":78060000,"refundRatePercent":71.58},"2.5":{"surrenderDisplayWon":84770000,"refundRatePercent":77.73},"3.75":{"surrenderDisplayWon":87270000,"refundRatePercent":80.03}}},{"month":60,"label":"5년","age":45,"paidDisplayWon":136320000,"scenarios":{"-1":{"surrenderDisplayWon":104260000,"refundRatePercent":76.48},"2.5":{"surrenderDisplayWon":114760000,"refundRatePercent":84.18},"3.75":{"surrenderDisplayWon":118720000,"refundRatePercent":87.09}}},{"month":72,"label":"6년","age":46,"paidDisplayWon":163580000,"scenarios":{"-1":{"surrenderDisplayWon":130180000,"refundRatePercent":79.58},"2.5":{"surrenderDisplayWon":145330000,"refundRatePercent":88.84},"3.75":{"surrenderDisplayWon":151140000,"refundRatePercent":92.4}}},{"month":84,"label":"7년","age":47,"paidDisplayWon":190840000,"scenarios":{"-1":{"surrenderDisplayWon":155820000,"refundRatePercent":81.65},"2.5":{"surrenderDisplayWon":176500000,"refundRatePercent":92.49},"3.75":{"surrenderDisplayWon":184560000,"refundRatePercent":96.71}}},{"month":96,"label":"8년","age":48,"paidDisplayWon":218110000,"scenarios":{"-1":{"surrenderDisplayWon":176950000,"refundRatePercent":81.13},"2.5":{"surrenderDisplayWon":204060000,"refundRatePercent":93.56},"3.75":{"surrenderDisplayWon":214790000,"refundRatePercent":98.48}}},{"month":108,"label":"9년","age":49,"paidDisplayWon":245370000,"scenarios":{"-1":{"surrenderDisplayWon":197790000,"refundRatePercent":80.61},"2.5":{"surrenderDisplayWon":232230000,"refundRatePercent":94.64},"3.75":{"surrenderDisplayWon":246080000,"refundRatePercent":100.29}}},{"month":120,"label":"10년","age":50,"paidDisplayWon":272640000,"scenarios":{"-1":{"surrenderDisplayWon":218330000,"refundRatePercent":80.08},"2.5":{"surrenderDisplayWon":261030000,"refundRatePercent":95.74},"3.75":{"surrenderDisplayWon":278470000,"refundRatePercent":102.14}}},{"month":132,"label":"11년","age":51,"paidDisplayWon":299900000,"scenarios":{"-1":{"surrenderDisplayWon":238570000,"refundRatePercent":79.55},"2.5":{"surrenderDisplayWon":290470000,"refundRatePercent":96.86},"3.75":{"surrenderDisplayWon":312000000,"refundRatePercent":104.03}}},{"month":144,"label":"12년","age":52,"paidDisplayWon":327160000,"scenarios":{"-1":{"surrenderDisplayWon":258500000,"refundRatePercent":79.01},"2.5":{"surrenderDisplayWon":320560000,"refundRatePercent":97.98},"3.75":{"surrenderDisplayWon":346720000,"refundRatePercent":105.98}}},{"month":156,"label":"13년","age":53,"paidDisplayWon":354430000,"scenarios":{"-1":{"surrenderDisplayWon":278130000,"refundRatePercent":78.47},"2.5":{"surrenderDisplayWon":351310000,"refundRatePercent":99.12},"3.75":{"surrenderDisplayWon":382650000,"refundRatePercent":107.96}}},{"month":168,"label":"14년","age":54,"paidDisplayWon":381690000,"scenarios":{"-1":{"surrenderDisplayWon":297430000,"refundRatePercent":77.92},"2.5":{"surrenderDisplayWon":382730000,"refundRatePercent":100.27},"3.75":{"surrenderDisplayWon":419850000,"refundRatePercent":110}}},{"month":180,"label":"15년","age":55,"paidDisplayWon":408960000,"scenarios":{"-1":{"surrenderDisplayWon":316390000,"refundRatePercent":77.36},"2.5":{"surrenderDisplayWon":414820000,"refundRatePercent":101.43},"3.75":{"surrenderDisplayWon":458350000,"refundRatePercent":112.08}}},{"month":192,"label":"16년","age":56,"paidDisplayWon":436220000,"scenarios":{"-1":{"surrenderDisplayWon":335010000,"refundRatePercent":76.8},"2.5":{"surrenderDisplayWon":447620000,"refundRatePercent":102.61},"3.75":{"surrenderDisplayWon":498200000,"refundRatePercent":114.21}}},{"month":204,"label":"17년","age":57,"paidDisplayWon":463480000,"scenarios":{"-1":{"surrenderDisplayWon":353300000,"refundRatePercent":76.23},"2.5":{"surrenderDisplayWon":481130000,"refundRatePercent":103.81},"3.75":{"surrenderDisplayWon":539480000,"refundRatePercent":116.4}}},{"month":216,"label":"18년","age":58,"paidDisplayWon":490750000,"scenarios":{"-1":{"surrenderDisplayWon":371230000,"refundRatePercent":75.65},"2.5":{"surrenderDisplayWon":515360000,"refundRatePercent":105.01},"3.75":{"surrenderDisplayWon":582220000,"refundRatePercent":118.64}}},{"month":228,"label":"19년","age":59,"paidDisplayWon":518010000,"scenarios":{"-1":{"surrenderDisplayWon":388790000,"refundRatePercent":75.05},"2.5":{"surrenderDisplayWon":550330000,"refundRatePercent":106.24},"3.75":{"surrenderDisplayWon":626470000,"refundRatePercent":120.94}}},{"month":240,"label":"20년","age":60,"paidDisplayWon":545280000,"scenarios":{"-1":{"surrenderDisplayWon":405960000,"refundRatePercent":74.45},"2.5":{"surrenderDisplayWon":586060000,"refundRatePercent":107.48},"3.75":{"surrenderDisplayWon":672320000,"refundRatePercent":123.3}}},{"month":300,"label":"25년","age":65,"paidDisplayWon":681600000,"scenarios":{"-1":{"surrenderDisplayWon":485380000,"refundRatePercent":71.21},"2.5":{"surrenderDisplayWon":776510000,"refundRatePercent":113.92},"3.75":{"surrenderDisplayWon":927750000,"refundRatePercent":136.11}}},{"month":360,"label":"30년","age":70,"paidDisplayWon":817920000,"scenarios":{"-1":{"surrenderDisplayWon":550030000,"refundRatePercent":67.25},"2.5":{"surrenderDisplayWon":987690000,"refundRatePercent":120.76},"3.75":{"surrenderDisplayWon":1234760000,"refundRatePercent":150.96}}},{"month":420,"label":"35년","age":75,"paidDisplayWon":954240000,"scenarios":{"-1":{"surrenderDisplayWon":590380000,"refundRatePercent":61.87},"2.5":{"surrenderDisplayWon":1222700000,"refundRatePercent":128.13},"3.75":{"surrenderDisplayWon":1607620000,"refundRatePercent":168.47}}},{"month":480,"label":"40년","age":80,"paidDisplayWon":1090560000,"scenarios":{"-1":{"surrenderDisplayWon":579820000,"refundRatePercent":53.17},"2.5":{"surrenderDisplayWon":1489150000,"refundRatePercent":136.55},"3.75":{"surrenderDisplayWon":2048910000,"refundRatePercent":187.88}}},{"month":540,"label":"45년","age":85,"paidDisplayWon":1226880000,"scenarios":{"-1":{"surrenderDisplayWon":475340000,"refundRatePercent":38.74},"2.5":{"surrenderDisplayWon":1787670000,"refundRatePercent":145.71},"3.75":{"surrenderDisplayWon":2562730000,"refundRatePercent":208.88}}},{"month":588,"label":"49년","age":89,"paidDisplayWon":1335930000,"scenarios":{"-1":{"surrenderDisplayWon":257980000,"refundRatePercent":19.31},"2.5":{"surrenderDisplayWon":2038420000,"refundRatePercent":152.58},"3.75":{"surrenderDisplayWon":3025660000,"refundRatePercent":226.48}}}]},"female":{"gender":"female","sourceTitle":"40세 여.pdf","sourceSha256":"b386c1667694b7f54374a488823c4b3ef476e61155645b5082d7f399246b098b","sourcePages":{"contract":9,"death":12,"base":13},"monthlyBasePremiumWon":775000,"base":[{"month":3,"label":"3개월","age":40,"paidDisplayWon":2320000,"scenarios":{"-1":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000}}},{"month":6,"label":"6개월","age":40,"paidDisplayWon":4650000,"scenarios":{"-1":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000}}},{"month":9,"label":"9개월","age":40,"paidDisplayWon":6970000,"scenarios":{"-1":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000}}},{"month":12,"label":"1년","age":41,"paidDisplayWon":9300000,"scenarios":{"-1":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000}}},{"month":24,"label":"2년","age":42,"paidDisplayWon":18600000,"scenarios":{"-1":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000}}},{"month":36,"label":"3년","age":43,"paidDisplayWon":27900000,"scenarios":{"-1":{"surrenderDisplayWon":5260000,"refundRatePercent":18.85,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":6300000,"refundRatePercent":22.58,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":6680000,"refundRatePercent":23.94,"deathDisplayWon":1000000000}}},{"month":48,"label":"4년","age":44,"paidDisplayWon":37200000,"scenarios":{"-1":{"surrenderDisplayWon":14760000,"refundRatePercent":39.68,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":16610000,"refundRatePercent":44.65,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":17300000,"refundRatePercent":46.51,"deathDisplayWon":1000000000}}},{"month":60,"label":"5년","age":45,"paidDisplayWon":46500000,"scenarios":{"-1":{"surrenderDisplayWon":24170000,"refundRatePercent":51.98,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":27060000,"refundRatePercent":58.19,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":28160000,"refundRatePercent":60.56,"deathDisplayWon":1000000000}}},{"month":72,"label":"6년","age":46,"paidDisplayWon":55800000,"scenarios":{"-1":{"surrenderDisplayWon":33490000,"refundRatePercent":60.02,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":37650000,"refundRatePercent":67.47,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":39250000,"refundRatePercent":70.34,"deathDisplayWon":1000000000}}},{"month":84,"label":"7년","age":47,"paidDisplayWon":65100000,"scenarios":{"-1":{"surrenderDisplayWon":42690000,"refundRatePercent":65.58,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":48380000,"refundRatePercent":74.32,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":50590000,"refundRatePercent":77.71,"deathDisplayWon":1000000000}}},{"month":96,"label":"8년","age":48,"paidDisplayWon":74400000,"scenarios":{"-1":{"surrenderDisplayWon":48410000,"refundRatePercent":65.07,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":55850000,"refundRatePercent":75.07,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":58800000,"refundRatePercent":79.03,"deathDisplayWon":1000000000}}},{"month":108,"label":"9년","age":49,"paidDisplayWon":83700000,"scenarios":{"-1":{"surrenderDisplayWon":54020000,"refundRatePercent":64.54,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":63460000,"refundRatePercent":75.82,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":67260000,"refundRatePercent":80.36,"deathDisplayWon":1000000000}}},{"month":120,"label":"10년","age":50,"paidDisplayWon":93000000,"scenarios":{"-1":{"surrenderDisplayWon":59510000,"refundRatePercent":63.99,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":71200000,"refundRatePercent":76.56,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":75980000,"refundRatePercent":81.7,"deathDisplayWon":1000000000}}},{"month":132,"label":"11년","age":51,"paidDisplayWon":102300000,"scenarios":{"-1":{"surrenderDisplayWon":64890000,"refundRatePercent":63.43,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":79080000,"refundRatePercent":77.3,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":84980000,"refundRatePercent":83.07,"deathDisplayWon":1000000000}}},{"month":144,"label":"12년","age":52,"paidDisplayWon":111600000,"scenarios":{"-1":{"surrenderDisplayWon":70160000,"refundRatePercent":62.87,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":87100000,"refundRatePercent":78.05,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":94250000,"refundRatePercent":84.45,"deathDisplayWon":1000000000}}},{"month":156,"label":"13년","age":53,"paidDisplayWon":120900000,"scenarios":{"-1":{"surrenderDisplayWon":75320000,"refundRatePercent":62.3,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":95270000,"refundRatePercent":78.8,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":103830000,"refundRatePercent":85.88,"deathDisplayWon":1000000000}}},{"month":168,"label":"14년","age":54,"paidDisplayWon":130200000,"scenarios":{"-1":{"surrenderDisplayWon":80390000,"refundRatePercent":61.74,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":103610000,"refundRatePercent":79.58,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":113720000,"refundRatePercent":87.34,"deathDisplayWon":1000000000}}},{"month":180,"label":"15년","age":55,"paidDisplayWon":139500000,"scenarios":{"-1":{"surrenderDisplayWon":85360000,"refundRatePercent":61.19,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":112120000,"refundRatePercent":80.37,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":123960000,"refundRatePercent":88.86,"deathDisplayWon":1000000000}}},{"month":192,"label":"16년","age":56,"paidDisplayWon":148800000,"scenarios":{"-1":{"surrenderDisplayWon":90260000,"refundRatePercent":60.66,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":120810000,"refundRatePercent":81.19,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":134550000,"refundRatePercent":90.42,"deathDisplayWon":1000000000}}},{"month":204,"label":"17년","age":57,"paidDisplayWon":158100000,"scenarios":{"-1":{"surrenderDisplayWon":95060000,"refundRatePercent":60.13,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":129690000,"refundRatePercent":82.03,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":145510000,"refundRatePercent":92.04,"deathDisplayWon":1000000000}}},{"month":216,"label":"18년","age":58,"paidDisplayWon":167400000,"scenarios":{"-1":{"surrenderDisplayWon":99750000,"refundRatePercent":59.59,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":138720000,"refundRatePercent":82.87,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":156810000,"refundRatePercent":93.67,"deathDisplayWon":1000000000}}},{"month":228,"label":"19년","age":59,"paidDisplayWon":176700000,"scenarios":{"-1":{"surrenderDisplayWon":104300000,"refundRatePercent":59.03,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":147900000,"refundRatePercent":83.7,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":168470000,"refundRatePercent":95.34,"deathDisplayWon":1000000000}}},{"month":240,"label":"20년","age":60,"paidDisplayWon":186000000,"scenarios":{"-1":{"surrenderDisplayWon":108690000,"refundRatePercent":58.44,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":157200000,"refundRatePercent":84.52,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":180460000,"refundRatePercent":97.02,"deathDisplayWon":1000000000}}},{"month":300,"label":"25년","age":65,"paidDisplayWon":232500000,"scenarios":{"-1":{"surrenderDisplayWon":128300000,"refundRatePercent":55.18,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":205780000,"refundRatePercent":88.51,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":246090000,"refundRatePercent":105.85,"deathDisplayWon":1000000000}}},{"month":360,"label":"30년","age":70,"paidDisplayWon":279000000,"scenarios":{"-1":{"surrenderDisplayWon":143770000,"refundRatePercent":51.53,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":258020000,"refundRatePercent":92.48,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":322600000,"refundRatePercent":115.63,"deathDisplayWon":1000000000}}},{"month":420,"label":"35년","age":75,"paidDisplayWon":325500000,"scenarios":{"-1":{"surrenderDisplayWon":149220000,"refundRatePercent":45.84,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":309320000,"refundRatePercent":95.03,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":407940000,"refundRatePercent":125.33,"deathDisplayWon":1000000000}}},{"month":480,"label":"40년","age":80,"paidDisplayWon":372000000,"scenarios":{"-1":{"surrenderDisplayWon":128230000,"refundRatePercent":34.47,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":346270000,"refundRatePercent":93.08,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":493840000,"refundRatePercent":132.75,"deathDisplayWon":1000000000}}},{"month":540,"label":"45년","age":85,"paidDisplayWon":418500000,"scenarios":{"-1":{"surrenderDisplayWon":49870000,"refundRatePercent":11.92,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":345290000,"refundRatePercent":82.51,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":568850000,"refundRatePercent":135.93,"deathDisplayWon":1000000000}}},{"month":588,"label":"49년","age":89,"paidDisplayWon":455700000,"scenarios":{"-1":{"surrenderDisplayWon":0,"refundRatePercent":0,"deathDisplayWon":1000000000},"2.5":{"surrenderDisplayWon":281820000,"refundRatePercent":61.84,"deathDisplayWon":1000000000},"3.75":{"surrenderDisplayWon":607620000,"refundRatePercent":133.34,"deathDisplayWon":1000000000}}}]}}}</script>
+<script>/* Source-backed illustration lookup, NOT a general actuarial projection engine. */
+(function (root, factory) {
+  'use strict';
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  else root.MetlifeModel = api;
+})(typeof globalThis === 'object' ? globalThis : this, function () {
+  'use strict';
+  function validate(data, state) {
+    if (!data.profiles[state.gender]) throw new RangeError('지원하지 않는 성별입니다.');
+    if (!data.rates.includes(String(state.rate))) throw new RangeError('공식 예시에 없는 수익률입니다.');
+    if (!['base', 'extra100'].includes(state.plan)) throw new RangeError('지원하지 않는 납입방식입니다.');
+    const profile = data.profiles[state.gender];
+    if (!profile[state.plan]) throw new RangeError('해당 성별의 추가납입 예시가 없습니다.');
+    if (!Number.isInteger(state.month) || !profile[state.plan].some(r => r.month === state.month)) {
+      throw new RangeError('공식 예시에 수록된 시점만 조회할 수 있습니다.');
+    }
+    return profile;
+  }
+  function series(data, state) {
+    const profile = validate(data, state);
+    const extra = state.plan === 'extra100';
+    return profile[state.plan].map(row => {
+      const basePaid = profile.monthlyBasePremiumWon * row.month;
+      // All supported observations are >= month 3: month-2 catch-up is complete.
+      const extraPaid = extra ? basePaid : 0;
+      const paid = basePaid + extraPaid;
+      const value = row.scenarios[String(state.rate)];
+      const minimumDeath = Math.max(data.sumAssuredWon + extraPaid, paid);
+      return Object.freeze({
+        month: row.month, label: row.label, age: row.age,
+        monthlyBase: profile.monthlyBasePremiumWon,
+        monthlyExtra: extra ? profile.monthlyBasePremiumWon : 0,
+        paid, basePaid, extraPaid, paidDisplay: row.paidDisplayWon,
+        surrender: value.surrenderDisplayWon, refundRate: value.refundRatePercent,
+        death: extra ? null : value.deathDisplayWon,
+        minimumDeath, sourcePage: profile.sourcePages[state.plan],
+        sourceTitle: profile.sourceTitle, surrenderPrecision: data.amountPrecisionWon,
+        differenceDisplay: value.surrenderDisplayWon - paid
+      });
+    });
+  }
+  function snapshot(data, state) {
+    return series(data, state).find(r => r.month === state.month);
+  }
+  function firstObservedRecovery(data, state) {
+    // Describes a table observation, not an interpolated or guaranteed breakeven date.
+    return series(data, state).find(r => r.refundRate >= 100) || null;
+  }
+  function parseMoneyInManwon(value) {
+    if (value === '' || value === null || value === undefined) return null;
+    if (!/^\d+(?:\.\d{1,4})?$/.test(String(value))) throw new RangeError('0 이상의 금액을 입력해 주세요.');
+    const result = Number(value) * 10000;
+    if (!Number.isFinite(result) || result > Number.MAX_SAFE_INTEGER) throw new RangeError('금액이 너무 큽니다.');
+    return Math.round(result);
+  }
+  function conversionCheck(data, state, reserveWon, noWaiverConfirmed) {
+    const point = snapshot(data, state);
+    // Preset contract has no withdrawals, reductions, loans, waiver or prior conversion.
+    // Thus its contractual paid premium equals actual paid premium at this observation.
+    const threshold = Math.max(Math.ceil(point.paid * 7 / 10), 1000000);
+    const amountKnown = typeof reserveWon === 'number' && Number.isFinite(reserveWon) && reserveWon >= 0;
+    const checks = {
+      time: point.month >= 84, age: point.age >= 15 && point.age <= 80,
+      waiver: noWaiverConfirmed === true,
+      reserve: amountKnown ? reserveWon >= threshold : null
+    };
+    const knownFailure = !checks.time || !checks.age || checks.reserve === false;
+    return {threshold, checks, shortfall: amountKnown ? Math.max(0, threshold - reserveWon) : null,
+      status: knownFailure ? 'unmet' : !amountKnown || !checks.waiver ? 'incomplete' : 'conditional'};
+  }
+  function csv(data, state) {
+    validate(data, state);
+    const quote = value => '"' + String(value ?? '').replace(/"/g, '""') + '"';
+    const rows = [
+      ['상품', data.product], ['자료 기준일', data.illustrationDate],
+      ['계산방식', '공식 설계 예시 조회; 계리 추정 아님'],
+      ['조건', (state.gender === 'male' ? '남성' : '여성') + ' / 40세 / 10억원 / 90세만기 / 일반가입형 / 전기납 / 특약없음'],
+      ['납입방식', state.plan === 'base' ? '기본납입' : '기본+추가납입100%'],
+      ['펀드', data.funds], ['가정 수익률(%)', state.rate],
+      ['환급금·사망보험금 표시정밀도', '만원 미만 절사; 환급률은 원자료의 표시값'],
+      ['추가납입 가정', '남성100%예시: 2개월차에 첫달분 포함 납입, 이후 매월; 인출·전환 없음'],
+      ['경과기간', '보험나이', '실제납입누계(원)', '원자료납입누계표시(원·만원미만절사)',
+        '해약환급금표시(원·만원미만절사)', '원자료환급률(%)', '사망보험금표시(원·만원미만절사)',
+        '최저사망보험금(원·산식)', '출처', 'PDF쪽']
+    ];
+    for (const p of series(data, state)) rows.push([p.label, p.age, p.paid, p.paidDisplay,
+      p.surrender, p.refundRate.toFixed(2), p.death, p.minimumDeath, p.sourceTitle, p.sourcePage]);
+    return '\uFEFF' + rows.map(row => row.map(quote).join(',')).join('\r\n');
+  }
+  function projectConvertedContract(input) {
+    const required = ['reserve', 'paidBefore', 'sumAssured', 'entryPremium', 'returnPercent', 'years', 'riskPer100m', 'monthlyAdmin', 'entryFeePercent', 'surrenderDeduction'];
+    for (const key of required) if (typeof input[key] !== 'number' || !Number.isFinite(input[key])) throw new RangeError('적립액과 모든 비용 가정을 입력해 주세요.');
+    if (!input.confirmed) throw new RangeError('가정 계산의 비용 조건을 확인해 주세요.');
+    if (input.returnPercent < -1 || input.returnPercent > 20) throw new RangeError('투자수익률은 -1%부터 20%까지 입력해 주세요.');
+    if (!Number.isInteger(input.years) || input.years < 1 || input.years > 50) throw new RangeError('전환 후 기간은 1~50년의 정수입니다.');
+    for (const key of ['reserve','paidBefore','riskPer100m','monthlyAdmin','entryPremium','surrenderDeduction']) if (input[key] < 0) throw new RangeError('금액은 0 이상이어야 합니다.');
+    if (input.entryFeePercent < 0 || input.entryFeePercent > 100) throw new RangeError('초회 공제율은 0~100%입니다.');
+    const minimumPremium = Math.ceil(Math.max(100000, input.paidBefore / 200) / 10000) * 10000;
+    const minimumSum = Math.ceil(input.entryPremium * 50 / 1000000) * 1000000;
+    if (input.entryPremium < minimumPremium || input.entryPremium % 10000 !== 0 || input.entryPremium > 20000000) throw new RangeError('초회 기본보험료는 최소 ' + minimumPremium.toLocaleString('ko-KR') + '원 이상, 1만원 단위·전환 전 가입금액의 2% 이하여야 합니다.');
+    if (input.sumAssured < minimumSum || input.sumAssured > 1000000000 || input.sumAssured % 1000000 !== 0) throw new RangeError('가입금액은 최소 ' + minimumSum.toLocaleString('ko-KR') + '원 이상·10억원 이하, 100만원 단위여야 합니다.');
+    if (input.reserve < Math.max(input.paidBefore * 7 / 10, 1000000)) throw new RangeError('전환 전 적립액이 기납입보험료의 70% 또는 100만원 기준에 미달합니다.');
+    let reserve = input.reserve + input.entryPremium * (1 - input.entryFeePercent / 100);
+    const paid = input.paidBefore + input.entryPremium;
+    const monthlyReturn = Math.pow(1 + input.returnPercent / 100, 1 / 12) - 1;
+    const fixedMonthlyCost = input.riskPer100m * input.sumAssured / 100000000 + input.monthlyAdmin;
+    let costTotal = input.entryPremium * input.entryFeePercent / 100;
+    let insufficientMonth = null;
+    const rows = [];
+    for (let month = 1; month <= input.years * 12; month++) {
+      const cost = fixedMonthlyCost + reserve * 0.0015 / 12;
+      if (reserve - input.surrenderDeduction < cost || reserve <= 0) { insufficientMonth = month; break; }
+      reserve = (reserve - cost) * (1 + monthlyReturn);
+      costTotal += cost;
+      if (month % 12 === 0) rows.push({year: month / 12, reserve, surrender: Math.max(0, reserve - input.surrenderDeduction), death: Math.max(input.sumAssured + reserve, paid)});
+    }
+    if (insufficientMonth !== null) return {status: 'funding-needed', insufficientMonth, rows, paid, costTotal};
+    const surrender = Math.max(0, reserve - input.surrenderDeduction);
+    return {status: 'projected', reserve, surrender, paid, death: Math.max(input.sumAssured + reserve, paid), refundRate: surrender / paid * 100, rows, costTotal};
+  }
+  return Object.freeze({validate, series, snapshot, firstObservedRecovery, parseMoneyInManwon, conversionCheck, csv, projectConvertedContract});
+});
+</script>
+<script>(function () {
+  'use strict';
+  const data = JSON.parse(document.getElementById('metlife-fixtures').textContent);
+  const model = globalThis.MetlifeModel;
+  const $ = id => document.getElementById(id);
+  const number = (n, digits = 0) => n.toLocaleString('ko-KR', {maximumFractionDigits: digits, minimumFractionDigits: digits});
+  const money = n => n >= 1e8 ? number(n / 1e8, 2) + '억 원' : number(n / 10000, n % 10000 ? 1 : 0) + '만 원';
+  const exactMoney = n => number(n) + '원';
+  const percent = n => number(n, 2) + '%';
+  const rateLabel = r => r === '-1' ? '-1.0' : r;
+  const state = {gender: 'male', plan: 'base', rate: '3.75', month: 120};
+  // URL fragments contain only validated enum values, never client names or financial input.
+  function readHash() {
+    const q = new URLSearchParams(location.hash.slice(1));
+    const proposed = {...state};
+    for (const key of ['gender', 'plan', 'rate']) if (q.has(key)) proposed[key] = q.get(key);
+    if (q.has('month')) proposed.month = Number(q.get('month'));
+    try { model.validate(data, proposed); Object.assign(state, proposed); }
+    catch { toast('지원하지 않는 조건 링크입니다. 기본 예시로 표시합니다.'); }
+  }
+  let toastTimer;
+  function toast(message) {
+    clearTimeout(toastTimer);
+    $('toast').textContent = message;
+    $('toast').classList.add('visible');
+    toastTimer = setTimeout(() => $('toast').classList.remove('visible'), 4000);
+  }
+  function synchronizeInputs() {
+    for (const key of ['gender', 'plan', 'rate']) {
+      for (const input of document.querySelectorAll('input[name="' + key + '"]')) input.checked = input.value === state[key];
+    }
+    const extraInput = document.querySelector('input[name="plan"][value="extra100"]');
+    extraInput.disabled = state.gender === 'female';
+    extraInput.setAttribute('aria-describedby', 'plan-help');
+    $('plan-help').textContent = state.gender === 'female'
+      ? '여성 추가납입 예시는 자료 확보 후 제공합니다.'
+      : '추가납입 시 월 총지출도 2배가 됩니다.';
+    $('period').value = String(state.month);
+    $('period-range').value = String(data.profiles[state.gender].base.findIndex(row => row.month === state.month));
+    const p = model.snapshot(data, state);
+    $('period-range').setAttribute('aria-valuetext', p.label + ' 경과, 보험나이 ' + p.age + '세');
+    $('selected-age').textContent = p.age + '세';
+    document.querySelectorAll('.milestones button').forEach(button => {
+      const selected = Number(button.dataset.month) === state.month;
+      button.classList.toggle('active', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+  }
+  function updateState(change) {
+    const proposed = {...state, ...change};
+    if (proposed.gender === 'female' && proposed.plan === 'extra100') {
+      proposed.plan = 'base';
+      toast('여성은 기본납입 예시로 변경했습니다.');
+    }
+    try { model.validate(data, proposed); }
+    catch (error) { toast(error.message); synchronizeInputs(); return; }
+    const changed = Object.keys(proposed).some(key => proposed[key] !== state[key]);
+    Object.assign(state, proposed);
+    if (changed) { $('reserve').value = ''; $('no-waiver').checked = false; }
+    render();
+    // Avoid history spam while moving the slider. Offline file:// may reject history APIs.
+    const fragment = new URLSearchParams(Object.entries(state)).toString();
+    try { history.replaceState(null, '', '#' + fragment); } catch { /* optional sharing state */ }
+  }
+  function renderMetrics(p) {
+    $('selected-context').textContent = '40세 ' + (state.gender === 'male' ? '남성' : '여성') + ' · 10억 원 · 90세 만기 · ' + (state.plan === 'base' ? '기본납입' : '추가납입 100%');
+    $('monthly-total').textContent = exactMoney(p.monthlyBase + p.monthlyExtra);
+    $('monthly-detail').textContent = '기본 ' + exactMoney(p.monthlyBase) + (p.monthlyExtra ? ' + 추가 ' + exactMoney(p.monthlyExtra) : ' · 추가납입 없음');
+    $('paid').textContent = money(p.paid);
+    $('paid-detail').textContent = p.label + ' 동안 ' + exactMoney(p.paid);
+    $('surrender').textContent = money(p.surrender);
+    $('surrender-detail').textContent = exactMoney(p.surrender) + ' · 만 원 미만 절사';
+    $('refund-rate').textContent = percent(p.refundRate);
+    $('chart-scenario').textContent = p.label + ' 경과 · 연 ' + rateLabel(state.rate) + '% 가정';
+    const first = model.firstObservedRecovery(data, state);
+    $('recovery').textContent = first ? '수록 시점 중 첫 환급률 100% 이상: ' + first.label : '수록 구간에서 환급률 100% 이상 시점 없음';
+    const isExtra = state.plan === 'extra100';
+    $('death-label').textContent = isExtra ? '최저사망보험금 · 약관 산식' : '사망보험금 · 공식 예시';
+    $('death').textContent = money(isExtra ? p.minimumDeath : p.death);
+    $('death-help').textContent = isExtra
+      ? exactMoney(p.minimumDeath) + '. 가입금액에 누적 추가납입액을 더한 기본보험금액과 기납입보험료 중 큰 금액입니다. 실제 사망보험금은 적립액에 따라 더 클 수 있습니다.'
+      : exactMoney(p.death) + ' (만 원 미만 절사). 선택한 시점·가정 수익률의 공식 설계값입니다. 사망보험금은 해약환급금과 다른 지급금입니다.';
+  }
+  function renderComparison() {
+    if (state.gender === 'female') {
+      $('comparison').innerHTML = '<p class="unavailable">현재 확보한 여성 설계서는 기본납입 예시입니다.<br>남성 탭에서 추가납입 비교를 살펴보실 수 있습니다.</p>';
+      $('comparison-help').textContent = '성별이 다른 예시의 환급률을 그대로 적용하지 않습니다.';
+      return;
+    }
+    $('comparison').innerHTML = ['base', 'extra100'].map(plan => {
+      const p = model.snapshot(data, {...state, plan});
+      return '<div class="compare-row ' + (state.plan === plan ? 'is-selected' : '') + '"><span>' + (plan === 'base' ? '기본납입' : '추가납입 100%') + '</span><strong>' + percent(p.refundRate) + '</strong><small>월 ' + exactMoney(p.monthlyBase + p.monthlyExtra) + '</small><small>환급금 ' + money(p.surrender) + '</small></div>';
+    }).join('');
+    $('comparison-help').textContent = '동일한 가입금액 기준 비교입니다. 추가납입 시 월 총지출과 누적납입액도 늘어납니다. 2개월차에 첫 달분을 포함해 추가납입한 예시입니다.';
+  }
+  function renderChart(points) {
+    const W = 800, H = 270, left = 49, right = 14, top = 18, bottom = 34;
+    const maxMonths = 588;
+    const maxValue = Math.max(...points.map(p => Math.max(p.paid, p.surrender)), 1);
+    const maxY = Math.ceil(maxValue / 4e7) * 4e7;
+    const x = month => left + month / maxMonths * (W - left - right);
+    const y = value => H - bottom - value / maxY * (H - top - bottom);
+    let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" aria-labelledby="chart-svg-title chart-svg-desc"><title id="chart-svg-title">납입누계와 해약환급금, ' + (state.gender === 'male' ? '남성' : '여성') + ' 연 ' + rateLabel(state.rate) + '% 가정</title><desc id="chart-svg-desc">해약환급금은 공식 표의 수록 시점을 점으로 표시합니다. 점은 마우스 또는 키보드 Enter로 선택할 수 있습니다. 같은 데이터는 아래 표에서도 확인할 수 있습니다.</desc>';
+    for (let i = 0; i <= 4; i++) {
+      const value = maxY * i / 4;
+      svg += '<line x1="' + left + '" y1="' + y(value) + '" x2="' + (W - right) + '" y2="' + y(value) + '" stroke="#e9efee"/><text x="' + (left - 12) + '" y="' + (y(value) + 4) + '" text-anchor="end" fill="#738590" font-size="14">' + (value / 1e8).toFixed(1) + '</text>';
+    }
+    for (const year of [0, 10, 20, 30, 40, 49]) svg += '<text x="' + x(year * 12) + '" y="' + (H - 10) + '" fill="#738590" font-size="14" text-anchor="middle">' + year + '년</text>';
+    // Actual premiums follow an exact payment schedule at the supported observations.
+    const paidPath = 'M' + x(0) + ',' + y(0) + points.map(p => 'L' + x(p.month) + ',' + y(p.paid)).join('');
+    svg += '<path d="' + paidPath + '" fill="none" stroke="#a3afb9" stroke-width="1.7" stroke-dasharray="5 5"/>';
+    svg += '<line x1="' + x(state.month) + '" y1="' + top + '" x2="' + x(state.month) + '" y2="' + (H - bottom) + '" stroke="#a6d1bf" stroke-dasharray="3 5"/>';
+    for (const p of points) {
+      const selected = p.month === state.month;
+      if (selected) svg += '<circle cx="' + x(p.month) + '" cy="' + y(p.surrender) + '" r="11" fill="#087f781a"/>';
+      const label = p.label + ' 해약환급금 ' + exactMoney(p.surrender) + ', 환급률 ' + percent(p.refundRate);
+      svg += '<circle class="point" role="button" tabindex="0" aria-label="' + label + '" aria-pressed="' + selected + '" data-month="' + p.month + '" cx="' + x(p.month) + '" cy="' + y(p.surrender) + '" r="' + (selected ? 6 : 4) + '" fill="' + (selected ? '#075e58' : '#188f80') + '"><title>' + label + '</title></circle>';
+    }
+    $('chart').innerHTML = svg + '</svg>';
+  }
+  function renderTable() {
+    const all = data.rates.map(rate => model.series(data, {...state, rate}));
+    $('table-description').textContent = (state.plan === 'base' ? '기본납입' : '기본 + 추가납입 100%') + ' · ' + (state.gender === 'male' ? '남성 설계서 ' : '여성 설계서 ') + (state.plan === 'base' ? '13쪽' : '15쪽') + ' · 금액 단위: 만원';
+    $('table-body').innerHTML = all[0].map((point, i) => '<tr class="' + (point.month === state.month ? 'is-active' : '') + '"><td><button class="table-body-button" data-month="' + point.month + '"' + (point.month === state.month ? ' aria-current="true"' : '') + '>' + point.label + '</button></td><td>' + point.age + '세</td><td>' + number(point.paid / 10000, point.paid % 10000 ? 1 : 0) + '</td>' + data.rates.map((rate, j) => '<td class="' + (rate === state.rate ? 'selected-rate' : '') + '">' + number(all[j][i].surrender / 10000) + '<small>' + percent(all[j][i].refundRate) + '</small></td>').join('') + '</tr>').join('');
+    document.querySelectorAll('th[data-rate]').forEach(th => th.classList.toggle('selected-rate', th.dataset.rate === state.rate));
+  }
+  function renderConversion() {
+    let amount;
+    try { amount = model.parseMoneyInManwon($('reserve').value); }
+    catch (error) { $('conversion-output').textContent = error.message; return; }
+    const result = model.conversionCheck(data, state, amount, $('no-waiver').checked);
+    const p = model.snapshot(data, state);
+    const row = (label, status, detail) => '<div class="check-row"><span>' + label + '</span><span class="check-' + (status === null ? 'unknown' : status ? 'pass' : 'fail') + '">' + detail + '</span></div>';
+    const headings = {incomplete: '적립액과 납입면제 여부를 확인해 주세요.', unmet: '충족하지 않은 조건이 있습니다.', conditional: '입력조건상 주요 요건을 충족합니다.'};
+    $('conversion-output').innerHTML = '<p class="conversion-status status-' + result.status + '">' + headings[result.status] + '</p>'
+      + row('계약일부터 7년 경과', result.checks.time, result.checks.time ? '충족 · ' + p.label : '미충족 · ' + p.label)
+      + row('전환 나이', result.checks.age, p.age + '세' + (result.checks.age ? ' · 범위 내' : ' · 범위 초과'))
+      + row('납입면제 미적용', result.checks.waiver ? true : null, result.checks.waiver ? '확인' : '확인 필요')
+      + row('필요 계약자적립액', result.checks.reserve, exactMoney(result.threshold) + ' 이상')
+      + (result.shortfall > 0 ? '<p class="tiny">입력한 적립액 기준 부족액: ' + exactMoney(result.shortfall) + '</p>' : '<p class="tiny">기준: 기납입보험료의 70%와 100만 원 중 큰 금액. 실제 전환 승낙·효력발생일은 보험사에서 확인합니다.</p>');
+  }
+  function render() {
+    synchronizeInputs();
+    const points = model.series(data, state);
+    renderMetrics(points.find(p => p.month === state.month));
+    renderComparison(); renderChart(points); renderTable(); renderConversion(); renderProjection();
+  }
+  let projectionProfile = '';
+  const projectionNumber = id => {
+    const raw = $(id).value.trim();
+    return raw === '' ? null : Number(raw);
+  };
+  function renderProjection() {
+    const signature = state.gender + '/' + state.plan;
+    if (projectionProfile !== signature) {
+      projectionProfile = signature;
+      $('scenario-reserves').innerHTML = [7,8,9,10].map(year => {
+        const point = model.snapshot(data, {...state, month: year * 12});
+        const minimumPremium = Math.ceil(Math.max(100000, point.paid / 200) / 10000) * 10000;
+        return '<div class="reserve-case"><h3>' + year + '년 후 전환 · ' + (40 + year) + '세</h3><p id="reference-' + year + '" class="field-help"></p><label for="opening-' + year + '">전환 전 계약자적립액 (만원)</label><input id="opening-' + year + '" type="number" min="0" step="0.0001" placeholder="계약자적립액 직접 입력"><label for="entry-' + year + '">전환 당일 초회 기본보험료 (만원)</label><input id="entry-' + year + '" type="number" min="' + minimumPremium / 10000 + '" step="1" value="' + minimumPremium / 10000 + '"><label for="deduction-' + year + '">전환 후 해약공제 가정 (만원)</label><input id="deduction-' + year + '" type="number" min="0" step="0.0001" placeholder="없다고 가정하면 0 입력"></div>';
+      }).join('');
+    }
+    const cards = [7,8,9,10].map(year => {
+      const p = model.snapshot(data, {...state, month:year * 12});
+      $('reference-' + year).textContent = '참고: 전환 전 공식 환급금 ' + exactMoney(p.surrender) + ' (연 ' + rateLabel(state.rate) + '%). 계약자적립액과 다르므로 자동 대입하지 않습니다.';
+      const reserve = projectionNumber('opening-' + year);
+      const deduction = projectionNumber('deduction-' + year);
+      const risk = projectionNumber('projection-risk');
+      const admin = projectionNumber('projection-admin');
+      const fee = projectionNumber('projection-entry-fee');
+      if ([reserve,deduction,risk,admin,fee].some(value => value === null)) return '<article class="projection-card"><h3>' + year + '년 후 전환</h3><p>계약자적립액·해약공제·공제비용 가정을 입력하면 결과가 표시됩니다.</p></article>';
+      try {
+        const years = projectionNumber('projection-horizon');
+        const result = model.projectConvertedContract({reserve:reserve * 10000, paidBefore:p.paid, sumAssured:projectionNumber('projection-sum') * 10000, entryPremium:projectionNumber('entry-' + year) * 10000, returnPercent:projectionNumber('projection-return'), years, riskPer100m:risk, monthlyAdmin:admin, entryFeePercent:fee, surrenderDeduction:deduction * 10000, confirmed:$('projection-confirm').checked});
+        if (result.status !== 'projected') return '<article class="projection-card"><h3>' + year + '년 후 전환</h3><p class="projection-warn">전환 후 ' + result.insufficientMonth + '개월차 비용 충당 부족</p><p>추가 납입·보험사 유지요건 확인이 필요합니다. 이후 시점의 보장금액과 환급률은 표시하지 않습니다.</p></article>';
+        return '<article class="projection-card"><h3>' + year + '년 후 전환 → ' + years + '년 경과</h3><p>최초 가입 후 ' + (year + years) + '년 · ' + (40 + year + years) + '세 · 가정 계산</p><dl><dt>예상 사망보험금</dt><dd>' + exactMoney(Math.round(result.death)) + '</dd><dt>예상 해약환급금</dt><dd>' + exactMoney(Math.round(result.surrender)) + '</dd><dt>예상 해약환급률</dt><dd>' + percent(result.refundRate) + '</dd></dl><p>실제 총 납입액 ' + exactMoney(result.paid) + ' (전환 당일 초회보험료 포함). 이후 추가 납입 0원.</p><p>공제비용 가정 합계 ' + exactMoney(Math.round(result.costTotal)) + '</p></article>';
+      } catch(error) { const safe = document.createElement('p'); safe.textContent = error.message; return '<article class="projection-card"><h3>' + year + '년 후 전환</h3><div class="projection-error">' + safe.innerHTML + '</div></article>'; }
+    });
+    $('projection-output').innerHTML = '<div class="projection-cards">' + cards.join('') + '</div>';
+  }
+  $('conversion-scenario').addEventListener('input', event => {
+    if (event.target.id === 'projection-return' || event.target.id === 'projection-return-slider') {
+      const other = event.target.id === 'projection-return' ? 'projection-return-slider' : 'projection-return';
+      $(other).value = event.target.value;
+    }
+    renderProjection();
+  });
+  readHash();
+  $('period').innerHTML = data.profiles.male.base.map(p => '<option value="' + p.month + '">' + p.label + ' 경과</option>').join('');
+  $('milestones').innerHTML = [3, 60, 84, 120, 240, 360, 480, 588].map(month => '<button type="button" data-month="' + month + '">' + (month === 3 ? '3개월' : month / 12 + '년') + '</button>').join('');
+  for (const key of ['gender', 'plan', 'rate']) document.querySelectorAll('input[name="' + key + '"]').forEach(input => input.addEventListener('change', () => updateState({[key]: input.value})));
+  $('period').addEventListener('change', event => updateState({month: Number(event.target.value)}));
+  $('period-range').addEventListener('input', event => updateState({month: data.profiles[state.gender].base[Number(event.target.value)].month}));
+  document.addEventListener('click', event => {
+    const target = event.target.closest('[data-month]');
+    if (target) {
+      const restoreChartFocus = target.classList.contains('point');
+      updateState({month: Number(target.dataset.month)});
+      if (restoreChartFocus) $('chart').querySelector('[data-month="' + state.month + '"]').focus({preventScroll: true});
+    }
+  });
+  $('chart').addEventListener('keydown', event => {
+    if ((event.key === 'Enter' || event.key === ' ') && event.target.matches('.point')) { event.preventDefault(); event.target.dispatchEvent(new MouseEvent('click', {bubbles: true})); }
+  });
+  $('check-conversion').addEventListener('click', renderConversion);
+  $('reserve').addEventListener('input', renderConversion);
+  $('no-waiver').addEventListener('change', renderConversion);
+  let sourceWasOpen = null;
+  window.addEventListener('beforeprint', () => {
+    const source = document.querySelector('details.sources');
+    if (sourceWasOpen === null) sourceWasOpen = source.open;
+    source.open = true;
+  });
+  window.addEventListener('afterprint', () => {
+    if (sourceWasOpen !== null) document.querySelector('details.sources').open = sourceWasOpen;
+    sourceWasOpen = null;
+  });
+  $('print').addEventListener('click', () => window.print());
+  $('export').addEventListener('click', () => {
+    const blob = new Blob([model.csv(data, state)], {type: 'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = '메트라이프_공식예시_' + (state.gender === 'male' ? '남성' : '여성') + '_' + state.plan + '_' + state.rate + 'pct.csv';
+    document.body.append(anchor); anchor.click(); anchor.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast('선택한 수익률의 전체 시점 표를 저장했습니다.');
+  });
+  render();
+})();
+
+;globalThis.MetlifeCalibration={
+  "male": {
+    "savings": {
+      "ages": [
+        40.0,
+        47.0,
+        53.0,
+        58.0,
+        63.0,
+        68.0,
+        73.0,
+        78.0,
+        83.0,
+        90.0
+      ],
+      "annualChargePerBillionWon": [
+        517005.66652092274,
+        977552.8382007745,
+        1687580.4027234458,
+        2521031.0884240866,
+        4057403.8064918616,
+        6512772.686177416,
+        11369023.434899844,
+        22560667.108740553,
+        37130237.379232146,
+        74585401.07434544
+      ],
+      "balanceRate": 0.0020167931420309055
+    },
+    "base": {
+      "ages": [
+        40.0,
+        47.0,
+        50.0,
+        55.0,
+        60.0,
+        65.0,
+        70.0,
+        75.0,
+        80.0,
+        85.0,
+        90.0
+      ],
+      "annualChargePerBillionWon": [
+        164547.43059402984,
+        366379.5423690106,
+        497608.2963810166,
+        853606.6355371163,
+        1619384.0690797498,
+        3642358.0290462556,
+        7614041.032880674,
+        14613935.167235559,
+        28268600.323357355,
+        47933612.85563219,
+        72725517.40747172
+      ],
+      "loadings": [
+        0.27524170077420124,
+        0.2854185870627118,
+        0.30600452659378985
+      ],
+      "penaltyAnnualPremiums": 2.187211432972999,
+      "extraLoading": 0,
+      "balanceRate": 0.0005886647216444856
+    }
+  },
+  "female": {
+    "savings": {
+      "ages": [
+        40.0,
+        47.0,
+        53.0,
+        58.0,
+        63.0,
+        68.0,
+        73.0,
+        78.0,
+        83.0,
+        90.0
+      ],
+      "annualChargePerBillionWon": [
+        462971.9471236883,
+        695545.7306572938,
+        985924.5934258077,
+        1375679.333061414,
+        1940600.606939132,
+        2673568.6288931533,
+        4848902.813833297,
+        11624585.191165138,
+        27868362.401726134,
+        94784872.09210116
+      ],
+      "balanceRate": 0.0019860609672616427
+    },
+    "base": {
+      "ages": [
+        40.0,
+        47.0,
+        50.0,
+        55.0,
+        60.0,
+        65.0,
+        70.0,
+        75.0,
+        80.0,
+        85.0,
+        90.0
+      ],
+      "annualChargePerBillionWon": [
+        202900.00957151674,
+        372249.3436147552,
+        481078.7929277485,
+        735268.0971339454,
+        1131641.014569392,
+        1765439.3333970981,
+        3084160.139230664,
+        6830875.968567537,
+        15918272.773554485,
+        33357858.832337044,
+        72573629.57277267
+      ],
+      "loadings": [
+        0.278440303381375,
+        0.2877587374280004,
+        0.29290673839811465
+      ],
+      "penaltyAnnualPremiums": 2.5522651641082517,
+      "extraLoading": 0,
+      "balanceRate": 2.9114452571390907e-18
+    }
+  }
+};
+(function(root,factory){const api=factory(typeof module==='object'&&module.exports?require('./calibration.json'):root.MetlifeCalibration);if(typeof module==='object'&&module.exports)module.exports=api;else root.MetlifeCustomer=api;})(typeof globalThis==='object'?globalThis:this,function(calibration){
+'use strict';
+// All forecast amounts are illustrative estimates, never insurer quotations.
+// Premium anchors: launch leaflet PDF p5, 90세만기·전기납·가입금액 1억원.
+const tariffs={general:{male:{20:71000,30:88400,40:113600,50:153000,60:219300,70:348400},female:{20:49400,30:61000,40:77500,50:102600,60:144800,70:229400}},simple:{male:{30:105600,40:135500,50:181700,60:256700,70:386900},female:{30:75300,40:95400,50:125300,60:173000,70:262300}}};
+function logInterpolate(age,ages,values){
+ let i=0;while(i<ages.length-2&&age>ages[i+1])i++;
+ return Math.exp(Math.log(values[i])+(age-ages[i])/(ages[i+1]-ages[i])*Math.log(values[i+1]/values[i]));
+}
+function tariff(type,gender,age){const table=tariffs[type][gender],ages=Object.keys(table).map(Number);return logInterpolate(age,ages,ages.map(a=>table[a]));}
+function charge(gender,kind,age){const p=calibration[gender][kind];return logInterpolate(age,p.ages,p.annualChargePerBillionWon);}
+// Simple underwriting has its own premium anchors. Its COST multiplier is only a proxy;
+// no simple-underwriting surrender-value illustration has yet been calibrated.
+function typeMultiplier(type,gender,age){return type==='simple'?tariff('simple',gender,age)/tariff('general',gender,age):1;}
+function baseProjection({gender,type,age,premium,sum,extra,rate,years}){
+ const p=calibration[gender].base,g=Math.pow(1+rate/100,1/12),rows=[];
+ let basic=0,additional=0;
+ const multiplier=typeMultiplier(type,gender,age);
+ for(let m=0;m<years*12;m++){
+  const load=p.loadings[m<84?0:m<120?1:2];
+  basic+=premium*(1-load);
+  // Month 2 catches up the first month's additional premium.
+  additional+=premium*extra*(m===0?0:m===1?2:1)*(1-p.extraLoading);
+  const reserve=basic+additional;
+  const risk=Math.max(sum+premium*extra*(m+1)-reserve,0);
+  const cost=charge(gender,'base',age+m/12)*multiplier*risk/1e9/12+sum*.00011/12+Math.max(reserve,0)*p.balanceRate/12;
+  basic=(basic-cost)*g;additional*=g;
+  const penalty=premium*12*p.penaltyAnnualPremiums*Math.max(1-(m+1)/84,0);
+  const surrender=m<84?Math.max(basic-penalty,0)+additional:Math.max(basic+additional,0);
+  if((m+1)%12===0){
+   const year=(m+1)/12,paid=premium*(1+extra)*(m+1),A=Math.max(basic+additional,0);
+   const basicBenefit=sum*(type==='simple'&&m+1<24?.5:1)+premium*extra*(m+1);
+   rows.push({year,age:age+year,paid,reserve:A,surrender,death:Math.max(basicBenefit,A*1.05,paid),refundRate:surrender/paid*100,deathKind:'보장형 추정',status:'estimated'});
+  }
+ }
+ return rows;
+}
+function projectSavings({gender,type,issueAge,conversionAge,reserve,paidBefore,entryPremium,sum,rate,years,entryInvested=entryPremium}){
+ const p=calibration[gender].savings,g=Math.pow(1+rate/100,1/12),paid=paidBefore+entryPremium,rows=[];
+ let A=reserve+entryInvested,shortfallMonth=null;
+ const multiplier=typeMultiplier(type,gender,issueAge);
+ // The source's 0년납 projection excludes entry premium from its displayed paid total.
+ // Production scenarios explicitly add the mandatory first payment; no further payments.
+ rows.push({year:0,paid,reserve:A,surrender:A,death:Math.max(sum+A,paid),refundRate:A/paid*100,status:'estimated',deathKind:'적립형 추정'});
+ for(let m=0;m<years*12;m++){
+  if(shortfallMonth===null){
+   const risk=Math.max(sum,paid-A,0);
+   const cost=charge(gender,'savings',conversionAge+m/12)*multiplier*risk/1e9/12+A*(.0015+p.balanceRate)/12;
+   if(A<=cost){shortfallMonth=m+1;A=0;}else A=(A-cost)*g;
+  }
+  if((m+1)%12===0)rows.push({year:(m+1)/12,paid,reserve:shortfallMonth===null?A:null,surrender:shortfallMonth===null?A:null,death:shortfallMonth===null?Math.max(sum+A,paid):null,refundRate:shortfallMonth===null?A/paid*100:null,status:shortfallMonth===null?'estimated':'funding-needed',deathKind:'적립형 추정'});
+ }
+ return {rows,shortfallMonth};
+}
+function describe(input){
+ const age=2026-input.birthYear;
+ if(!Number.isInteger(input.birthYear))throw new RangeError('출생연도를 정수로 입력해 주세요.');
+ if(!['male','female'].includes(input.gender)||!['general','simple'].includes(input.type))throw new RangeError('가입형과 성별을 선택해 주세요.');
+ if(age<(input.type==='general'?15:30)||age>(input.type==='general'?70:75))throw new RangeError('90세 만기의 예시 가입나이 범위는 일반 15~70세, 간편 30~75세입니다.');
+ if(![0,.5,1].includes(input.extra))throw new RangeError('추가납입 비율을 확인해 주세요.');
+ if(!Number.isInteger(input.conversionYear)||input.conversionYear<7||input.conversionYear>Math.min(80-age,89-age))throw new RangeError('전환시점은 7년 이후·전환나이 80세 이하·기본만기 전이어야 합니다.');
+ for(const r of [input.beforeReturn,input.afterReturn])if(!Number.isFinite(r)||r< -1||r>20)throw new RangeError('수익률은 -1~20% 범위입니다.');
+ if(input.driver!=='sum'&&(!Number.isFinite(input.premium)||input.premium<80000))throw new RangeError('주계약 단독 화면의 월 기본보험료는 8만원 이상으로 입력해 주세요.');
+ const rate=tariff(input.type,input.gender,age),exactRate=Object.hasOwn(tariffs[input.type][input.gender],age);
+ let sum=input.driver==='premium'?Math.floor((input.premium/rate*1e8+1e-5)/1e6)*1e6:input.sum;
+ let premium=input.driver==='premium'?input.premium:Math.round(sum/1e8*rate);
+ if(!Number.isFinite(sum)||sum<1e7||sum>(input.type==='general'?5e9:2e9))throw new RangeError('가입금액 범위는 일반 1천만~50억원, 간편 1천만~20억원입니다.');
+ if(premium<80000)throw new RangeError('환산 기본보험료가 8만원 미만입니다. 가입금액을 높여 주세요.');
+ const totalMonthly=premium*(1+input.extra),paidBefore=totalMonthly*input.conversionYear*12;
+ const entryPremium=Math.ceil(Math.max(100000,paidBefore*.005)/10000)*10000;
+ const minConvertedSum=Math.ceil(entryPremium*50/1e6)*1e6;
+ const postSum=input.postSum??minConvertedSum;
+ const boundsError=!Number.isFinite(postSum)||postSum<minConvertedSum||postSum>sum||postSum%1e6!==0;
+ const before=baseProjection({gender:input.gender,type:input.type,age,premium,sum,extra:input.extra,rate:input.beforeReturn,years:input.conversionYear});
+ const conversionReserve=before.at(-1).reserve,threshold=Math.max(paidBefore*.7,1e6);
+ let conversionConstraints=entryPremium>sum*.02||minConvertedSum>sum?'전환 초회보험료와 가입금액 한도를 동시에 충족하지 못합니다.':null;
+ if(!conversionConstraints&&conversionReserve<threshold)conversionConstraints='추정 적립금이 전환 기준(납입액 70%·100만원 중 큰 금액)에 미달합니다.';
+ if(!conversionConstraints&&boundsError)conversionConstraints='전환 후 가입금액을 최저·최고 한도 안에서 100만원 단위로 입력해 주세요.';
+ const eligible=!conversionConstraints;
+ const horizon=90-age-input.conversionYear;
+ const post=eligible?projectSavings({gender:input.gender,type:input.type,issueAge:age,conversionAge:age+input.conversionYear,reserve:conversionReserve,paidBefore,entryPremium,sum:postSum,rate:input.afterReturn,years:horizon}):null;
+ const rows=before.slice(0,-1);
+ for(let y=input.conversionYear;y<=90-age;y++){
+  const r=post?.rows[y-input.conversionYear];
+  rows.push(r?{...r,year:y,age:age+y}:{year:y,age:age+y,paid:paidBefore,surrender:null,reserve:null,death:null,refundRate:null,status:'conversion-unavailable',deathKind:'전환 미성립'});
+ }
+ return {age,ageBasis:'연나이 예시(생월일 미반영)',rate,exactRate,sum,premium,totalMonthly,paidBefore,entryPremium,minConvertedSum,postSum,conversionReserve,conversionThreshold:threshold,conversionConstraints,eligible,rows,before,shortfallMonth:post?.shortfallMonth??null,needsRates:false,hasOfficialValues:false,projectionLimitAge:90,calibrated:input.type==='general'&&age===40};
+}
+return Object.freeze({describe,tariffs,tariff,logInterpolate,baseProjection,projectSavings,calibration});
+});
+
+(function(){
+'use strict';const root=document.getElementById('customer-workbench'),data=JSON.parse(document.getElementById('metlife-fixtures').textContent),M=globalThis.MetlifeCustomer;
+const state={gender:'male',birthYear:1986,type:'general',premium:1136000,sum:1000000000,driver:'premium',conversionYear:7,extra:0,beforeReturn:3.75,afterReturn:3.75};let zoom=true,postTouched=false;
+const n=(v,d=0)=>v.toLocaleString('ko-KR',{maximumFractionDigits:d});const won=v=>v===null||!Number.isFinite(v)?'산출 제외':n(Math.round(v))+'원';const $=id=>document.getElementById('c-'+id);
+root.innerHTML=`<div class="customer-layout"><aside class="customer-inputs"><h2>고객 조건 입력</h2><p class="customer-kicker">값을 바꾸면 바로 반영됩니다</p>
+<label for="c-gender">성별</label><select id="c-gender"><option value="male">남성</option><option value="female">여성</option></select>
+<label for="c-birth">출생연도 <output id="c-age"></output></label><div class="unit-input"><input id="c-birth" type="number" step="1" value="1986"><span>년생</span></div>
+<label for="c-type">가입형</label><select id="c-type"><option value="general">일반가입형</option><option value="simple">간편가입형</option></select>
+<label for="c-premium">월 기본보험료 <output id="c-premium-label"></output></label><input id="c-premium-range" type="range" aria-label="월 기본보험료 조절" min="8" max="500" step="0.01" value="113.6"><div class="unit-input"><input id="c-premium" type="number" min="8" step="0.01" value="113.6"><span>만원</span></div>
+<label for="c-sum">보험가입금액 <output id="c-sum-label"></output></label><div class="unit-input"><input id="c-sum" type="number" min="1000" step="100" value="100000"><span>만원</span></div>
+<p id="c-price-note" class="customer-note"></p>
+<label>납입기간 / 보험기간</label><div class="locked-period">전기납 / 90세 만기</div>
+<label for="c-conversion">적립형 전환 시점</label><div class="unit-input"><input id="c-conversion" type="number" min="7" max="40" step="1" value="7"><span>년 후</span></div>
+<label for="c-extra">납입방식</label><select id="c-extra"><option value="0">기본납입</option><option value="0.5">기본 + 추가납입 50%</option><option value="1">기본 + 추가납입 100%</option></select>
+<label for="c-before">전환 전 연 투자수익률 <output id="c-before-label">3.75%</output></label><input id="c-before-range" aria-label="전환 전 수익률 조절" type="range" min="-1" max="20" step="0.05" value="3.75"><div class="unit-input"><input id="c-before" type="number" min="-1" max="20" step="0.05" value="3.75"><span>%</span></div>
+<label for="c-after">전환 후 연 투자수익률 <output id="c-after-label">3.75%</output></label><input id="c-after-range" aria-label="전환 후 수익률 조절" type="range" min="-1" max="20" step="0.05" value="3.75"><div class="unit-input"><input id="c-after" type="number" min="-1" max="20" step="0.05" value="3.75"><span>%</span></div>
+<label for="c-post-sum">적립형 전환 후 가입금액</label><div class="unit-input"><input id="c-post-sum" type="number" step="100"><span>만원</span></div><p id="c-post-bounds" class="customer-note"></p>
+<div class="auto-summary"><span>월 총 납입액</span><strong id="c-total">—</strong><span>전환 당일 최저 초회보험료</span><strong id="c-entry">—</strong><p>초회보험료 자동 설정 · 전환 후 정기납입 0원 가정</p></div></aside>
+<main class="customer-results"><span class="eyebrow">METLIFE · FINANCIAL PLANNING</span><h1>보장과 자산의 흐름을<br>한눈에 비교하세요.</h1><p>메트라이프 변액리치정기보험 · 기준일 2026.10.28</p><div id="c-status" class="customer-status" role="status" aria-live="polite"></div>
+<section class="customer-cards"><article><span>보험가입금액 · 추정 환산</span><strong id="c-sum-result">—</strong></article><article><span>전환 전 총 납입예산</span><strong id="c-paid-result">—</strong></article><article><span>전환 직전 추정 적립금</span><strong id="c-min-sum">—</strong></article></section>
+<section class="panel customer-chart-panel"><div class="section-top"><h2>납입액 · 사망보장 · 환급금</h2><button id="c-zoom" class="button">전체 기간 보기</button></div><div class="customer-legend"><span class="blue">● 누적 납입액</span><span class="gold">● 사망보험금 · 추정</span><span class="green">● 해약환급금 · 추정</span></div><div id="c-chart"></div><p class="customer-note">동일한 원 단위 축, 0원 기준입니다. 전환 후 정기납입은 0원이며 초회 최저보험료는 포함합니다. 전환 후는 종신 계약을 90세까지만 예시합니다. 사망보험금과 환급금은 합산 수령액이 아닙니다.</p></section>
+<section class="panel"><h2>적립형 전환 결과</h2><div id="c-converted" class="customer-status"></div><div id="c-post-cards" class="customer-cards post-cards"></div><p class="customer-note">추정 적립금이 전환 기준을 충족하는 경우만 전환 후를 계산합니다. 비용 재원이 부족해지면 이후 보장·환급금 산출을 중단합니다. 실제 전환 심사·납입최고·실효일은 가입설계에서 확인합니다.</p></section><section class="panel"><h2>7 · 8 · 9 · 10년 전환 비교</h2><p class="customer-note">각 시점에 전환한 뒤 10년이 지난 결과입니다. 기본 설정은 각 전환시점의 최저 가입금액이며, 가입금액을 직접 수정하면 같은 금액으로 비교합니다.</p><div id="c-comparisons" class="conversion-comparisons"></div></section>
+<section class="panel"><h2>연도별 금액</h2><div class="table-scroll"><table><thead><tr><th>경과</th><th>나이 예시</th><th>누적 납입액</th><th>사망보험금 · 추정</th><th>해약환급금 · 추정</th><th>환급률</th></tr></thead><tbody id="c-rows"></tbody></table></div></section>
+<section class="panel estimate-method"><h2>상담 예시용 추정 모델입니다</h2><p>보험료는 리플렛의 남녀·일반/간편 연령별 예시를 연결한 참고 환산입니다. 환급금은 일반가입형 40세 설계서의 여러 수익률 사례를 이용해 월별 합산 공제비용을 역산했습니다. 실제 위험보험료·사업비를 각각 복원한 값은 아닙니다.</p><p>다른 나이·금액·추가납입 50%는 확장 추정이며, 간편형은 보험료 차이를 비용에 반영한 임시 추정이며, 첫 2년은 재해 이외 사망의 가입금액 50% 감액을 가정합니다. 전환 후 초회보험료는 전액 투입으로 가정하고, 월별 추정 비용과 보증비용을 차감합니다. 실제 초회 공제·해약공제와 차이가 날 수 있습니다.</p><p>입력 수익률은 펀드 기준가 기준의 가정입니다. 보정 범위인 -1~3.75%를 벗어나면 오차가 더 커질 수 있으며, 높은 수익률을 예상·보장하지 않습니다. 출생연도는 연나이 예시이므로 실제 보험나이는 다를 수 있습니다. 모든 금액은 세전 예시입니다. 최종 금액과 가입·전환 가능 여부는 반드시 보험사의 가입설계로 확인합니다.</p></section></main></div>`;
+function chart(result){const W=Math.max(260,Math.min(850,$('chart').clientWidth||850)),H=330,L=70,T=20,R=25,B=45,maxYear=zoom?Math.min(90-result.age,state.conversionYear+15):90-result.age;const rows=result.rows.filter(r=>r.year<=maxYear);const vals=rows.flatMap(r=>[r.paid,r.death,r.surrender]).filter(v=>v!==null);const max=Math.max(1,...vals)*1.12;const x=y=>L+y/maxYear*(W-L-R),yy=v=>H-B-v/max*(H-T-B);let out=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="누적 납입액, 추정 사망보험금, 추정 해약환급금. 산출 제외 기간은 생략합니다.">`;
+for(let i=0;i<=4;i++){const v=max*i/4;out+=`<line x1="${L}" x2="${W-R}" y1="${yy(v)}" y2="${yy(v)}" stroke="#d7e2ed"/><text x="${L-10}" y="${yy(v)+6}" text-anchor="end" font-size="16" fill="#3d5369">${n(v/1e8,2)}억</text>`;}
+for(let i=0;i<=4;i++){const y=Math.round(maxYear*i/4);out+=`<text x="${x(y)}" y="${H-12}" text-anchor="middle" font-size="16">${y}년</text>`;}
+for(const [key,color]of[['paid','#245baf'],['death','#be7412'],['surrender','#008268']]){let prior=null;for(const row of rows){if(row[key]===null){prior=null;continue;}if(prior)out+=`<path d="M${x(prior.year)} ${yy(prior[key])} L${x(row.year)} ${yy(row[key])}" fill="none" stroke="${color}" stroke-width="4"/>`;out+=`<circle cx="${x(row.year)}" cy="${yy(row[key])}" r="5" fill="${color}"><title>${row.year}년 ${key==='paid'?'누적 납입액':key==='death'?row.deathKind:'추정 환급금'} ${won(row[key])}</title></circle>`;prior=row;}}
+out+=`<line x1="${x(state.conversionYear)}" x2="${x(state.conversionYear)}" y1="${T}" y2="${H-B}" stroke="#8d4b83" stroke-dasharray="6 6"/><text x="${x(state.conversionYear)-7}" y="${T+16}" text-anchor="end" font-size="16" fill="#733366">${state.conversionYear}년 전환</text></svg>`;$('chart').innerHTML=out;}
+const estimated=v=>v===null||!Number.isFinite(v)?'산출 제외':'약 '+won(Math.round(v/10000)*10000);
+const pct=v=>v===null||!Number.isFinite(v)?'—':n(v,1)+'%';
+function comparison(){
+ $('comparisons').innerHTML=[7,8,9,10].map(year=>{
+  try{
+   const result=M.describe({...state,conversionYear:year,postSum:postTouched?Number($('post-sum').value)*10000:undefined});
+   const row=result.rows.find(r=>r.year===year+10);
+   return `<article class="conversion-compare ${year===state.conversionYear?'selected':''}"><h3>${year}년 후 전환</h3><span>전환 직전 적립금</span><strong>${estimated(result.conversionReserve)}</strong><span>전환 후 가입금액</span><b>${estimated(result.postSum)}</b><span>전환 10년 뒤 환급금</span><strong class="green">${result.eligible?estimated(row?.surrender??null):'전환 산출 제외'}</strong><span>환급률 ${result.eligible?pct(row?.refundRate??null):'—'}</span><p>${result.conversionConstraints||(!row?'90세 예시 범위 밖':row.status==='funding-needed'?'비용 재원 부족으로 산출 제외':'초회 납입 후 정기납입 0원')}</p></article>`;
+  }catch(e){return `<article class="conversion-compare"><h3>${year}년 후 전환</h3><p>${e.message}</p></article>`;}
+ }).join('');
+}
+function render(){
+ $('before-label').textContent=Number.isFinite(state.beforeReturn)?n(state.beforeReturn,2)+'%':'입력 확인';
+ $('after-label').textContent=Number.isFinite(state.afterReturn)?n(state.afterReturn,2)+'%':'입력 확인';
+ try{
+  const result=M.describe({...state,postSum:postTouched?Number($('post-sum').value)*10000:undefined});
+  $('age').textContent='연나이 예시 '+result.age+'세';$('conversion').max=Math.min(80-result.age,89-result.age);
+  $('price-note').textContent='1억원당 월 '+won(Math.round(result.rate))+' · '+(result.exactRate?'리플렛 예시요율':'예시 연령 사이 보간·범위 밖 외삽')+' · 보험사 견적과 차이가 있습니다.';
+  if(state.driver==='premium'){state.sum=result.sum;$('sum').value=result.sum/10000;}
+  else{state.premium=result.premium;$('premium').value=result.premium/10000;$('premium-range').value=result.premium/10000;}
+  $('premium-label').textContent=won(result.premium);$('sum-label').textContent=won(result.sum);$('sum-result').textContent=estimated(result.sum);
+  $('total').textContent=won(result.totalMonthly);$('entry').textContent=won(result.entryPremium);$('paid-result').textContent=won(result.paidBefore);$('min-sum').textContent=estimated(result.conversionReserve);
+  if(!postTouched)$('post-sum').value=result.minConvertedSum/10000;
+  $('post-sum').min=result.minConvertedSum/10000;$('post-sum').max=result.sum/10000;
+  $('post-bounds').textContent='100만원 단위 · '+won(result.minConvertedSum)+' 이상 / '+won(result.sum)+' 이하';
+  $('status').textContent='상담 예시용 추정치입니다. 실제 금액은 가입설계로 확인해 주세요.'+(state.type==='simple'?' 간편형 비용은 임시 추정이며 전용 설계서 보정 전입니다.':result.age!==40?' 선택 나이는 40세 설계서에서 확장한 추정입니다.':'')+(state.beforeReturn>3.75||state.afterReturn>3.75?' 3.75% 초과 수익률은 보정 범위 밖의 가정입니다.':'');
+  const targetYear=state.conversionYear+10,row=result.rows.find(r=>r.year===targetYear);
+  const shortage=result.shortfallMonth===null?'':` 전환 약 ${n(result.shortfallMonth/12,1)}년 뒤 비용 재원 부족이 예상되어 이후 산출을 중단합니다.`;
+  $('converted').textContent=result.conversionConstraints||`${state.conversionYear}년 후 전환 가정 · 초회 ${won(result.entryPremium)} 납입 후 정기납입 0원. 전환 기준 ${estimated(result.conversionThreshold)} / 추정 적립금 ${estimated(result.conversionReserve)}.${shortage}`;
+  $('post-cards').innerHTML=[['전환 10년 뒤 사망보험금',result.eligible?estimated(row?.death??null):'산출 제외'],['전환 10년 뒤 해약환급금',result.eligible?estimated(row?.surrender??null):'산출 제외'],['전환 10년 뒤 환급률',result.eligible?pct(row?.refundRate??null):'—']].map(([label,value])=>`<article><span>${label}</span><strong>${value}</strong></article>`).join('');
+  chart(result);
+  $('rows').innerHTML=result.rows.map(r=>`<tr><td>${r.year}년${r.year===state.conversionYear?' · 전환':''}</td><td>${r.age}세</td><td>${won(r.paid)}</td><td>${estimated(r.death)}</td><td>${estimated(r.surrender)}</td><td>${pct(r.refundRate)}</td></tr>`).join('');
+  comparison();
+ }catch(e){
+  $('age').textContent='나이·조건 확인 필요';$('status').textContent=e.message;
+  for(const id of['sum-result','total','entry','paid-result','min-sum','premium-label','sum-label'])$(id).textContent='입력 확인 필요';
+  $('price-note').textContent='입력 조건을 확인해 주세요.';$('post-bounds').textContent='입력 확인 후 한도를 계산합니다.';$('chart').innerHTML='';$('rows').innerHTML='';$('post-cards').innerHTML='';$('comparisons').innerHTML='';$('converted').textContent='조건을 확인해 주세요.';
+ }
+}
+root.addEventListener('input',event=>{const id=event.target.id,raw=event.target.value;
+if(id==='c-post-sum'){postTouched=true;render();return;}
+const fields={'c-birth':'birthYear','c-conversion':'conversionYear','c-extra':'extra','c-gender':'gender','c-type':'type'};
+if(fields[id])state[fields[id]]=id==='c-gender'||id==='c-type'?raw:raw===''?NaN:Number(raw);
+if(id==='c-premium'||id==='c-premium-range'){state.premium=raw===''?NaN:Number(raw)*10000;state.driver='premium';$(id==='c-premium'?'premium-range':'premium').value=raw;}
+if(id==='c-sum'){state.sum=raw===''?NaN:Number(raw)*10000;state.driver='sum';}
+for(const key of ['before','after'])if(id==='c-'+key||id==='c-'+key+'-range'){state[key+'Return']=raw===''?NaN:Number(raw);$(id.endsWith('-range')?key:key+'-range').value=raw;}
+if(id!=='c-post-sum'&&id!=='c-after'&&id!=='c-after-range')postTouched=false;render();
+});$('zoom').addEventListener('click',()=>{zoom=!zoom;$('zoom').textContent=zoom?'전체 기간 보기':'전환 전후 확대';render();});window.addEventListener('resize',render);render();
+})();
+</script>
+</body>
+</html>

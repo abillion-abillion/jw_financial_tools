@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="메트라이프 변액리치정기보험의 공식 설계 예시를 보정한 추정 모델로 납입액, 사망보험금, 해약환급금을 비교합니다.">
+  <meta name="color-scheme" content="light">
+  <title>변액리치정기보험 시뮬레이터 · JW Financial</title>
+  <style>__STYLES__</style>
+</head>
+<body>
+<a class="skip" href="#customer-workbench">결과로 바로가기</a>
+<header class="topbar">
+  <a class="brand" href="#"><span class="brand-mark">JW<span>·</span></span><span>JW FINANCIAL<small>FINANCIAL PLANNING TOOLS</small></span></a>
+  <div class="header-right"><span class="version"><i></i>상담 예시용 추정 · v0.4</span><button class="button print-button" id="print">인쇄 / PDF <span aria-hidden="true">↗</span></button></div>
+</header>
+<div id="customer-workbench"></div>
+<details class="legacy-details"><summary>기존 공식 예시 및 내부 검토 도구 열기</summary><div class="workspace">
+<aside class="sidebar" aria-label="비교 조건">
+  <div class="side-heading"><span class="eyebrow">YOUR SCENARIO</span><h2>비교 조건</h2><p>확인된 공식 설계값으로 살펴봅니다.</p></div>
+  <fieldset><legend>피보험자 성별</legend><div class="segments two"><label><input type="radio" name="gender" value="male" checked><span>남성</span></label><label><input type="radio" name="gender" value="female"><span>여성</span></label></div></fieldset>
+  <div class="fixed-conditions"><div><span>가입나이</span><strong>40세</strong></div><div><span>보험가입금액</span><strong>10억 원</strong></div><div><span>보험기간</span><strong>90세 만기</strong></div><div><span>가입형 / 납입기간</span><strong>일반 / 전기납</strong></div><div><span>선택특약</span><strong>없음</strong></div></div>
+  <fieldset><legend>납입 방식</legend><div class="plan-options"><label><input type="radio" name="plan" value="base" checked><span><strong>기본납입</strong><small>사망보장을 위한 기본보험료</small></span></label><label id="extra-option"><input type="radio" name="plan" value="extra100"><span><strong>기본 + 추가납입 100%</strong><small>기본보험료와 같은 금액 추가</small></span></label></div><p class="field-help" id="plan-help">추가납입 시 월 총지출도 2배가 됩니다.</p></fieldset>
+  <fieldset><legend>공식 예시 수익률 <span class="muted">연</span></legend><div class="segments three"><label><input type="radio" name="rate" value="-1"><span>-1.0%</span></label><label><input type="radio" name="rate" value="2.5"><span>2.5%</span></label><label><input type="radio" name="rate" value="3.75" checked><span>3.75%</span></label></div><p class="field-help">펀드 기준가 수익률 가정입니다.<br>해약환급금의 수익률과는 다릅니다.</p></fieldset>
+  <a class="button primary" href="#conversion-scenario" style="margin-top:22px;white-space:normal">적립형 전환 · 자유수익률 계산 →</a><div class="premium-note"><span>월 총 납입액</span><strong id="monthly-total">—</strong><p id="monthly-detail">—</p></div>
+  <div class="side-foot"><span class="tiny-label">현재 조회 범위</span><p>40세 · 10억 원 · 90세 만기<br>다른 조건은 요율 검증 후 추가합니다.</p><p class="fund-note">골드투자형 20%<br>미국주식형3호 80%</p></div>
+</aside>
+<main id="results" tabindex="-1">
+  <section class="intro"><div><span class="eyebrow">METLIFE · VARIABLE TERM LIFE</span><h1>보장과 적립,<br>같은 시간 위에서.</h1><p>무배당 메트라이프 변액리치정기보험</p></div><span class="intro-index" aria-hidden="true">01<span>ILLUSTRATION</span></span></section>
+  <div class="context-line"><span id="selected-context">—</span><span>설계 기준 2026.10.28</span><span class="print-only">일반가입형 · 전기납 · 특약 없음 · 골드투자형 20% / 미국주식형3호 80%</span></div>
+  <section class="timeline panel" aria-labelledby="timeline-title"><div class="section-top"><h2 id="timeline-title">언제의 모습을 볼까요?</h2><div class="time-select"><label for="period" class="sr-only">경과기간</label><select id="period"></select><span id="selected-age">50세</span></div></div><label class="sr-only" for="period-range">경과기간 선택</label><input id="period-range" type="range" min="0" max="28" value="12"><div class="milestones" id="milestones"></div><p class="tiny">표에 수록된 시점만 선택할 수 있습니다. 만기 전 마지막 수록 시점은 49년입니다.</p></section>
+  <section class="metrics" aria-label="선택 시점 결과" aria-live="polite" aria-atomic="true">
+    <article class="metric"><span class="metric-label">실제 납입누계</span><strong id="paid">—</strong><small id="paid-detail">—</small></article>
+    <article class="metric featured"><span class="metric-label">해약환급금 <span class="pill">공식 예시</span></span><strong id="surrender">—</strong><small id="surrender-detail">원자료 표시값 · 만 원 미만 절사</small></article>
+    <article class="metric"><span class="metric-label">해약환급률</span><strong id="refund-rate">—</strong><small>원자료의 납입보험료 대비 환급률</small></article>
+  </section>
+  <section class="panel chart-panel" aria-labelledby="chart-title"><div class="section-top"><div><span class="eyebrow">THE LONG VIEW</span><h2 id="chart-title">시간에 따른 납입액과 환급금</h2></div><span class="chart-unit">단위: 억 원</span></div><div class="legend"><span><i class="dot teal"></i>해약환급금</span><span><i class="dash"></i>실제 납입누계</span><span id="chart-scenario" class="chart-scenario">—</span></div><div id="chart" class="chart"></div><div class="chart-caption"><p>환급금은 수록 시점의 점으로 표시합니다. 점 사이의 금액을 추정하지 않습니다.</p><p id="recovery">—</p></div></section>
+  <section class="two-panels">
+    <article class="panel protection" aria-labelledby="protection-heading"><span class="eyebrow">PROTECTION</span><h2 id="protection-heading">사망보장도 함께 확인하세요.</h2><span class="result-label" id="death-label">사망보험금 · 공식 예시</span><strong id="death">—</strong><p id="death-help">—</p><div class="formula"><span>보장형 사망보험금 산식</span><p>기본보험금액 · 적립액 × 105% · 기납입보험료<br>세 금액 중 가장 큰 금액</p></div><p class="tiny">사망보험금과 해약환급금은 각각의 지급사유에 따른 금액이며 합산 수령액이 아닙니다.</p></article>
+    <article class="panel compare" aria-labelledby="compare-heading"><span class="eyebrow">ONE MORE OPTION</span><h2 id="compare-heading">추가납입을 한다면?</h2><div id="comparison"></div><p class="tiny" id="comparison-help">—</p></article>
+  </section>
+  <section class="panel scenario" id="conversion-scenario" aria-labelledby="scenario-title">
+    <span class="eyebrow">CONVERSION PLANNING · 가정 계산</span><h2 id="scenario-title">7·8·9·10년 후 적립형으로 전환한다면?</h2>
+    <p class="section-description">전환 후 추가 보험료 납입은 0원으로 가정합니다. 전환 당일 초회보험료는 별도로 반영합니다. 아래 금액은 입력한 비용 가정에 따른 추정이며 보험사 설계값이 아닙니다.</p>
+    <div class="scenario-controls">
+      <div><label for="projection-return">전환 후 연 투자수익률 (%)</label><input id="projection-return" type="number" min="-1" max="20" step="0.05" value="3.75"><label class="sr-only" for="projection-return-slider">전환 후 투자수익률 슬라이더</label><input id="projection-return-slider" type="range" min="-1" max="20" step="0.05" value="3.75"><div class="range-ends"><span>-1%</span><span>20%</span></div></div>
+      <div><label for="projection-sum">전환 후 보험가입금액 (만원)</label><input id="projection-sum" type="number" min="100" max="100000" step="100" value="100000"><p class="field-help">사망보험금 총액이 아니라 적립액에 더해지는 가입금액입니다. 100만원 단위이며 전환 전 가입금액 이하로 선택합니다.</p></div>
+      <div><label for="projection-horizon">전환 후 경과연수</label><input id="projection-horizon" type="number" min="1" max="50" step="1" value="10"><p class="field-help">모든 전환시점을 동일한 전환 후 기간으로 비교합니다.</p></div>
+    </div>
+    <div class="scenario-reserves" id="scenario-reserves"></div>
+    <details class="cost-assumptions" open><summary>공제비용 가정 입력 · 미입력 시 계산하지 않습니다</summary><div class="scenario-controls">
+      <div><label for="projection-risk">가입금액 1억원당 월 위험보험료 (원)</label><input id="projection-risk" type="number" min="0" step="1" placeholder="확인한 요율 또는 검토용 가정"><p class="field-help">선택한 가입금액에 비례하며 일정하다고 가정합니다. 실제 연령별 위험보험료를 재현하지 않습니다.</p></div>
+      <div><label for="projection-admin">월 계약관리비용 (원)</label><input id="projection-admin" type="number" min="0" step="1" placeholder="확인한 비용 또는 검토용 가정"></div>
+      <div><label for="projection-entry-fee">전환 초회보험료의 공제비율 (%)</label><input id="projection-entry-fee" type="number" min="0" max="100" step="0.01" placeholder="비용 확인 필요"><p class="field-help">초회 납입액에서 공제 후 적립액에 더합니다. 이후 정기납입은 없습니다.</p></div>
+    </div><label class="checkbox"><input id="projection-confirm" type="checkbox">납입면제 이력이 없는 계약이며, 고정 위험보험료 가정은 실제 유지 여부·환급금과 다를 수 있음을 확인했습니다.</label></details>
+    <div id="projection-output" role="status" aria-live="polite"></div>
+    <p class="section-description">보증비용은 적립액 기준 연 0.15%를 월별 차감합니다. 입력 수익률은 운용보수 반영 후 펀드 기준가 수익률입니다. 해약공제는 별도 입력한 금액을 차감합니다. 비용 충당이 안 되는 시점 이후는 ‘추가 납입 필요’로 표시하며 사망보장 유지를 가정하지 않습니다.</p>
+  </section>
+  <section class="panel conversion" aria-labelledby="conversion-heading"><div class="section-top"><div><span class="eyebrow">AFTER YEAR 7</span><h2 id="conversion-heading">적립형 전환, 조건부터 확인하세요.</h2></div><span class="subtle-tag">7년은 완납 시점이 아닙니다</span></div><p class="section-description">선택한 예시 시점의 납입내역을 기준으로 주요 전환 요건을 확인합니다.</p><div class="conversion-layout"><div><label class="input-label" for="reserve">주계약 계약자적립액 <span>만원</span></label><input id="reserve" type="number" inputmode="decimal" min="0" step="0.0001" placeholder="보험사에서 확인한 적립액 입력" aria-describedby="reserve-help"><p class="field-help" id="reserve-help">해약환급금과 다를 수 있어 자동으로 넣지 않습니다.<br>인출·감액·기존 전환이 없는 본 예시 계약 기준입니다.</p><label class="checkbox"><input type="checkbox" id="no-waiver">보험료 납입면제를 받지 않은 계약입니다.</label><button class="button primary" id="check-conversion">주요 전환 요건 확인 <span aria-hidden="true">→</span></button></div><div class="conversion-output" id="conversion-output" role="status" aria-live="polite"></div></div><p class="tiny conversion-limit">입력조건 확인이며 보험사의 전환 승낙을 의미하지 않습니다. 전환 후 보험료·가입금액 선택, 심사 및 실제 효력발생일은 별도 확인해야 합니다.</p></section>
+  <section class="panel table-panel" aria-labelledby="table-heading"><div class="section-top"><div><span class="eyebrow">DETAILS MATTER</span><h2 id="table-heading">수익률별 해약환급금</h2></div><button class="button" id="export">선택 수익률 CSV 저장 <span aria-hidden="true">↓</span></button></div><p class="section-description" id="table-description">—</p><div class="table-scroll" tabindex="0" role="region" aria-label="수익률별 해약환급금 표. 가로 스크롤 가능"><table><caption class="sr-only">경과기간별 실제 납입누계와 세 가지 수익률의 해약환급금·환급률</caption><thead><tr><th scope="col">경과기간</th><th scope="col">보험나이</th><th scope="col">실제 납입누계</th><th scope="col" data-rate="-1">연 -1.0%</th><th scope="col" data-rate="2.5">연 2.5%</th><th scope="col" data-rate="3.75">연 3.75%</th></tr></thead><tbody id="table-body"></tbody></table></div><p class="tiny table-note">금액 단위: 만원. 환급금은 만 원 미만 절사된 원자료 값이며, 환급률은 원자료의 소수 둘째 자리 표시값을 유지합니다. 납입누계는 실제 월보험료 × 납입횟수입니다.</p></section>
+  <details class="panel sources"><summary><span>계산 기준과 자료 출처</span><span class="details-icon" aria-hidden="true">＋</span></summary><div class="sources-body"><div><h3>현재 제공하는 기능</h3><p>2026.10.28 설계서의 공식 예시 조회입니다. 공식 보험사 산식을 재현하는 범용 계리 엔진은 포함하지 않습니다. 별도 전환 가정 계산에서는 적립액·공제비용을 직접 입력합니다. 40세 남녀의 기본납입 및 남성의 추가납입 100% 예시를 제공합니다.</p><p>특약·중도인출·감액·납입면제·전환을 반영하지 않은 계약입니다. 여성 추가납입 예시는 자료 확보 후 제공합니다.</p><h3>수익률·비용</h3><p>펀드 기준가 수익률에 반영된 운용보수는 다시 차감하지 않습니다. 보장형 보증비용은 보험가입금액 기준 연 0.011%, 적립형은 특별계정적립액 기준 연 0.15%로 서로 다릅니다. 표시된 환급금에서 비용을 추가로 빼지 않습니다.</p></div><div><h3>출처</h3><ul><li>40세 남자.pdf: 계약정보 9쪽, 사망보험금 12쪽, 기본납입 13쪽, 추가납입 15쪽</li><li>40세 여.pdf: 계약정보 9쪽, 사망보험금 12쪽, 기본납입 13쪽</li><li>운용설명서: 최저사망보험금 보증비용 및 펀드비용</li><li>공식 약관: 제2조의2, 제13조, 제38~40조, 제47조, 제50~51조, 별표1</li></ul><div class="source-links"><a href="https://brand.metlife.co.kr/pn/mcvrgProd/retrieveMcvrgProdMain.do" target="_blank" rel="noopener noreferrer">메트라이프 공시실 ↗</a><a href="https://brand.metlife.co.kr/pn/mcvrgProd/mcvrgProdDownloadFile.do?insProdSeq=1128&amp;seq=4206&amp;fnum=03" target="_blank" rel="noopener noreferrer">2026.10.20 약관 ↗</a></div><p class="tiny">페이지는 PDF 기준입니다. 상품 버전 2026.10.20 · 자료 확인 2026.10.28</p></div></div></details>
+  <footer class="footer"><p>투자수익률은 가정이며, 해약환급금에는 최저보증이 없어 원금손실이 발생할 수 있습니다. 표시 금액은 세전입니다.</p><span>JW FINANCIAL · INTERNAL REVIEW · v0.3</span></footer>
+</main>
+</div>
+</details>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<noscript><p class="no-script">예시 조회에는 JavaScript가 필요합니다. 브라우저에서 JavaScript를 허용해 주세요.</p></noscript>
+<script id="metlife-fixtures" type="application/json">__FIXTURES__</script>
+<script>__MODEL__</script>
+<script>__APP__</script>
+</body>
+</html>
