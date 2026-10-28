@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="메트라이프 변액리치정기보험의 공식 설계 예시를 바탕으로 납입액, 사망보장, 해약환급금을 비교합니다.">
+  <meta name="description" content="메트라이프 변액리치정기보험의 공식 설계 예시를 보정한 추정 모델로 납입액, 사망보험금, 해약환급금을 비교합니다.">
   <meta name="color-scheme" content="light">
   <title>변액리치정기보험 시뮬레이터 · JW Financial</title>
   <style>:root{--ink:#142b40;--navy:#152e43;--muted:#647582;--teal:#087f78;--teal-dark:#08635e;--teal-pale:#eaf5f1;--line:#dce5e8;--bg:#f5f7f7;--white:#fff;--red:#a84242;--amber:#926012;--radius:14px;font-family:Inter,"Pretendard","Noto Sans KR",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);font-synthesis:none}
@@ -33,13 +33,18 @@ body{font-size:16px}.eyebrow,.tiny,.field-help,.section-description,.metric smal
 @media print{.customer-layout{display:block}.customer-inputs{position:static;max-height:none;overflow:visible;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0}.customer-inputs input[type=range]{display:none}.customer-inputs label{margin:4px 0}.customer-inputs input,.customer-inputs select{min-height:0!important;padding:4px!important;font-size:12px!important}.customer-inputs .customer-kicker,.customer-inputs .customer-note{font-size:10px}.customer-results{padding:12px 0}.customer-status{font-size:11px;margin:8px 0;padding:8px}.customer-cards{display:grid;grid-template-columns:repeat(3,1fr)}.customer-cards article{display:block;padding:10px}.customer-cards strong{font-size:17px}.legacy-details{display:none}.customer-results h1{font-size:25px}.customer-results .table-scroll{max-height:none}#c-chart svg{max-height:230px}}
 
 @media(max-width:750px){#c-chart svg text{font-size:16px}}
+/* Customer estimate mode: readable values and comparisons. */
+.customer-kicker,.customer-inputs output,.customer-note,.auto-summary>span,.auto-summary p,.customer-cards span,.customer-legend{font-size:16px}.customer-results td,.customer-results th{font-size:16px}.customer-results .panel>p{font-size:16px;line-height:1.85}.conversion-comparisons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:22px}.conversion-compare{background:#f4f8fc;border:1px solid #cddbea;border-radius:12px;padding:20px;min-width:0}.conversion-compare.selected{border:2px solid #1b4c89;background:#eaf2fe}.conversion-compare h3{font-size:22px;color:#173e71;margin:0 0 20px}.conversion-compare>span{display:block;font-size:16px;color:#435f79;margin-top:15px}.conversion-compare strong{display:block;font-size:23px;margin-top:8px;overflow-wrap:anywhere;line-height:1.45}.conversion-compare b{display:block;font-size:18px;margin-top:7px;overflow-wrap:anywhere}.conversion-compare p{font-size:16px;color:#485b6c;margin-top:20px}.estimate-method p{font-size:16px;line-height:1.85;margin-top:16px}.post-cards article:nth-child(2){background:#eaf8f3;border-color:#9ecfbc}.post-cards article:nth-child(2) strong{color:#006c54}.customer-results .customer-cards strong{font-size:26px}.customer-status{background:#edf4ff;border-color:#295c99;color:#1e4269}.customer-results h1{color:#102f54}.customer-results .eyebrow{font-size:15px}.customer-inputs .customer-note{line-height:1.65}.customer-inputs label{font-size:17px}.customer-results .section-top .button{font-size:16px}
+@media(max-width:1300px){.conversion-comparisons{grid-template-columns:repeat(2,minmax(0,1fr))}.post-cards{grid-template-columns:1fr}.post-cards article{display:block}.customer-results .customer-cards strong{font-size:24px}}
+@media(max-width:750px){.conversion-comparisons{grid-template-columns:1fr}.conversion-compare{padding:20px}.customer-results .customer-cards strong{font-size:25px}.customer-results .panel h2{line-height:1.5}.customer-results .eyebrow{font-size:15px}.customer-inputs output{font-size:16px}}
+@media print{.conversion-comparisons{grid-template-columns:repeat(2,1fr)}.conversion-compare{break-inside:avoid}.customer-results td,.customer-results th{font-size:10px}.customer-results .customer-cards strong{font-size:17px}.estimate-method p,.customer-results .panel>p{font-size:11px}.customer-results .eyebrow{font-size:11px}}
 </style>
 </head>
 <body>
 <a class="skip" href="#customer-workbench">결과로 바로가기</a>
 <header class="topbar">
   <a class="brand" href="#"><span class="brand-mark">JW<span>·</span></span><span>JW FINANCIAL<small>FINANCIAL PLANNING TOOLS</small></span></a>
-  <div class="header-right"><span class="version"><i></i>검토용 초안 · v0.3</span><button class="button print-button" id="print">인쇄 / PDF <span aria-hidden="true">↗</span></button></div>
+  <div class="header-right"><span class="version"><i></i>상담 예시용 추정 · v0.4</span><button class="button print-button" id="print">인쇄 / PDF <span aria-hidden="true">↗</span></button></div>
 </header>
 <div id="customer-workbench"></div>
 <details class="legacy-details"><summary>기존 공식 예시 및 내부 검토 도구 열기</summary><div class="workspace">
@@ -448,53 +453,233 @@ body{font-size:16px}.eyebrow,.tiny,.field-help,.section-description,.metric smal
   render();
 })();
 
-(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.MetlifeCustomer=api;})(typeof globalThis==='object'?globalThis:this,function(){
+;globalThis.MetlifeCalibration={
+  "male": {
+    "savings": {
+      "ages": [
+        40.0,
+        47.0,
+        53.0,
+        58.0,
+        63.0,
+        68.0,
+        73.0,
+        78.0,
+        83.0,
+        90.0
+      ],
+      "annualChargePerBillionWon": [
+        517005.66652092274,
+        977552.8382007745,
+        1687580.4027234458,
+        2521031.0884240866,
+        4057403.8064918616,
+        6512772.686177416,
+        11369023.434899844,
+        22560667.108740553,
+        37130237.379232146,
+        74585401.07434544
+      ],
+      "balanceRate": 0.0020167931420309055
+    },
+    "base": {
+      "ages": [
+        40.0,
+        47.0,
+        50.0,
+        55.0,
+        60.0,
+        65.0,
+        70.0,
+        75.0,
+        80.0,
+        85.0,
+        90.0
+      ],
+      "annualChargePerBillionWon": [
+        164547.43059402984,
+        366379.5423690106,
+        497608.2963810166,
+        853606.6355371163,
+        1619384.0690797498,
+        3642358.0290462556,
+        7614041.032880674,
+        14613935.167235559,
+        28268600.323357355,
+        47933612.85563219,
+        72725517.40747172
+      ],
+      "loadings": [
+        0.27524170077420124,
+        0.2854185870627118,
+        0.30600452659378985
+      ],
+      "penaltyAnnualPremiums": 2.187211432972999,
+      "extraLoading": 0,
+      "balanceRate": 0.0005886647216444856
+    }
+  },
+  "female": {
+    "savings": {
+      "ages": [
+        40.0,
+        47.0,
+        53.0,
+        58.0,
+        63.0,
+        68.0,
+        73.0,
+        78.0,
+        83.0,
+        90.0
+      ],
+      "annualChargePerBillionWon": [
+        462971.9471236883,
+        695545.7306572938,
+        985924.5934258077,
+        1375679.333061414,
+        1940600.606939132,
+        2673568.6288931533,
+        4848902.813833297,
+        11624585.191165138,
+        27868362.401726134,
+        94784872.09210116
+      ],
+      "balanceRate": 0.0019860609672616427
+    },
+    "base": {
+      "ages": [
+        40.0,
+        47.0,
+        50.0,
+        55.0,
+        60.0,
+        65.0,
+        70.0,
+        75.0,
+        80.0,
+        85.0,
+        90.0
+      ],
+      "annualChargePerBillionWon": [
+        202900.00957151674,
+        372249.3436147552,
+        481078.7929277485,
+        735268.0971339454,
+        1131641.014569392,
+        1765439.3333970981,
+        3084160.139230664,
+        6830875.968567537,
+        15918272.773554485,
+        33357858.832337044,
+        72573629.57277267
+      ],
+      "loadings": [
+        0.278440303381375,
+        0.2877587374280004,
+        0.29290673839811465
+      ],
+      "penaltyAnnualPremiums": 2.5522651641082517,
+      "extraLoading": 0,
+      "balanceRate": 2.9114452571390907e-18
+    }
+  }
+};
+(function(root,factory){const api=factory(typeof module==='object'&&module.exports?require('./calibration.json'):root.MetlifeCalibration);if(typeof module==='object'&&module.exports)module.exports=api;else root.MetlifeCustomer=api;})(typeof globalThis==='object'?globalThis:this,function(calibration){
 'use strict';
-// Attachment: 신상품 리플렛, PDF p5, 90세만기·가입금액1억. Sparse illustrative rates only.
+// All forecast amounts are illustrative estimates, never insurer quotations.
+// Premium anchors: launch leaflet PDF p5, 90세만기·전기납·가입금액 1억원.
 const tariffs={general:{male:{20:71000,30:88400,40:113600,50:153000,60:219300,70:348400},female:{20:49400,30:61000,40:77500,50:102600,60:144800,70:229400}},simple:{male:{30:105600,40:135500,50:181700,60:256700,70:386900},female:{30:75300,40:95400,50:125300,60:173000,70:262300}}};
-function describe(input,data){
- const year=2026;const age=year-input.birthYear;
+function logInterpolate(age,ages,values){
+ let i=0;while(i<ages.length-2&&age>ages[i+1])i++;
+ return Math.exp(Math.log(values[i])+(age-ages[i])/(ages[i+1]-ages[i])*Math.log(values[i+1]/values[i]));
+}
+function tariff(type,gender,age){const table=tariffs[type][gender],ages=Object.keys(table).map(Number);return logInterpolate(age,ages,ages.map(a=>table[a]));}
+function charge(gender,kind,age){const p=calibration[gender][kind];return logInterpolate(age,p.ages,p.annualChargePerBillionWon);}
+// Simple underwriting has its own premium anchors. Its COST multiplier is only a proxy;
+// no simple-underwriting surrender-value illustration has yet been calibrated.
+function typeMultiplier(type,gender,age){return type==='simple'?tariff('simple',gender,age)/tariff('general',gender,age):1;}
+function baseProjection({gender,type,age,premium,sum,extra,rate,years}){
+ const p=calibration[gender].base,g=Math.pow(1+rate/100,1/12),rows=[];
+ let basic=0,additional=0;
+ const multiplier=typeMultiplier(type,gender,age);
+ for(let m=0;m<years*12;m++){
+  const load=p.loadings[m<84?0:m<120?1:2];
+  basic+=premium*(1-load);
+  // Month 2 catches up the first month's additional premium.
+  additional+=premium*extra*(m===0?0:m===1?2:1)*(1-p.extraLoading);
+  const reserve=basic+additional;
+  const risk=Math.max(sum+premium*extra*(m+1)-reserve,0);
+  const cost=charge(gender,'base',age+m/12)*multiplier*risk/1e9/12+sum*.00011/12+Math.max(reserve,0)*p.balanceRate/12;
+  basic=(basic-cost)*g;additional*=g;
+  const penalty=premium*12*p.penaltyAnnualPremiums*Math.max(1-(m+1)/84,0);
+  const surrender=m<84?Math.max(basic-penalty,0)+additional:Math.max(basic+additional,0);
+  if((m+1)%12===0){
+   const year=(m+1)/12,paid=premium*(1+extra)*(m+1),A=Math.max(basic+additional,0);
+   const basicBenefit=sum*(type==='simple'&&m+1<24?.5:1)+premium*extra*(m+1);
+   rows.push({year,age:age+year,paid,reserve:A,surrender,death:Math.max(basicBenefit,A*1.05,paid),refundRate:surrender/paid*100,deathKind:'보장형 추정',status:'estimated'});
+  }
+ }
+ return rows;
+}
+function projectSavings({gender,type,issueAge,conversionAge,reserve,paidBefore,entryPremium,sum,rate,years,entryInvested=entryPremium}){
+ const p=calibration[gender].savings,g=Math.pow(1+rate/100,1/12),paid=paidBefore+entryPremium,rows=[];
+ let A=reserve+entryInvested,shortfallMonth=null;
+ const multiplier=typeMultiplier(type,gender,issueAge);
+ // The source's 0년납 projection excludes entry premium from its displayed paid total.
+ // Production scenarios explicitly add the mandatory first payment; no further payments.
+ rows.push({year:0,paid,reserve:A,surrender:A,death:Math.max(sum+A,paid),refundRate:A/paid*100,status:'estimated',deathKind:'적립형 추정'});
+ for(let m=0;m<years*12;m++){
+  if(shortfallMonth===null){
+   const risk=Math.max(sum,paid-A,0);
+   const cost=charge(gender,'savings',conversionAge+m/12)*multiplier*risk/1e9/12+A*(.0015+p.balanceRate)/12;
+   if(A<=cost){shortfallMonth=m+1;A=0;}else A=(A-cost)*g;
+  }
+  if((m+1)%12===0)rows.push({year:(m+1)/12,paid,reserve:shortfallMonth===null?A:null,surrender:shortfallMonth===null?A:null,death:shortfallMonth===null?Math.max(sum+A,paid):null,refundRate:shortfallMonth===null?A/paid*100:null,status:shortfallMonth===null?'estimated':'funding-needed',deathKind:'적립형 추정'});
+ }
+ return {rows,shortfallMonth};
+}
+function describe(input){
+ const age=2026-input.birthYear;
  if(!Number.isInteger(input.birthYear))throw new RangeError('출생연도를 정수로 입력해 주세요.');
  if(!['male','female'].includes(input.gender)||!['general','simple'].includes(input.type))throw new RangeError('가입형과 성별을 선택해 주세요.');
- if(age<(input.type==='general'?15:30)||age>(input.type==='general'?70:75))throw new RangeError('90세 만기의 예시 가입나이 범위를 벗어났습니다. 생월일에 따른 실제 보험나이는 별도 확인해야 합니다.');
+ if(age<(input.type==='general'?15:30)||age>(input.type==='general'?70:75))throw new RangeError('90세 만기의 예시 가입나이 범위는 일반 15~70세, 간편 30~75세입니다.');
  if(![0,.5,1].includes(input.extra))throw new RangeError('추가납입 비율을 확인해 주세요.');
- if(!Number.isInteger(input.conversionYear)||input.conversionYear<7||input.conversionYear>Math.min(80-age,90-age-1))throw new RangeError('전환시점은 7년 이후이며 전환나이 80세 이하·기본만기 전이어야 합니다.');
+ if(!Number.isInteger(input.conversionYear)||input.conversionYear<7||input.conversionYear>Math.min(80-age,89-age))throw new RangeError('전환시점은 7년 이후·전환나이 80세 이하·기본만기 전이어야 합니다.');
  for(const r of [input.beforeReturn,input.afterReturn])if(!Number.isFinite(r)||r< -1||r>20)throw new RangeError('수익률은 -1~20% 범위입니다.');
- if(!Number.isFinite(input.premium)||input.premium<80000)throw new RangeError('주계약 단독 화면의 월 기본보험료는 8만원 이상으로 입력해 주세요.');
- const rate=tariffs[input.type][input.gender][age]??null;
- let sum=input.sum;
- let premium=input.premium;
- if(input.driver==='premium')sum=rate?Math.floor(premium/rate*100000000/1000000)*1000000:null;
- else if(rate)premium=Math.round(sum/100000000*rate);
- if(sum!==null&&(!Number.isFinite(sum)||sum<10000000||sum>(input.type==='general'?5000000000:2000000000)))throw new RangeError('가입금액 범위는 일반 1천만~50억원, 간편 1천만~20억원입니다.');
+ if(input.driver!=='sum'&&(!Number.isFinite(input.premium)||input.premium<80000))throw new RangeError('주계약 단독 화면의 월 기본보험료는 8만원 이상으로 입력해 주세요.');
+ const rate=tariff(input.type,input.gender,age),exactRate=Object.hasOwn(tariffs[input.type][input.gender],age);
+ let sum=input.driver==='premium'?Math.floor((input.premium/rate*1e8+1e-5)/1e6)*1e6:input.sum;
+ let premium=input.driver==='premium'?input.premium:Math.round(sum/1e8*rate);
+ if(!Number.isFinite(sum)||sum<1e7||sum>(input.type==='general'?5e9:2e9))throw new RangeError('가입금액 범위는 일반 1천만~50억원, 간편 1천만~20억원입니다.');
  if(premium<80000)throw new RangeError('환산 기본보험료가 8만원 미만입니다. 가입금액을 높여 주세요.');
- if(!rate)return {age,ageBasis:'연나이 예시(생월일 미반영)',rate:null,sum:input.driver==='sum'?input.sum:null,premium:input.driver==='premium'?input.premium:null,totalMonthly:null,paidBefore:null,entryPremium:null,minConvertedSum:null,conversionConstraints:'해당 나이의 요율표 필요',rows:[],needsRates:true,hasOfficialValues:false};
- // Cashflow is an illustrative budget, not an insurer premium quote.
- const totalMonthly=premium*(1+input.extra);
- const paidBefore=totalMonthly*input.conversionYear*12;
- const entryPremium=Math.ceil(Math.max(100000,paidBefore/200)/10000)*10000;
- const minConvertedSum=Math.ceil(entryPremium*50/1000000)*1000000;
- const conversionConstraints=sum===null?'전환 전 가입금액 확인 필요':entryPremium>sum*.02||minConvertedSum>sum?'전환 최저 기본보험료와 가입금액 한도를 동시에 충족하지 못합니다.':null;
- let profile=null;
- if(age===40&&input.type==='general'&&sum===1000000000&&premium===data.profiles[input.gender].monthlyBasePremiumWon){const plan=input.extra===0?'base':input.extra===1?'extra100':null;if(plan&&data.profiles[input.gender][plan])profile=data.profiles[input.gender][plan];}
- const officialRate=data.rates.includes(String(input.beforeReturn))?String(input.beforeReturn):null;
- const rows=[];
- for(let y=1;y<=90-age;y++){
-   const paid=totalMonthly*Math.min(y,input.conversionYear)*12+(y>=input.conversionYear?entryPremium:0);
-   const source=profile&&officialRate&&y<input.conversionYear?profile.find(r=>r.month===y*12):null;
-   const floor = sum!==null&&y<input.conversionYear?Math.max(sum*(input.type==='simple'&&y<2?.5:1)+premium*input.extra*y*12,totalMonthly*y*12):null;
-   rows.push({year:y,age:age+y,paid,surrender:source?source.scenarios[officialRate].surrenderDisplayWon:null,death:source?.scenarios[officialRate].deathDisplayWon??floor,deathKind:source?.scenarios[officialRate].deathDisplayWon!=null?'공식 예시':'최저보장 산식(가입·정상납입 가정)'});
+ const totalMonthly=premium*(1+input.extra),paidBefore=totalMonthly*input.conversionYear*12;
+ const entryPremium=Math.ceil(Math.max(100000,paidBefore*.005)/10000)*10000;
+ const minConvertedSum=Math.ceil(entryPremium*50/1e6)*1e6;
+ const postSum=input.postSum??minConvertedSum;
+ const boundsError=!Number.isFinite(postSum)||postSum<minConvertedSum||postSum>sum||postSum%1e6!==0;
+ const before=baseProjection({gender:input.gender,type:input.type,age,premium,sum,extra:input.extra,rate:input.beforeReturn,years:input.conversionYear});
+ const conversionReserve=before.at(-1).reserve,threshold=Math.max(paidBefore*.7,1e6);
+ let conversionConstraints=entryPremium>sum*.02||minConvertedSum>sum?'전환 초회보험료와 가입금액 한도를 동시에 충족하지 못합니다.':null;
+ if(!conversionConstraints&&conversionReserve<threshold)conversionConstraints='추정 적립금이 전환 기준(납입액 70%·100만원 중 큰 금액)에 미달합니다.';
+ if(!conversionConstraints&&boundsError)conversionConstraints='전환 후 가입금액을 최저·최고 한도 안에서 100만원 단위로 입력해 주세요.';
+ const eligible=!conversionConstraints;
+ const horizon=90-age-input.conversionYear;
+ const post=eligible?projectSavings({gender:input.gender,type:input.type,issueAge:age,conversionAge:age+input.conversionYear,reserve:conversionReserve,paidBefore,entryPremium,sum:postSum,rate:input.afterReturn,years:horizon}):null;
+ const rows=before.slice(0,-1);
+ for(let y=input.conversionYear;y<=90-age;y++){
+  const r=post?.rows[y-input.conversionYear];
+  rows.push(r?{...r,year:y,age:age+y}:{year:y,age:age+y,paid:paidBefore,surrender:null,reserve:null,death:null,refundRate:null,status:'conversion-unavailable',deathKind:'전환 미성립'});
  }
- const conversionReferenceSurrender=profile&&officialRate?profile.find(r=>r.month===input.conversionYear*12)?.scenarios[officialRate].surrenderDisplayWon??null:null;
- return{conversionReferenceSurrender,age,ageBasis:'연나이 예시(생월일 미반영)',rate,sum,premium,totalMonthly,paidBefore,entryPremium,minConvertedSum,conversionConstraints,rows,needsRates:!rate,hasOfficialValues:rows.some(r=>r.surrender!==null)};
+ return {age,ageBasis:'연나이 예시(생월일 미반영)',rate,exactRate,sum,premium,totalMonthly,paidBefore,entryPremium,minConvertedSum,postSum,conversionReserve,conversionThreshold:threshold,conversionConstraints,eligible,rows,before,shortfallMonth:post?.shortfallMonth??null,needsRates:false,hasOfficialValues:false,projectionLimitAge:90,calibrated:input.type==='general'&&age===40};
 }
-return Object.freeze({describe,tariffs});
+return Object.freeze({describe,tariffs,tariff,logInterpolate,baseProjection,projectSavings,calibration});
 });
 
 (function(){
 'use strict';const root=document.getElementById('customer-workbench'),data=JSON.parse(document.getElementById('metlife-fixtures').textContent),M=globalThis.MetlifeCustomer;
 const state={gender:'male',birthYear:1986,type:'general',premium:1136000,sum:1000000000,driver:'premium',conversionYear:7,extra:0,beforeReturn:3.75,afterReturn:3.75};let zoom=true,postTouched=false;
-const n=(v,d=0)=>v.toLocaleString('ko-KR',{maximumFractionDigits:d});const won=v=>v===null||!Number.isFinite(v)?'자료 확인 필요':n(Math.round(v))+'원';const $=id=>document.getElementById('c-'+id);
+const n=(v,d=0)=>v.toLocaleString('ko-KR',{maximumFractionDigits:d});const won=v=>v===null||!Number.isFinite(v)?'산출 제외':n(Math.round(v))+'원';const $=id=>document.getElementById('c-'+id);
 root.innerHTML=`<div class="customer-layout"><aside class="customer-inputs"><h2>고객 조건 입력</h2><p class="customer-kicker">값을 바꾸면 바로 반영됩니다</p>
 <label for="c-gender">성별</label><select id="c-gender"><option value="male">남성</option><option value="female">여성</option></select>
 <label for="c-birth">출생연도 <output id="c-age"></output></label><div class="unit-input"><input id="c-birth" type="number" step="1" value="1986"><span>년생</span></div>
@@ -510,28 +695,54 @@ root.innerHTML=`<div class="customer-layout"><aside class="customer-inputs"><h2>
 <label for="c-post-sum">적립형 전환 후 가입금액</label><div class="unit-input"><input id="c-post-sum" type="number" step="100"><span>만원</span></div><p id="c-post-bounds" class="customer-note"></p>
 <div class="auto-summary"><span>월 총 납입액</span><strong id="c-total">—</strong><span>전환 당일 최저 초회보험료</span><strong id="c-entry">—</strong><p>초회보험료 자동 설정 · 전환 후 정기납입 0원 가정</p></div></aside>
 <main class="customer-results"><span class="eyebrow">METLIFE · FINANCIAL PLANNING</span><h1>보장과 자산의 흐름을<br>한눈에 비교하세요.</h1><p>메트라이프 변액리치정기보험 · 기준일 2026.10.28</p><div id="c-status" class="customer-status" role="status" aria-live="polite"></div>
-<section class="customer-cards"><article><span>보험가입금액 · 참고 환산</span><strong id="c-sum-result">—</strong></article><article><span>전환 전 총 납입예산</span><strong id="c-paid-result">—</strong></article><article><span>적립형 최저 가입금액</span><strong id="c-min-sum">—</strong></article></section>
-<section class="panel customer-chart-panel"><div class="section-top"><h2>납입액 · 사망보장 · 환급금</h2><button id="c-zoom" class="button">전체 기간 보기</button></div><div class="customer-legend"><span class="blue">● 납입액(예산)</span><span class="gold">● 사망보험금 / 최저보장 산식</span><span class="green">● 해약환급금(공식 예시)</span></div><div id="c-chart"></div><p class="customer-note">동일한 원 단위 축, 0원 기준으로 비교합니다. 확인되지 않은 환급금·전환 후 사망보험금은 그리지 않습니다. 사망보장은 해약환급금과 합산 수령하는 금액이 아닙니다.</p></section>
-<section class="panel"><h2>적립형 전환 결과</h2><div id="c-converted" class="customer-status"></div><p class="customer-note">전환 적립액, 위험보험료·사업비·해약공제 요율이 확보되면 고객 입력 없이 계산됩니다. 현재는 비용 입력란을 고객 화면에서 제외했습니다.</p></section>
-<section class="panel"><h2>연도별 금액</h2><div class="table-scroll"><table><thead><tr><th>경과</th><th>나이 예시</th><th>납입예산</th><th>사망보험금 / 최저보장</th><th>해약환급금</th></tr></thead><tbody id="c-rows"></tbody></table></div></section>
-<section class="panel"><h2>계산에 필요한 자료</h2><p>간편가입 설계서와 전체 연령별 보험료표, 보험료 및 해약환급금 산출방법서(사업비·위험보험료·해약공제 포함)가 필요합니다. 예시 나이 사이를 임의로 보간하거나 다른 가입형의 환급률을 적용하지 않습니다.</p><p class="customer-note">출생연도로 표시한 나이는 연나이 예시입니다. 정확한 보험나이는 생월일과 계약일로 결정됩니다. 보험료·가입금액 연동은 리플렛 5쪽의 1억원당 예시보험료를 단순 비례 환산한 참고값이며 실제 가입설계와 다를 수 있습니다.</p></section></main></div>`;
-function chart(result){const W=Math.max(260,Math.min(850,$('chart').clientWidth||850)),H=330,L=70,T=20,R=25,B=45,maxYear=zoom?Math.min(90-result.age,state.conversionYear+1):90-result.age;const rows=result.rows.filter(r=>r.year<=maxYear);const vals=rows.flatMap(r=>[r.paid,r.death,r.surrender]).filter(v=>v!==null);const max=Math.max(1,...vals)*1.12;const x=y=>L+y/maxYear*(W-L-R),yy=v=>H-B-v/max*(H-T-B);let out=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="납입예산, 사망보험금 또는 최저보장 산식, 공식 환급금. 미확인 값은 생략합니다.">`;
+<section class="customer-cards"><article><span>보험가입금액 · 추정 환산</span><strong id="c-sum-result">—</strong></article><article><span>전환 전 총 납입예산</span><strong id="c-paid-result">—</strong></article><article><span>전환 직전 추정 적립금</span><strong id="c-min-sum">—</strong></article></section>
+<section class="panel customer-chart-panel"><div class="section-top"><h2>납입액 · 사망보장 · 환급금</h2><button id="c-zoom" class="button">전체 기간 보기</button></div><div class="customer-legend"><span class="blue">● 누적 납입액</span><span class="gold">● 사망보험금 · 추정</span><span class="green">● 해약환급금 · 추정</span></div><div id="c-chart"></div><p class="customer-note">동일한 원 단위 축, 0원 기준입니다. 전환 후 정기납입은 0원이며 초회 최저보험료는 포함합니다. 전환 후는 종신 계약을 90세까지만 예시합니다. 사망보험금과 환급금은 합산 수령액이 아닙니다.</p></section>
+<section class="panel"><h2>적립형 전환 결과</h2><div id="c-converted" class="customer-status"></div><div id="c-post-cards" class="customer-cards post-cards"></div><p class="customer-note">추정 적립금이 전환 기준을 충족하는 경우만 전환 후를 계산합니다. 비용 재원이 부족해지면 이후 보장·환급금 산출을 중단합니다. 실제 전환 심사·납입최고·실효일은 가입설계에서 확인합니다.</p></section><section class="panel"><h2>7 · 8 · 9 · 10년 전환 비교</h2><p class="customer-note">각 시점에 전환한 뒤 10년이 지난 결과입니다. 기본 설정은 각 전환시점의 최저 가입금액이며, 가입금액을 직접 수정하면 같은 금액으로 비교합니다.</p><div id="c-comparisons" class="conversion-comparisons"></div></section>
+<section class="panel"><h2>연도별 금액</h2><div class="table-scroll"><table><thead><tr><th>경과</th><th>나이 예시</th><th>누적 납입액</th><th>사망보험금 · 추정</th><th>해약환급금 · 추정</th><th>환급률</th></tr></thead><tbody id="c-rows"></tbody></table></div></section>
+<section class="panel estimate-method"><h2>상담 예시용 추정 모델입니다</h2><p>보험료는 리플렛의 남녀·일반/간편 연령별 예시를 연결한 참고 환산입니다. 환급금은 일반가입형 40세 설계서의 여러 수익률 사례를 이용해 월별 합산 공제비용을 역산했습니다. 실제 위험보험료·사업비를 각각 복원한 값은 아닙니다.</p><p>다른 나이·금액·추가납입 50%는 확장 추정이며, 간편형은 보험료 차이를 비용에 반영한 임시 추정이며, 첫 2년은 재해 이외 사망의 가입금액 50% 감액을 가정합니다. 전환 후 초회보험료는 전액 투입으로 가정하고, 월별 추정 비용과 보증비용을 차감합니다. 실제 초회 공제·해약공제와 차이가 날 수 있습니다.</p><p>입력 수익률은 펀드 기준가 기준의 가정입니다. 보정 범위인 -1~3.75%를 벗어나면 오차가 더 커질 수 있으며, 높은 수익률을 예상·보장하지 않습니다. 출생연도는 연나이 예시이므로 실제 보험나이는 다를 수 있습니다. 모든 금액은 세전 예시입니다. 최종 금액과 가입·전환 가능 여부는 반드시 보험사의 가입설계로 확인합니다.</p></section></main></div>`;
+function chart(result){const W=Math.max(260,Math.min(850,$('chart').clientWidth||850)),H=330,L=70,T=20,R=25,B=45,maxYear=zoom?Math.min(90-result.age,state.conversionYear+15):90-result.age;const rows=result.rows.filter(r=>r.year<=maxYear);const vals=rows.flatMap(r=>[r.paid,r.death,r.surrender]).filter(v=>v!==null);const max=Math.max(1,...vals)*1.12;const x=y=>L+y/maxYear*(W-L-R),yy=v=>H-B-v/max*(H-T-B);let out=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="누적 납입액, 추정 사망보험금, 추정 해약환급금. 산출 제외 기간은 생략합니다.">`;
 for(let i=0;i<=4;i++){const v=max*i/4;out+=`<line x1="${L}" x2="${W-R}" y1="${yy(v)}" y2="${yy(v)}" stroke="#d7e2ed"/><text x="${L-10}" y="${yy(v)+6}" text-anchor="end" font-size="16" fill="#3d5369">${n(v/1e8,2)}억</text>`;}
 for(let i=0;i<=4;i++){const y=Math.round(maxYear*i/4);out+=`<text x="${x(y)}" y="${H-12}" text-anchor="middle" font-size="16">${y}년</text>`;}
-for(const [key,color]of[['paid','#245baf'],['death','#be7412'],['surrender','#008268']]){let prior=null;for(const row of rows){if(row[key]===null){prior=null;continue;}if(prior)out+=`<path d="M${x(prior.year)} ${yy(prior[key])} L${x(row.year)} ${yy(row[key])}" fill="none" stroke="${color}" stroke-width="4"/>`;out+=`<circle cx="${x(row.year)}" cy="${yy(row[key])}" r="5" fill="${color}"><title>${row.year}년 ${key==='paid'?'납입예산':key==='death'?row.deathKind:'공식 환급금'} ${won(row[key])}</title></circle>`;prior=row;}}
+for(const [key,color]of[['paid','#245baf'],['death','#be7412'],['surrender','#008268']]){let prior=null;for(const row of rows){if(row[key]===null){prior=null;continue;}if(prior)out+=`<path d="M${x(prior.year)} ${yy(prior[key])} L${x(row.year)} ${yy(row[key])}" fill="none" stroke="${color}" stroke-width="4"/>`;out+=`<circle cx="${x(row.year)}" cy="${yy(row[key])}" r="5" fill="${color}"><title>${row.year}년 ${key==='paid'?'누적 납입액':key==='death'?row.deathKind:'추정 환급금'} ${won(row[key])}</title></circle>`;prior=row;}}
 out+=`<line x1="${x(state.conversionYear)}" x2="${x(state.conversionYear)}" y1="${T}" y2="${H-B}" stroke="#8d4b83" stroke-dasharray="6 6"/><text x="${x(state.conversionYear)-7}" y="${T+16}" text-anchor="end" font-size="16" fill="#733366">${state.conversionYear}년 전환</text></svg>`;$('chart').innerHTML=out;}
+const estimated=v=>v===null||!Number.isFinite(v)?'산출 제외':'약 '+won(Math.round(v/10000)*10000);
+const pct=v=>v===null||!Number.isFinite(v)?'—':n(v,1)+'%';
+function comparison(){
+ $('comparisons').innerHTML=[7,8,9,10].map(year=>{
+  try{
+   const result=M.describe({...state,conversionYear:year,postSum:postTouched?Number($('post-sum').value)*10000:undefined});
+   const row=result.rows.find(r=>r.year===year+10);
+   return `<article class="conversion-compare ${year===state.conversionYear?'selected':''}"><h3>${year}년 후 전환</h3><span>전환 직전 적립금</span><strong>${estimated(result.conversionReserve)}</strong><span>전환 후 가입금액</span><b>${estimated(result.postSum)}</b><span>전환 10년 뒤 환급금</span><strong class="green">${result.eligible?estimated(row?.surrender??null):'전환 산출 제외'}</strong><span>환급률 ${result.eligible?pct(row?.refundRate??null):'—'}</span><p>${result.conversionConstraints||(!row?'90세 예시 범위 밖':row.status==='funding-needed'?'비용 재원 부족으로 산출 제외':'초회 납입 후 정기납입 0원')}</p></article>`;
+  }catch(e){return `<article class="conversion-compare"><h3>${year}년 후 전환</h3><p>${e.message}</p></article>`;}
+ }).join('');
+}
 function render(){
-$('before-label').textContent=(Number.isFinite(state.beforeReturn)?n(state.beforeReturn,2)+'%':'입력 확인');$('after-label').textContent=(Number.isFinite(state.afterReturn)?n(state.afterReturn,2)+'%':'입력 확인');
-try{const result=M.describe(state,data);$('age').textContent='연나이 예시 '+result.age+'세';$('conversion').max=Math.min(80-result.age,89-result.age);$('price-note').textContent=result.needsRates?'해당 나이의 보험료표가 없어 자동 환산은 자료 확보 후 가능합니다.':'1억원당 '+won(result.rate)+'의 예시요율로 단순 환산한 참고값입니다.';
-if(state.driver==='premium'&&result.sum===null)$('sum').value='';if(state.driver==='sum'&&result.needsRates)$('premium').value='';
-if(state.driver==='premium'&&result.sum!==null){state.sum=result.sum;$('sum').value=result.sum/10000;}else if(state.driver==='sum'&&!result.needsRates){state.premium=result.premium;$('premium').value=result.premium/10000;$('premium-range').value=result.premium/10000;}
-$('premium-label').textContent=won(result.premium);$('sum-label').textContent=won(result.sum);$('sum-result').textContent=won(result.sum);$('total').textContent=won(result.totalMonthly);$('entry').textContent=won(result.entryPremium);$('paid-result').textContent=won(result.paidBefore);$('min-sum').textContent=won(result.minConvertedSum);
-if(!postTouched||result.minConvertedSum===null){$('post-sum').value=result.minConvertedSum===null?'':result.minConvertedSum/10000;}const post=$('post-sum').value===''?null:Number($('post-sum').value)*10000;const postError=post!==null&&result.sum!==null&&(post<result.minConvertedSum||post>result.sum||post%1000000!==0);$('post-bounds').textContent='100만원 단위 · '+won(result.minConvertedSum)+' 이상 / '+won(result.sum)+' 이하';
-$('status').textContent=result.needsRates?'해당 연나이의 요율 자료 대기 — 이전 조건의 계산값은 표시하지 않습니다.': '보험료·가입금액은 예시 환산입니다. '+(result.hasOfficialValues?'일치하는 조건의 전환 전 공식 환급금만 표시합니다.':'선택 조건의 해약환급금·실제 사망보험금은 계리자료 확보 후 계산됩니다.');
-$('converted').textContent=postError?'전환 후 가입금액이 최저·최고 한도 또는 100만원 단위 조건에 맞지 않습니다.':result.conversionConstraints||'전환 당일 최저 초회보험료 '+won(result.entryPremium)+' 자동 설정. 전환 후 연 '+n(state.afterReturn,2)+'% 입력값은 저장되지만, 실제 사망보험금·환급률은 전환 적립액과 비용표 확인 후 계산됩니다.';
-if(result.conversionReferenceSurrender!==null&&result.conversionReferenceSurrender!==undefined)$('converted').textContent+=' 전환 직전 공식 해약환급금 참고값: '+won(result.conversionReferenceSurrender)+' (계약자적립액과 다름).';
-chart(result);$('rows').innerHTML=result.rows.map(r=>`<tr><td>${r.year}년${r.year===state.conversionYear?' · 전환':''}</td><td>${r.age}세</td><td>${won(r.paid)}</td><td>${r.death===null?'자료 확인 필요':won(r.death)+'<small>'+r.deathKind+'</small>'}</td><td>${r.surrender===null?'자료 확인 필요':won(r.surrender)+'<small>공식 표시값 · 만원 미만 절사</small>'}</td></tr>`).join('');if(!result.rows.length)$('chart').innerHTML='<p class="customer-status">요율표 확보 후 금액을 표시합니다.</p>';
-}catch(e){$('age').textContent='나이·조건 확인 필요';$('status').textContent=e.message;for(const id of['sum-result','total','entry','paid-result','min-sum'])$(id).textContent='입력 확인 필요';$('chart').innerHTML='';$('rows').innerHTML='';$('converted').textContent='조건을 확인해 주세요.';}
+ $('before-label').textContent=Number.isFinite(state.beforeReturn)?n(state.beforeReturn,2)+'%':'입력 확인';
+ $('after-label').textContent=Number.isFinite(state.afterReturn)?n(state.afterReturn,2)+'%':'입력 확인';
+ try{
+  const result=M.describe({...state,postSum:postTouched?Number($('post-sum').value)*10000:undefined});
+  $('age').textContent='연나이 예시 '+result.age+'세';$('conversion').max=Math.min(80-result.age,89-result.age);
+  $('price-note').textContent='1억원당 월 '+won(Math.round(result.rate))+' · '+(result.exactRate?'리플렛 예시요율':'예시 연령 사이 보간·범위 밖 외삽')+' · 보험사 견적과 차이가 있습니다.';
+  if(state.driver==='premium'){state.sum=result.sum;$('sum').value=result.sum/10000;}
+  else{state.premium=result.premium;$('premium').value=result.premium/10000;$('premium-range').value=result.premium/10000;}
+  $('premium-label').textContent=won(result.premium);$('sum-label').textContent=won(result.sum);$('sum-result').textContent=estimated(result.sum);
+  $('total').textContent=won(result.totalMonthly);$('entry').textContent=won(result.entryPremium);$('paid-result').textContent=won(result.paidBefore);$('min-sum').textContent=estimated(result.conversionReserve);
+  if(!postTouched)$('post-sum').value=result.minConvertedSum/10000;
+  $('post-sum').min=result.minConvertedSum/10000;$('post-sum').max=result.sum/10000;
+  $('post-bounds').textContent='100만원 단위 · '+won(result.minConvertedSum)+' 이상 / '+won(result.sum)+' 이하';
+  $('status').textContent='상담 예시용 추정치입니다. 실제 금액은 가입설계로 확인해 주세요.'+(state.type==='simple'?' 간편형 비용은 임시 추정이며 전용 설계서 보정 전입니다.':result.age!==40?' 선택 나이는 40세 설계서에서 확장한 추정입니다.':'')+(state.beforeReturn>3.75||state.afterReturn>3.75?' 3.75% 초과 수익률은 보정 범위 밖의 가정입니다.':'');
+  const targetYear=state.conversionYear+10,row=result.rows.find(r=>r.year===targetYear);
+  const shortage=result.shortfallMonth===null?'':` 전환 약 ${n(result.shortfallMonth/12,1)}년 뒤 비용 재원 부족이 예상되어 이후 산출을 중단합니다.`;
+  $('converted').textContent=result.conversionConstraints||`${state.conversionYear}년 후 전환 가정 · 초회 ${won(result.entryPremium)} 납입 후 정기납입 0원. 전환 기준 ${estimated(result.conversionThreshold)} / 추정 적립금 ${estimated(result.conversionReserve)}.${shortage}`;
+  $('post-cards').innerHTML=[['전환 10년 뒤 사망보험금',result.eligible?estimated(row?.death??null):'산출 제외'],['전환 10년 뒤 해약환급금',result.eligible?estimated(row?.surrender??null):'산출 제외'],['전환 10년 뒤 환급률',result.eligible?pct(row?.refundRate??null):'—']].map(([label,value])=>`<article><span>${label}</span><strong>${value}</strong></article>`).join('');
+  chart(result);
+  $('rows').innerHTML=result.rows.map(r=>`<tr><td>${r.year}년${r.year===state.conversionYear?' · 전환':''}</td><td>${r.age}세</td><td>${won(r.paid)}</td><td>${estimated(r.death)}</td><td>${estimated(r.surrender)}</td><td>${pct(r.refundRate)}</td></tr>`).join('');
+  comparison();
+ }catch(e){
+  $('age').textContent='나이·조건 확인 필요';$('status').textContent=e.message;
+  for(const id of['sum-result','total','entry','paid-result','min-sum','premium-label','sum-label'])$(id).textContent='입력 확인 필요';
+  $('price-note').textContent='입력 조건을 확인해 주세요.';$('post-bounds').textContent='입력 확인 후 한도를 계산합니다.';$('chart').innerHTML='';$('rows').innerHTML='';$('post-cards').innerHTML='';$('comparisons').innerHTML='';$('converted').textContent='조건을 확인해 주세요.';
+ }
 }
 root.addEventListener('input',event=>{const id=event.target.id,raw=event.target.value;
 if(id==='c-post-sum'){postTouched=true;render();return;}

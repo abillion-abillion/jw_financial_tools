@@ -7,7 +7,7 @@ const data = JSON.stringify(JSON.parse(read('metlife/fixtures.json'))).replace(/
 let html = read('metlife/template.html');
 for (const [token, content] of [
   ['__STYLES__', read('metlife/styles.css')],
-  ['__FIXTURES__', data], ['__MODEL__', read('metlife/model.cjs')], ['__APP__', read('metlife/app.js') + '\n' + read('metlife/customer-model.cjs') + '\n' + read('metlife/customer.js')]
+  ['__FIXTURES__', data], ['__MODEL__', read('metlife/model.cjs')], ['__APP__', read('metlife/app.js') + '\n;globalThis.MetlifeCalibration=' + read('metlife/calibration.json') + ';\n' + read('metlife/customer-model.cjs') + '\n' + read('metlife/customer.js')]
 ]) {
   if (html.split(token).length !== 2) throw new Error('Template marker missing or duplicated: ' + token);
   html = html.replace(token, () => content);
